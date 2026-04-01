@@ -207,31 +207,22 @@ export default function ProjectsPage() {
           variants={containerVariants}
           className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
         >
-          {filteredProjects.map((project, index) => {
+          {filteredProjects.map((project) => {
             const StatusIcon = statusConfig[project.status].icon;
-            const isLargeCard = index % 5 === 0; // Every 5th card is larger
 
             return (
               <motion.div
                 key={project.projectId}
                 variants={cardVariants}
-                className={`${isLargeCard ? 'md:col-span-2 lg:col-span-2' : ''}`}
               >
-                <Card
-                  className={`group relative h-full overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-500 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10 ${
-                    isLargeCard ? 'lg:flex' : ''
-                  }`}
-                >
+                <Card className="group relative h-full overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-500 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10">
                   {/* Image Container */}
-                  <div
-                    className={`relative overflow-hidden bg-muted ${
-                      isLargeCard ? 'aspect-video lg:w-1/2' : 'aspect-4/3'
-                    }`}
-                  >
+                  <div className="relative aspect-4/3 overflow-hidden bg-muted">
                     <Image
                       src={project.image}
                       alt={project.projectName}
                       fill
+                      loading="eager"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
                     />
@@ -257,11 +248,7 @@ export default function ProjectsPage() {
                   </div>
 
                   {/* Content */}
-                  <CardContent
-                    className={`flex flex-col gap-4 p-6 ${
-                      isLargeCard ? 'lg:w-1/2' : ''
-                    }`}
-                  >
+                  <CardContent className="flex flex-col gap-4 p-6">
                     {/* Title */}
                     <div>
                       <h3 className="mb-2 font-heading text-xl font-bold tracking-tight line-clamp-1 group-hover:text-primary sm:text-2xl">
@@ -274,56 +261,33 @@ export default function ProjectsPage() {
 
                     {/* Tech Stack */}
                     <div className="flex flex-wrap gap-2">
-                      {project.stacks
-                        .slice(0, isLargeCard ? 6 : 4)
-                        .map((stack) => (
-                          <div
-                            key={stack.name}
-                            className="flex items-center gap-1.5 rounded-md border border-border/50 bg-background/50 px-2.5 py-1"
-                          >
-                            <div className="relative size-3.5">
-                              <Image
-                                src={stack.icon}
-                                alt={stack.name}
-                                fill
-                                className="object-contain dark:brightness-110"
-                              />
-                            </div>
-                            <span className="text-xs font-medium text-muted-foreground">
-                              {stack.name}
-                            </span>
+                      {project.stacks.slice(0, 4).map((stack) => (
+                        <div
+                          key={stack.name}
+                          className="flex items-center gap-1.5 rounded-md border border-border/50 bg-background/50 px-2.5 py-1"
+                        >
+                          <div className="relative size-3.5">
+                            <Image
+                              src={stack.icon}
+                              alt={stack.name}
+                              fill
+                              loading='lazy'
+                              className="object-contain dark:brightness-110"
+                            />
                           </div>
-                        ))}
-                      {project.stacks.length > (isLargeCard ? 6 : 4) && (
+                          <span className="text-xs font-medium text-muted-foreground">
+                            {stack.name}
+                          </span>
+                        </div>
+                      ))}
+                      {project.stacks.length > 4 && (
                         <div className="flex items-center rounded-md border border-border/50 bg-background/50 px-2.5 py-1">
                           <span className="text-xs font-medium text-muted-foreground">
-                            +{project.stacks.length - (isLargeCard ? 6 : 4)}
+                            +{project.stacks.length - 4}
                           </span>
                         </div>
                       )}
                     </div>
-
-                    {/* Features (if large card) */}
-                    {isLargeCard && project.features && (
-                      <div className="mt-2">
-                        <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                          Key Features
-                        </h4>
-                        <ul className="grid gap-1.5 sm:grid-cols-2">
-                          {project.features.slice(0, 6).map((feature) => (
-                            <li
-                              key={feature}
-                              className="flex items-start gap-2 text-sm"
-                            >
-                              <CheckCircle2 className="mt-0.5 size-3 shrink-0 text-primary" />
-                              <span className="text-muted-foreground">
-                                {feature}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
 
                     {/* Actions */}
                     <div className="mt-auto flex flex-wrap gap-2 pt-4">
