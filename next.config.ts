@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -6,11 +6,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: '/:path*',
         headers: [
           {
-            key: "Cross-Origin-Opener-Policy",
-            value: "same-origin-allow-popups",
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups',
           },
         ],
       },
@@ -20,13 +20,13 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "googleusercontent.com",
+        protocol: 'https',
+        hostname: 'googleusercontent.com',
       },
       {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
-        port: "",
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        port: '',
       },
     ],
   },

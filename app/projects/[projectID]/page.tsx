@@ -86,12 +86,6 @@ export default function ProjectDetailPage({
       variants={pageVariants}
       className="relative min-h-screen overflow-hidden"
     >
-      {/* Background atmosphere */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute right-0 top-0 size-125 rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute bottom-0 left-0 size-100 rounded-full bg-purple-500/5 blur-[100px]" />
-      </div>
-
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         {/* Back Button */}
         <motion.div variants={itemVariants} className="mb-8">
@@ -181,7 +175,7 @@ export default function ProjectDetailPage({
             className="space-y-8 lg:col-span-2"
           >
             {/* Project Image */}
-            <Card className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm">
+            <Card className="overflow-hidden border-border/50 bg-card">
               <div className="relative aspect-video overflow-hidden bg-muted">
                 <Image
                   src={project.image}
@@ -189,6 +183,8 @@ export default function ProjectDetailPage({
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 66vw"
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                   className="object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>
@@ -196,7 +192,7 @@ export default function ProjectDetailPage({
 
             {/* Features Section */}
             {project.features && project.features.length > 0 && (
-              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+              <Card className="border-border/50 bg-card">
                 <CardContent className="p-6">
                   <h2 className="mb-4 flex items-center gap-2 font-heading text-2xl font-bold">
                     <CheckCircle2 className="size-6 text-primary" />
@@ -236,25 +232,9 @@ export default function ProjectDetailPage({
                   Tech Stack
                 </h2>
                 <div className="flex flex-wrap gap-3">
-                  {project.stacks.map((stack, index) => (
-                    <motion.div
+                  {project.stacks.map((stack) => (
+                    <div
                       key={stack.name}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        delay: shouldReduceMotion ? 0 : index * 0.05,
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 20,
-                      }}
-                      whileHover={{
-                        scale: shouldReduceMotion ? 1 : 1.05,
-                        transition: {
-                          type: 'spring',
-                          stiffness: 400,
-                          damping: 17,
-                        },
-                      }}
                       className="flex items-center gap-2 rounded-lg border border-border/50 bg-background/50 px-3 py-2"
                     >
                       <div className="relative size-5">
@@ -262,11 +242,13 @@ export default function ProjectDetailPage({
                           src={stack.icon}
                           alt={stack.name}
                           fill
+                          loading="lazy"
+                          sizes="20px"
                           className="object-contain dark:brightness-110"
                         />
                       </div>
                       <span className="text-sm font-medium">{stack.name}</span>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </CardContent>
@@ -323,14 +305,14 @@ export default function ProjectDetailPage({
                       variant="outline"
                       className="w-full justify-start gap-2"
                     >
-                      <a
+                      <Link
                         href={project.liveLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <ExternalLink className="size-4" />
                         Live Demo
-                      </a>
+                      </Link>
                     </Button>
                   )}
                   {project.githubLink && (
@@ -339,14 +321,14 @@ export default function ProjectDetailPage({
                       variant="outline"
                       className="w-full justify-start gap-2"
                     >
-                      <a
+                      <Link
                         href={project.githubLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <GithubIcon className="size-4" />
                         GitHub Repository
-                      </a>
+                      </Link>
                     </Button>
                   )}
                 </div>
@@ -374,28 +356,17 @@ export default function ProjectDetailPage({
                 const RelatedStatusIcon =
                   statusConfig[relatedProject.status].icon;
                 return (
-                  <motion.div
+                  <div
                     key={relatedProject.projectId}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    whileHover={{
-                      y: shouldReduceMotion ? 0 : -8,
-                      transition: {
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 20,
-                      },
-                    }}
                   >
                     <Link href={`/projects/${relatedProject.projectId}`}>
-                      <Card className="group h-full overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:shadow-xl">
+                      <Card className="group h-full overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl">
                         <div className="relative aspect-video overflow-hidden bg-muted">
                           <Image
                             src={relatedProject.image}
                             alt={relatedProject.projectName}
                             fill
+                            loading="lazy"
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
                           />
@@ -424,7 +395,7 @@ export default function ProjectDetailPage({
                         </CardContent>
                       </Card>
                     </Link>
-                  </motion.div>
+                  </div>
                 );
               })}
           </div>

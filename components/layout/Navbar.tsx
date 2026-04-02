@@ -36,6 +36,7 @@ export function Navbar() {
                   width={36}
                   height={36}
                   loading="lazy"
+                  sizes="36px"
                   className="rounded-full"
                 />
               </div>
