@@ -40,3 +40,8 @@ export const statusConfig: Record<
     border: 'border-gray-500/30',
   },
 };
+
+export function getStatusIcon(status: ProjectStatus) {
+  return statusConfig[status].icon;
+}
+
