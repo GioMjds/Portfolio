@@ -9,7 +9,7 @@ import {
 } from '@/lib/site';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'Personal Portfolio',
+  title: 'Gio Majadas | Personal Portfolio',
   description:
     'Explore Gio Majadas projects, skills, and experience in modern web development, mobile app development, and AI-powered product delivery.',
   pathname: '/',

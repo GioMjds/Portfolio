@@ -3,6 +3,7 @@
 import { useOptimistic, useState, useTransition } from 'react';
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { useForm, type UseFormSetError } from 'react-hook-form';
+import { motion, AnimatePresence } from 'motion/react';
 import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
 import {
   contactFormSchema,
@@ -172,6 +173,18 @@ export function ContactForm() {
     setSubmissionState(initialSubmissionState);
   };
 
+  const fieldVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number],
+      },
+    },
+  };
+
   return (
     <Card
       className="border-border/70 bg-card/70 backdrop-blur"
@@ -198,79 +211,115 @@ export function ContactForm() {
           />
 
           <FieldGroup className="gap-5">
-            <Field data-invalid={Boolean(errors.name)}>
-              <FieldLabel htmlFor="contact-name">Name</FieldLabel>
-              <FieldContent>
-                <Input
-                  id="contact-name"
-                  placeholder="Your name"
-                  aria-invalid={Boolean(errors.name)}
-                  disabled={isSending}
-                  {...register('name')}
-                />
-                <FieldError errors={[errors.name]} />
-              </FieldContent>
-            </Field>
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={fieldVariants}
+              transition={{ delay: 0.1 }}
+            >
+              <Field data-invalid={Boolean(errors.name)}>
+                <FieldLabel htmlFor="contact-name">Name</FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="contact-name"
+                    placeholder="Your name"
+                    aria-invalid={Boolean(errors.name)}
+                    disabled={isSending}
+                    {...register('name')}
+                  />
+                  <FieldError errors={[errors.name]} />
+                </FieldContent>
+              </Field>
+            </motion.div>
 
-            <Field data-invalid={Boolean(errors.email)}>
-              <FieldLabel htmlFor="contact-email">Email</FieldLabel>
-              <FieldContent>
-                <Input
-                  id="contact-email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  aria-invalid={Boolean(errors.email)}
-                  disabled={isSending}
-                  {...register('email')}
-                />
-                <FieldError errors={[errors.email]} />
-              </FieldContent>
-            </Field>
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={fieldVariants}
+              transition={{ delay: 0.2 }}
+            >
+              <Field data-invalid={Boolean(errors.email)}>
+                <FieldLabel htmlFor="contact-email">Email</FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="contact-email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    aria-invalid={Boolean(errors.email)}
+                    disabled={isSending}
+                    {...register('email')}
+                  />
+                  <FieldError errors={[errors.email]} />
+                </FieldContent>
+              </Field>
+            </motion.div>
 
-            <Field data-invalid={Boolean(errors.subject)}>
-              <FieldLabel htmlFor="contact-subject">Subject</FieldLabel>
-              <FieldContent>
-                <Input
-                  id="contact-subject"
-                  placeholder="Project inquiry"
-                  aria-invalid={Boolean(errors.subject)}
-                  disabled={isSending}
-                  {...register('subject')}
-                />
-                <FieldError errors={[errors.subject]} />
-              </FieldContent>
-            </Field>
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={fieldVariants}
+              transition={{ delay: 0.3 }}
+            >
+              <Field data-invalid={Boolean(errors.subject)}>
+                <FieldLabel htmlFor="contact-subject">Subject</FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="contact-subject"
+                    placeholder="Project inquiry"
+                    aria-invalid={Boolean(errors.subject)}
+                    disabled={isSending}
+                    {...register('subject')}
+                  />
+                  <FieldError errors={[errors.subject]} />
+                </FieldContent>
+              </Field>
+            </motion.div>
 
-            <Field data-invalid={Boolean(errors.message)}>
-              <FieldLabel htmlFor="contact-message">Message</FieldLabel>
-              <FieldContent>
-                <Textarea
-                  id="contact-message"
-                  rows={7}
-                  placeholder="Tell me about your project, timeline, and goals..."
-                  aria-invalid={Boolean(errors.message)}
-                  disabled={isSending}
-                  {...register('message')}
-                />
-                <FieldDescription>
-                  Please include enough context so I can provide a meaningful
-                  reply.
-                </FieldDescription>
-                <FieldError errors={[errors.message]} />
-              </FieldContent>
-            </Field>
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={fieldVariants}
+              transition={{ delay: 0.4 }}
+            >
+              <Field data-invalid={Boolean(errors.message)}>
+                <FieldLabel htmlFor="contact-message">Message</FieldLabel>
+                <FieldContent>
+                  <Textarea
+                    id="contact-message"
+                    rows={7}
+                    placeholder="Tell me about your project, timeline, and goals..."
+                    aria-invalid={Boolean(errors.message)}
+                    disabled={isSending}
+                    {...register('message')}
+                  />
+                  <FieldDescription>
+                    Please include enough context so I can provide a meaningful
+                    reply.
+                  </FieldDescription>
+                  <FieldError errors={[errors.message]} />
+                </FieldContent>
+              </Field>
+            </motion.div>
           </FieldGroup>
 
-          {optimisticSubmissionState.phase !== 'idle' ? (
-            <Alert
-              variant={
-                optimisticSubmissionState.phase === 'error'
-                  ? 'destructive'
-                  : 'default'
-              }
-            >
+          <AnimatePresence mode="wait">
+            {optimisticSubmissionState.phase !== 'idle' ? (
+              <motion.div
+                key="alert"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+              <Alert
+                variant={
+                  optimisticSubmissionState.phase === 'error'
+                    ? 'destructive'
+                    : 'default'
+                }
+              >
               {optimisticSubmissionState.phase === 'success' ? (
                 <CheckCircle2 className="size-4" />
               ) : null}
@@ -294,9 +343,16 @@ export function ContactForm() {
                   : ''}
               </p>
             </Alert>
-          ) : null}
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <motion.div
+            className="flex flex-col gap-2 sm:flex-row sm:items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.4 }}
+          >
             <Button
               type="submit"
               disabled={isSending}
@@ -320,7 +376,7 @@ export function ContactForm() {
                 Send another
               </Button>
             ) : null}
-          </div>
+          </motion.div>
         </form>
       </CardContent>
     </Card>

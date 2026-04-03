@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { motion } from 'motion/react';
 import {
   Empty,
   EmptyDescription,
@@ -15,6 +16,7 @@ import {
 } from '@/constants';
 import { CertificateCard } from './certificate-card';
 import { CertificatePreviewDialog } from './certificate-preview-dialog';
+import { containerVariants, itemVariants } from '@/utils';
 
 interface FeaturedCertificatesProps {
   certificates: Certificate[];
@@ -44,8 +46,14 @@ export function FeaturedCertificates({
 
   return (
     <>
-      <section className="space-y-6">
-        <div className="space-y-2 text-center">
+      <motion.section
+        className="space-y-6"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-100px' }}
+        variants={containerVariants}
+      >
+        <motion.div className="space-y-2 text-center" variants={itemVariants}>
           <h2 className="font-heading text-3xl font-semibold tracking-tight">
             Featured Credentials
           </h2>
@@ -53,18 +61,22 @@ export function FeaturedCertificates({
             A curated set of certifications that best represent current
             strengths.
           </p>
-        </div>
-        <ul className="grid gap-6 md:grid-cols-2" role="list">
+        </motion.div>
+        <motion.ul
+          className="grid gap-6 md:grid-cols-2"
+          role="list"
+          variants={containerVariants}
+        >
           {featured.map((certificate) => (
-            <li key={certificate.name}>
+            <motion.li key={certificate.name} variants={itemVariants}>
               <CertificateCard
                 certificate={certificate}
                 onPreview={setSelected}
               />
-            </li>
+            </motion.li>
           ))}
-        </ul>
-      </section>
+        </motion.ul>
+      </motion.section>
       <CertificatePreviewDialog
         certificate={selected}
         open={Boolean(selected)}

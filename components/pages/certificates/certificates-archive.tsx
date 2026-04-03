@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,6 +9,7 @@ import {
   getFeaturedCertificates,
   sortCertificatesByYear,
 } from '@/constants';
+import { containerVariants, itemVariants } from '@/utils';
 import { CertificateCard } from './certificate-card';
 import { CertificatePreviewDialog } from './certificate-preview-dialog';
 
@@ -33,17 +35,23 @@ export function CertificatesArchive({
 
   return (
     <>
-      <section className="space-y-6">
-        <div className="space-y-2 text-center">
+      <motion.section
+        className="space-y-6"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-100px' }}
+        variants={containerVariants}
+      >
+        <motion.div className="space-y-2 text-center" variants={itemVariants}>
           <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
             Full Certificate Archive
           </h2>
           <p className="text-muted-foreground">
             Explore the complete credential history when you need deeper proof.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="flex justify-center">
+        <motion.div className="flex justify-center" variants={itemVariants}>
           <Button
             type="button"
             variant="outline"
@@ -60,21 +68,30 @@ export function CertificatesArchive({
               <ChevronDown className="size-4" />
             )}
           </Button>
-        </div>
+        </motion.div>
 
-        {expanded && (
-          <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" role="list">
-            {archiveCertificates.map((certificate) => (
-              <li key={certificate.name}>
-                <CertificateCard
-                  certificate={certificate}
-                  onPreview={setSelected}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+        <AnimatePresence>
+          {expanded && (
+            <motion.ul
+              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+              role="list"
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, transition: { duration: 0.3 } }}
+              variants={containerVariants}
+            >
+              {archiveCertificates.map((certificate) => (
+                <motion.li key={certificate.name} variants={itemVariants}>
+                  <CertificateCard
+                    certificate={certificate}
+                    onPreview={setSelected}
+                  />
+                </motion.li>
+              ))}
+            </motion.ul>
+          )}
+        </AnimatePresence>
+      </motion.section>
       <CertificatePreviewDialog
         certificate={selected}
         open={Boolean(selected)}
