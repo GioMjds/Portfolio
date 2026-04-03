@@ -1,32 +1,30 @@
 {
-    "name": "Gio Majadas | Personal Portfolio",
-    "description": "Gio Majadas' personal portfolio website showcasing projects, skills, and contact information.",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#18181b",
-    "theme_color": "#18181b",
-    "icons": [
-        {
-            "src": "/favicon.ico",
-            "sizes": "64x64 32x32 24x24 16x16",
-            "type": "image/x-icon"
-        }
-    ],
-    "categories": ["personal", "portfolio", "developer"],
-    "dir": "ltr",
-    "lang": "en-US",
-    "display_override": ["standalone", "minimal-ui"],
-    "file_handlers": [
-        { "accept": { "text/plain": [".txt"] }, "action": "/open-text-file" }
-    ],
-    "launch_handler": {
-        "client_mode": ["navigate-existing"]
-    },
-    "prefer_related_applications": false,
-    "protocol_handlers": [
-        { "protocol": "mailto", "url": "/open-mail?to=%s" }
-    ],
-    "scope": "/",
-    "orientation": "landscape-primary",
-    "short_name": "GioMjds"
+  "name": "Gio Majadas | Personal Portfolio",
+  "description": "Gio Majadas' personal portfolio website showcasing projects, skills, and contact information.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#18181b",
+  "theme_color": "#18181b",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["personal", "portfolio", "developer"],
+  "dir": "ltr",
+  "lang": "en-US",
+  "display_override": ["standalone", "minimal-ui"],
+  "file_handlers": [
+    { "accept": { "text/plain": [".txt"] }, "action": "/open-text-file" }
+  ],
+  "launch_handler": {
+    "client_mode": ["navigate-existing"]
+  },
+  "prefer_related_applications": false,
+  "protocol_handlers": [{ "protocol": "mailto", "url": "/open-mail?to=%s" }],
+  "scope": "/",
+  "orientation": "landscape-primary",
+  "short_name": "GioMjds"
 }

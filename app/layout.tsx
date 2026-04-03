@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Navbar, Footer } from '@/components/layout';
+import { ChatPanel } from '@/components/assistant';
 import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
   },
   description:
     "Welcome to my personal portfolio! I'm Gio Majadas, a passionate software developer with expertise in web development, mobile app development, and cloud computing. Explore my projects, skills, and experience to see how I can contribute to your next project or team.",
+  // Add more metadata fields as needed (e.g., openGraph, twitter, icons)
 };
 
 export const viewport: Viewport = {
@@ -39,6 +41,7 @@ export const jsonLd = {
   description:
     "Welcome to my personal portfolio! I'm Gio Majadas, a passionate software developer with expertise in web development, mobile app development, and cloud computing. Explore my projects, skills, and experience to see how I can contribute to your next project or team.",
   url: 'https://giomjds.vercel.app',
+  // Add more structured data as needed (e.g., sameAs for social profiles, jobTitle, etc.)
 };
 
 export default function RootLayout({
@@ -71,6 +74,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
+          <ChatPanel />
         </ThemeProvider>
       </body>
     </html>

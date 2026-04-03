@@ -1,5 +1,53 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## AI Portfolio Chatbot
+
+This project includes a global, docked AI assistant that answers only from portfolio content (about, skills, projects, certifications, services, and homepage highlights).
+
+### Environment variables
+
+Set these server-side variables for local and Vercel deployments:
+
+```bash
+GEMINI_API_KEY=your_gemini_api_key
+# Optional override (default: gemini-2.0-flash)
+GEMINI_MODEL=gemini-2.0-flash
+```
+
+### API route
+
+- `POST /api/assistant/chat` (primary)
+- `POST /api/chat` (compatibility alias)
+
+Request body:
+
+```json
+{
+  "message": "What are Gio's strongest skills?",
+  "route": "/about",
+  "history": [
+    { "role": "user", "content": "Hi" },
+    { "role": "assistant", "content": "Hello!" }
+  ]
+}
+```
+
+Response body:
+
+```json
+{
+  "answer": "...",
+  "usedSections": ["identity", "skills"],
+  "safetyFlags": []
+}
+```
+
+### Vercel deployment notes
+
+1. Add `GEMINI_API_KEY` in Project Settings → Environment Variables for Preview and Production.
+2. Trigger a new deployment after saving env vars.
+3. Verify the assistant from any route (the panel is mounted globally in `app/layout.tsx`).
+
 ## Getting Started
 
 First, run the development server:
