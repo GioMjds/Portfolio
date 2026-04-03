@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   },
   description:
     "Welcome to my personal portfolio! I'm Gio Majadas, a passionate software developer with expertise in web development, mobile app development, and cloud computing. Explore my projects, skills, and experience to see how I can contribute to your next project or team.",
+  // Add more metadata fields as needed (e.g., openGraph, twitter, icons)
 };
 
 export const viewport: Viewport = {
@@ -40,6 +41,7 @@ export const jsonLd = {
   description:
     "Welcome to my personal portfolio! I'm Gio Majadas, a passionate software developer with expertise in web development, mobile app development, and cloud computing. Explore my projects, skills, and experience to see how I can contribute to your next project or team.",
   url: 'https://giomjds.vercel.app',
+  // Add more structured data as needed (e.g., sameAs for social profiles, jobTitle, etc.)
 };
 
 export default function RootLayout({

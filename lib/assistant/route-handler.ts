@@ -21,13 +21,24 @@ const recentRequests = new Map<string, number>();
 
 function getClientFingerprint(req: Request): string {
   const forwardedFor = req.headers.get('x-forwarded-for');
-  if (!forwardedFor) {
-    return 'unknown-client';
-  }
-  return forwardedFor.split(',')[0]?.trim() || 'unknown-client';
+  const realIp = req.headers.get('x-real-ip');
+  const userAgent = req.headers.get('user-agent') ?? '';
+
+  const ip =
+    forwardedFor?.split(',')[0]?.trim() ||
+    realIp?.trim() ||
+    '';
+
+  // If we have no stable identifier at all, return empty string to signal
+  // that rate limiting should be skipped for this request.
+  if (!ip && !userAgent) return '';
+
+  return userAgent ? `${ip}|${userAgent}` : ip;
 }
 
 function isRateLimited(fingerprint: string, now: number): boolean {
+  if (!fingerprint) return false;
+
   const lastRequestAt = recentRequests.get(fingerprint);
   if (lastRequestAt && now - lastRequestAt < RATE_LIMIT_WINDOW_MS) {
     return true;

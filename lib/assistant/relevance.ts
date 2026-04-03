@@ -71,7 +71,16 @@ export function selectRelevantKnowledge(
   route?: string,
 ): RelevanceResult {
   const normalizedRoute = route?.startsWith('/') ? route : undefined;
-  const routeSection = normalizedRoute ? SECTION_ROUTE_BOOST[normalizedRoute] : undefined;
+  const routeSection = normalizedRoute
+    ? Object.entries(SECTION_ROUTE_BOOST).find(([path]) => {
+        if (path === '/') {
+          return normalizedRoute === '/' || normalizedRoute === '';
+        }
+        return (
+          normalizedRoute === path || normalizedRoute.startsWith(path + '/')
+        );
+      })?.[1]
+    : undefined;
   const tokens = tokenize(question);
 
   const scored = slices
@@ -91,11 +100,14 @@ export function selectRelevantKnowledge(
 
   const ensureIdentity = slices.find((slice) => slice.id === 'identity-main');
   const withIdentity =
-    ensureIdentity && !selectedSlices.some((slice) => slice.id === ensureIdentity.id)
+    ensureIdentity &&
+    !selectedSlices.some((slice) => slice.id === ensureIdentity.id)
       ? [ensureIdentity, ...selectedSlices].slice(0, 6)
       : selectedSlices;
 
-  const usedSections = Array.from(new Set(withIdentity.map((slice) => slice.section)));
+  const usedSections = Array.from(
+    new Set(withIdentity.map((slice) => slice.section)),
+  );
   const totalKeywordMatches = scored.reduce(
     (accumulator, item) => accumulator + Math.max(item.score, 0),
     0,
@@ -115,4 +127,3 @@ export function selectRelevantKnowledge(
     totalKeywordMatches,
   };
 }
-

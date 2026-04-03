@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Bot, MessageCircle, Send, Sparkles, Trash2, X } from 'lucide-react';
+import { Bot, BotMessageSquare, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -124,18 +124,38 @@ export function ChatPanel() {
         }),
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        const fallback = await response
-          .json()
-          .catch(() => ({ error: 'The assistant request failed.' }));
-        throw new Error(
-          typeof fallback.error === 'string'
-            ? fallback.error
-            : 'The assistant request failed.',
-        );
+        const maybeAssistant = data as Partial<AssistantChatResponse> | null;
+
+        if (maybeAssistant && typeof maybeAssistant.answer === 'string') {
+          const assistantEntry: ChatEntry = {
+            id: makeId('assistant'),
+            role: 'assistant',
+            content: maybeAssistant.answer,
+            usedSections: maybeAssistant.usedSections,
+            safetyFlags: maybeAssistant.safetyFlags,
+          };
+
+          setMessages((current) => [...current, assistantEntry]);
+          return;
+        }
+
+        const fallbackError =
+          data && typeof data.error === 'string'
+            ? data.error
+            : 'An error occurred while fetching the assistant response.';
+
+        throw new Error(fallbackError);
       }
 
-      const payload = (await response.json()) as AssistantChatResponse;
+      const payload = data as AssistantChatResponse | null;
+
+      if (!payload || typeof payload.answer !== 'string') {
+        throw new Error('Invalid response from assistant API.');
+      }
+
       const assistantEntry: ChatEntry = {
         id: makeId('assistant'),
         role: 'assistant',
@@ -183,9 +203,6 @@ export function ChatPanel() {
                   Portfolio AI Assistant
                 </span>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="font-normal">
-                    Grounded only
-                  </Badge>
                   <Button
                     type="button"
                     variant="ghost"
@@ -207,7 +224,9 @@ export function ChatPanel() {
                       key={message.id}
                       className={cn(
                         'flex w-full',
-                        message.role === 'user' ? 'justify-end' : 'justify-start',
+                        message.role === 'user'
+                          ? 'justify-end'
+                          : 'justify-start',
                       )}
                     >
                       <div
@@ -219,7 +238,8 @@ export function ChatPanel() {
                         )}
                       >
                         <p className="whitespace-pre-wrap">{message.content}</p>
-                        {message.role === 'assistant' && message.usedSections?.length ? (
+                        {message.role === 'assistant' &&
+                        message.usedSections?.length ? (
                           <div className="mt-2 flex flex-wrap gap-1">
                             {message.usedSections.map((section) => (
                               <Badge
@@ -325,7 +345,7 @@ export function ChatPanel() {
         onClick={() => setIsOpen((current) => !current)}
         aria-label={isOpen ? 'Close assistant' : 'Open assistant'}
       >
-        <MessageCircle className="size-6" />
+        <BotMessageSquare className="size-6" />
       </Button>
     </div>
   );
