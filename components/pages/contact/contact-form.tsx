@@ -173,9 +173,14 @@ export function ContactForm() {
   };
 
   return (
-    <Card className="border-border/70 bg-card/70 backdrop-blur">
+    <Card
+      className="border-border/70 bg-card/70 backdrop-blur"
+      aria-labelledby="contact-form-title"
+    >
       <CardHeader className="space-y-2">
-        <CardTitle className="font-heading text-2xl">Send a message</CardTitle>
+        <CardTitle id="contact-form-title" className="font-heading text-2xl">
+          Send a message
+        </CardTitle>
         <CardDescription>
           Fill out the form and I&apos;ll get back to you as soon as possible.
         </CardDescription>
@@ -282,6 +287,12 @@ export function ContactForm() {
                     ? 'Send failed'
                     : 'Sending'}
               </AlertTitle>
+              <p className="text-sm text-muted-foreground">
+                {optimisticSubmissionState.message}
+                {optimisticSubmissionState.requestId
+                  ? ` Reference: ${optimisticSubmissionState.requestId}.`
+                  : ''}
+              </p>
             </Alert>
           ) : null}
 

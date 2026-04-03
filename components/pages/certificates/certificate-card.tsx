@@ -53,9 +53,9 @@ export function CertificateCard({
             certificate.category.slice(1)}
         </p>
         {certificate.icons && certificate.icons.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <ul className="flex flex-wrap gap-2" role="list" aria-label="Certificate technologies">
             {certificate.icons.map((icon) => (
-              <div
+              <li
                 key={icon}
                 className="relative size-7 rounded-md border border-border/50 bg-background/60 p-1"
               >
@@ -67,9 +67,9 @@ export function CertificateCard({
                   sizes="28px"
                   className="object-contain p-1"
                 />
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
         <Button
           type="button"

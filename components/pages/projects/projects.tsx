@@ -29,10 +29,11 @@ export function Projects({ activeFilter }: ProjectsProps) {
 
   if (filteredProjects.length === 0) {
     return (
-      <motion.div
+      <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="py-24 text-center"
+        aria-label="No projects available"
       >
         <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full bg-muted">
           <Filter className="size-10 text-muted-foreground" />
@@ -41,23 +42,25 @@ export function Projects({ activeFilter }: ProjectsProps) {
         <p className="text-muted-foreground">
           Try adjusting your filters to see more projects.
         </p>
-      </motion.div>
+      </motion.section>
     );
   }
 
   return (
-    <motion.div
+    <motion.ul
       key={activeFilter}
-      initial="hidden"
+      initial={false}
       animate="visible"
       variants={containerVariants}
       className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+      role="list"
+      aria-label="Projects"
     >
       {filteredProjects.map((project) => {
         const StatusIcon = statusConfig[project.status].icon;
 
         return (
-          <motion.div key={project.projectId} variants={cardVariants}>
+          <motion.li key={project.projectId} variants={cardVariants} className="h-full">
             <Card className="group relative h-full overflow-hidden border-border/50 bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10">
               {/* Image Container */}
               <div className="relative aspect-4/3 overflow-hidden bg-muted">
@@ -94,10 +97,10 @@ export function Projects({ activeFilter }: ProjectsProps) {
               <CardContent className="flex flex-col gap-4 p-6">
                 {/* Title */}
                 <div>
-                  <h3 className="mb-2 font-heading text-xl font-bold tracking-tight line-clamp-1 group-hover:text-primary sm:text-2xl">
+                  <h3 className="mb-2 font-heading text-xl font-bold tracking-tight line-clamp-1 text-foreground sm:text-2xl">
                     {project.projectName}
                   </h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  <p className="text-sm text-foreground line-clamp-2">
                     {project.description}
                   </p>
                 </div>
@@ -107,26 +110,27 @@ export function Projects({ activeFilter }: ProjectsProps) {
                   {project.stacks.slice(0, 4).map((stack) => (
                     <div
                       key={stack.name}
-                      className="flex items-center gap-1.5 rounded-md border border-border/50 bg-background/50 px-2.5 py-1"
+                      className="flex items-center gap-1.5 rounded-md border border-border/70 bg-card px-2.5 py-1"
                     >
                       <div className="relative size-3.5">
                         <Image
                           src={stack.icon}
-                          alt={stack.name}
+                          alt=""
+                          aria-hidden="true"
                           fill
                           loading="lazy"
                           sizes="24px"
                           className="object-contain dark:brightness-110"
                         />
                       </div>
-                      <span className="text-xs font-medium text-muted-foreground">
+                      <span className="text-xs font-medium text-foreground">
                         {stack.name}
                       </span>
                     </div>
                   ))}
                   {project.stacks.length > 4 && (
-                    <div className="flex items-center rounded-md border border-border/50 bg-background/50 px-2.5 py-1">
-                      <span className="text-xs font-medium text-muted-foreground">
+                    <div className="flex items-center rounded-md border border-border/70 bg-card px-2.5 py-1">
+                      <span className="text-xs font-medium text-foreground">
                         +{project.stacks.length - 4}
                       </span>
                     </div>
@@ -139,7 +143,7 @@ export function Projects({ activeFilter }: ProjectsProps) {
                     <Button
                       asChild
                       size="sm"
-                      className="flex-1 gap-2 shadow-lg shadow-primary/25"
+                      className="flex-1 gap-2 bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary"
                     >
                       <Link
                         href={project.liveLink}
@@ -152,12 +156,7 @@ export function Projects({ activeFilter }: ProjectsProps) {
                     </Button>
                   )}
                   {project.githubLink && (
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                    >
+                    <Button asChild variant="default" size="sm" className="gap-2">
                       <Link
                         href={project.githubLink}
                         target="_blank"
@@ -168,7 +167,7 @@ export function Projects({ activeFilter }: ProjectsProps) {
                       </Link>
                     </Button>
                   )}
-                  <Button asChild variant="ghost" size="sm" className="gap-2">
+                  <Button asChild variant="outline" size="sm" className="gap-2 border-border bg-background text-foreground hover:bg-muted">
                     <Link href={`/projects/${project.projectId}`}>
                       View Details →
                     </Link>
@@ -176,9 +175,9 @@ export function Projects({ activeFilter }: ProjectsProps) {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </motion.li>
         );
       })}
-    </motion.div>
+    </motion.ul>
   );
 }

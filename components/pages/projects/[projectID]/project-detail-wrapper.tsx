@@ -20,11 +20,12 @@ export function ProjectDetailWrapper({
   allProjects,
 }: ProjectDetailWrapperProps) {
   return (
-    <motion.div
+    <motion.section
       initial="hidden"
       animate="visible"
       variants={pageVariants}
       className="relative min-h-screen overflow-hidden"
+      aria-label="Project detail content"
     >
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <Header project={project} />
@@ -40,6 +41,6 @@ export function ProjectDetailWrapper({
           currentProjectId={project.projectId}
         />
       </div>
-    </motion.div>
+    </motion.section>
   );
 }

@@ -23,7 +23,10 @@ export function Navbar() {
     <TooltipProvider>
       <header className="sticky top-0 z-50 w-full">
         <div className="mx-auto max-w-5xl px-4 pt-4">
-          <nav className="flex items-center justify-between gap-4 rounded-2xl border border-border/50 bg-card/80 px-4 py-3 shadow-lg shadow-primary/5 backdrop-blur-xl transition-all duration-300">
+          <nav
+            aria-label="Primary navigation"
+            className="flex items-center justify-between gap-4 rounded-2xl border border-border/50 bg-card/80 px-4 py-3 shadow-lg shadow-primary/5 backdrop-blur-xl transition-all duration-300"
+          >
             {/* Logo / Brand */}
             <Link
               href="/"
@@ -46,38 +49,42 @@ export function Navbar() {
             </Link>
 
             {/* Navigation Links */}
-            <div className="flex items-center gap-1">
+            <ul className="flex items-center gap-1" role="list">
               {navItems.map(({ href, label, icon: Icon }) => {
                 const isActive = pathname === href;
                 return (
-                  <Tooltip key={href}>
-                    <TooltipTrigger asChild>
-                      <Button
-                        asChild
-                        variant={isActive ? 'secondary' : 'ghost'}
-                        size="sm"
-                        className={cn(
-                          'relative transition-all duration-200',
-                          isActive &&
-                            'bg-secondary/80 shadow-sm after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4 after:-translate-x-1/2 after:rounded-full after:bg-primary',
-                        )}
-                      >
-                        <Link
-                          href={href as Route}
-                          className="flex items-center gap-2"
+                  <li key={href}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          asChild
+                          variant={isActive ? 'secondary' : 'ghost'}
+                          size="sm"
+                          className={cn(
+                            'relative transition-all duration-200',
+                            isActive &&
+                              'bg-secondary/80 shadow-sm after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4 after:-translate-x-1/2 after:rounded-full after:bg-primary',
+                          )}
                         >
-                          <Icon className="size-4" />
-                          <span className="hidden md:inline">{label}</span>
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent className="md:hidden">
-                      {label}
-                    </TooltipContent>
-                  </Tooltip>
+                          <Link
+                            href={href as Route}
+                            aria-label={label}
+                            aria-current={isActive ? 'page' : undefined}
+                            className="flex items-center gap-2"
+                          >
+                            <Icon className="size-4" />
+                            <span className="hidden md:inline">{label}</span>
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="md:hidden">
+                        {label}
+                      </TooltipContent>
+                    </Tooltip>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
 
             {/* Theme Toggle */}
             <div className="flex items-center gap-2">

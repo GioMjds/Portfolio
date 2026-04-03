@@ -8,8 +8,11 @@ export function ContactPageShell() {
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <div className="grid items-start gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="space-y-6">
+        <section
+          className="grid items-start gap-8 lg:grid-cols-[0.95fr_1.05fr]"
+          aria-label="Contact introduction and form"
+        >
+          <article className="space-y-6">
             <Badge
               variant="outline"
               className="gap-2 border-primary/30 bg-primary/5 px-4 py-3"
@@ -68,10 +71,10 @@ export function ContactPageShell() {
                 giomjds@gmail.com
               </Link>
             </p>
-          </div>
+          </article>
 
           <ContactForm />
-        </div>
+        </section>
       </div>
     </section>
   );

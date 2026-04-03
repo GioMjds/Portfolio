@@ -63,15 +63,16 @@ export function CertificatesArchive({
         </div>
 
         {expanded && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" role="list">
             {archiveCertificates.map((certificate) => (
-              <CertificateCard
-                key={certificate.name}
-                certificate={certificate}
-                onPreview={setSelected}
-              />
+              <li key={certificate.name}>
+                <CertificateCard
+                  certificate={certificate}
+                  onPreview={setSelected}
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </section>
       <CertificatePreviewDialog

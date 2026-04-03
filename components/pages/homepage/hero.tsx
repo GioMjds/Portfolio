@@ -130,12 +130,13 @@ export function Hero() {
           <motion.div
             variants={staggerContainerVariants}
             className="flex flex-wrap justify-center gap-2"
+            initial={false}
           >
             {techStack.map((tech) => (
               <motion.div key={tech} variants={scaleInVariants}>
                 <Badge
-                  variant="secondary"
-                  className="px-3 py-1 text-sm transition-colors duration-200 hover:bg-secondary/80"
+                  variant="outline"
+                  className="border-border/70 bg-background px-3 py-1 text-sm text-foreground transition-colors duration-200 hover:bg-secondary"
                 >
                   {tech}
                 </Badge>

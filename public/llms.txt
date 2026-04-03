@@ -1,8 +1,11 @@
 # giomjds.vercel.app llms.txt
 
-> Gio Majadas' personal portfolio website serves as a comprehensive showcase of his skills and expertise as a software developer. Specializing in web and mobile applications, the site emphasizes his ability to deliver high-quality, user-centric digital solutions. Visitors can explore his offerings in web development, mobile app development, UI/UX design, and database engineering. The portfolio is designed to attract potential clients, employers, and collaborators, highlighting Gio's unique blend of technical proficiency and design aesthetics, which ensures a holistic approach to project execution within the technology and software development industry.
+> This website is Gio Majadas' personal portfolio. It presents public information about software development projects, skills, certifications, and contact options for collaboration.
 
-- [Gio Majadas Portfolio](https://giomjds.vercel.app/): This main page serves as an introduction to Gio Majadas, featuring an overview of his professional skills and services. It includes sections that detail his expertise in web and mobile application development, UI/UX design, and database engineering. The layout is visually appealing, designed to engage potential clients and collaborators by showcasing his projects and capabilities in a user-friendly manner.
+- [Homepage](https://giomjds.vercel.app/): Professional overview, highlights, and portfolio entry points.
+- [About](https://giomjds.vercel.app/about): Background, skill sets, services, and development journey milestones.
+- [Projects](https://giomjds.vercel.app/projects): Project catalog with technology stacks and detail pages.
+- [Certificates](https://giomjds.vercel.app/certificates): Verified credentials and certifications.
+- [Contact](https://giomjds.vercel.app/contact): Contact form and direct communication route.
 
-# Build-Hash: C313-4601-2061
-# Required for AI compatibility checks.
+This file is informational and only describes content that is publicly available on the site.

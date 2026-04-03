@@ -19,9 +19,9 @@ export function MainContent({ project }: MainContentProps) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <div className="grid gap-8 lg:grid-cols-3">
+    <section className="grid gap-8 lg:grid-cols-3" aria-label="Project details">
       {/* Left Column - Image & Features */}
-      <motion.div variants={itemVariants} className="space-y-8 lg:col-span-2">
+      <motion.article variants={itemVariants} className="space-y-8 lg:col-span-2">
         {/* Project Image */}
         <Card className="overflow-hidden border-border/50 bg-card">
           <div className="relative aspect-video overflow-hidden bg-muted">
@@ -40,9 +40,12 @@ export function MainContent({ project }: MainContentProps) {
 
         {/* Features Section */}
         {project.features && project.features.length > 0 && (
-          <Card className="border-border/50 bg-card">
+          <Card className="border-border/50 bg-card" aria-labelledby="project-features-heading">
             <CardContent className="p-6">
-              <h2 className="mb-4 flex items-center gap-2 font-heading text-2xl font-bold">
+              <h2
+                id="project-features-heading"
+                className="mb-4 flex items-center gap-2 font-heading text-2xl font-bold"
+              >
                 <CheckCircle2 className="size-6 text-primary" />
                 Key Features
               </h2>
@@ -68,27 +71,34 @@ export function MainContent({ project }: MainContentProps) {
             </CardContent>
           </Card>
         )}
-      </motion.div>
+      </motion.article>
 
       {/* Right Column - Tech Stack & Info */}
-      <motion.div variants={itemVariants} className="space-y-8">
+      <motion.aside variants={itemVariants} className="space-y-8" aria-label="Project metadata and links">
         {/* Tech Stack */}
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <Card
+          className="border-border/50 bg-card/50 backdrop-blur-sm"
+          aria-labelledby="project-stack-heading"
+        >
           <CardContent className="p-6">
-            <h2 className="mb-4 flex items-center gap-2 font-heading text-xl font-bold">
+            <h2
+              id="project-stack-heading"
+              className="mb-4 flex items-center gap-2 font-heading text-xl font-bold"
+            >
               <Code2 className="size-5 text-primary" />
               Tech Stack
             </h2>
-            <div className="flex flex-wrap gap-3">
+            <ul className="flex flex-wrap gap-3" role="list">
               {project.stacks.map((stack) => (
-                <div
+                <li
                   key={stack.name}
                   className="flex items-center gap-2 rounded-lg border border-border/50 bg-background/50 px-3 py-2"
                 >
                   <div className="relative size-5">
                     <Image
                       src={stack.icon}
-                      alt={stack.name}
+                      alt=""
+                      aria-hidden="true"
                       fill
                       loading="lazy"
                       sizes="20px"
@@ -96,16 +106,16 @@ export function MainContent({ project }: MainContentProps) {
                     />
                   </div>
                   <span className="text-sm font-medium">{stack.name}</span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </CardContent>
         </Card>
 
         {/* Project Info Card */}
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm" aria-labelledby="project-info-heading">
           <CardContent className="p-6">
-            <h2 className="mb-4 font-heading text-xl font-bold">
+            <h2 id="project-info-heading" className="mb-4 font-heading text-xl font-bold">
               Project Info
             </h2>
             <div className="space-y-3">
@@ -139,9 +149,11 @@ export function MainContent({ project }: MainContentProps) {
         </Card>
 
         {/* Links Card */}
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm" aria-labelledby="project-links-heading">
           <CardContent className="p-6">
-            <h2 className="mb-4 font-heading text-xl font-bold">Links</h2>
+            <h2 id="project-links-heading" className="mb-4 font-heading text-xl font-bold">
+              Links
+            </h2>
             <div className="space-y-2">
               {project.liveLink && (
                 <Button
@@ -178,7 +190,7 @@ export function MainContent({ project }: MainContentProps) {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
-    </div>
+      </motion.aside>
+    </section>
   );
 }

@@ -11,12 +11,12 @@ export function ProjectsContainer() {
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
   return (
-    <>
+    <section aria-label="Project filtering and results">
       <FilterPills
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
       />
       <Projects activeFilter={activeFilter} />
-    </>
+    </section>
   );
 }

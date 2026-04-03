@@ -21,14 +21,14 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden px-4 pb-12 pt-24 sm:pb-20 sm:pt-32">
       <div className="mx-auto max-w-5xl">
-        <motion.div
+        <motion.article
           initial="hidden"
           animate="visible"
           variants={containerVariants}
           className="grid items-center gap-12 lg:grid-cols-2"
         >
           {/* Text Content */}
-          <motion.div variants={itemVariants} className="space-y-6">
+          <motion.article variants={itemVariants} className="space-y-6">
             <Badge
               variant="outline"
               className="gap-2 border-primary/30 bg-primary/5 px-4 py-3"
@@ -100,10 +100,10 @@ export function Hero() {
                 </DialogContent>
               </Dialog>
             </div>
-          </motion.div>
+          </motion.article>
 
           {/* Profile Image Placeholder */}
-          <motion.div
+          <motion.figure
             variants={itemVariants}
             className="relative mx-auto aspect-square w-full max-w-sm lg:mx-0"
           >
@@ -118,8 +118,11 @@ export function Hero() {
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
               className="rounded-full"
             />
-          </motion.div>
-        </motion.div>
+            <figcaption className="sr-only">
+              Gio Majadas profile photo.
+            </figcaption>
+          </motion.figure>
+        </motion.article>
       </div>
     </section>
   );

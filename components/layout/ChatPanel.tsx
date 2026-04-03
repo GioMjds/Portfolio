@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Bot, BotMessageSquare, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -39,9 +39,9 @@ const GREETING: ChatEntry = {
 
 /**
  * This function provides context-aware starter prompts that base in the current page route.
- * 
+ *
  * The prompts are designed to encourage users to ask about relevant content for each section of the portfolio, such as projects, skills, or certifications. By tailoring the prompts to the page context, it helps guide users in engaging with the assistant and discovering key information about Gio's experience and offerings.
- * 
+ *
  * Page routes and example prompts:
  * - `/about`
  * - `/projects`
@@ -85,11 +85,14 @@ function makeId(prefix: string): string {
 
 export function ChatPanel() {
   const pathname = usePathname() ?? '/';
+  const panelId = 'portfolio-assistant-panel';
+  const statusId = 'portfolio-assistant-status';
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [messages, setMessages] = useState<ChatEntry[]>([GREETING]);
   const [draft, setDraft] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const starterPrompts = useMemo(() => getStarterPrompts(pathname), [pathname]);
   const canSend = draft.trim().length > 0 && !isLoading;
@@ -201,10 +204,43 @@ export function ChatPanel() {
     setDraft('');
   }
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    panelRef.current?.focus();
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    function onEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    }
+
+    window.addEventListener('keydown', onEscape);
+    return () => {
+      window.removeEventListener('keydown', onEscape);
+    };
+  }, [isOpen]);
+
   return (
     <div className="fixed bottom-4 right-4 z-50">
       {isOpen ? (
-        <div className="w-[min(calc(100vw-2rem),24rem)]">
+        <div
+          id={panelId}
+          ref={panelRef}
+          className="w-[min(calc(100vw-2rem),24rem)]"
+          role="dialog"
+          aria-modal="false"
+          aria-label="Portfolio AI Assistant"
+          tabIndex={-1}
+        >
           <Card className="gap-0 border-border/60 bg-card/95 shadow-xl backdrop-blur">
             <CardHeader className="border-b py-4">
               <CardTitle className="flex items-center justify-between gap-2 text-sm">
@@ -229,6 +265,11 @@ export function ChatPanel() {
             <CardContent className="pb-3 pt-3">
               <ScrollArea className="h-72 pr-3">
                 <div className="space-y-3">
+                  <p id={statusId} className="sr-only" aria-live="polite">
+                    {isLoading
+                      ? 'Assistant is generating a response.'
+                      : 'Assistant is ready.'}
+                  </p>
                   {messages.map((message) => (
                     <div
                       key={message.id}
@@ -354,6 +395,8 @@ export function ChatPanel() {
         className="mt-3 size-14 rounded-full shadow-xl shadow-primary/25"
         onClick={() => setIsOpen((current) => !current)}
         aria-label={isOpen ? 'Close assistant' : 'Open assistant'}
+        aria-expanded={isOpen}
+        aria-controls={panelId}
       >
         <BotMessageSquare className="size-6" />
       </Button>

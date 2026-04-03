@@ -1,3 +1,4 @@
+import { TicketCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { getCertificateStats, type Certificate } from '@/constants';
 
@@ -15,6 +16,7 @@ export function Header({ certificates }: HeaderProps) {
           variant="outline"
           className="gap-2 border-primary/30 bg-primary/5 px-4 py-3 text-sm"
         >
+          <TicketCheck className="size-3" />
           Credentials and Certifications
         </Badge>
         <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">

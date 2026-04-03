@@ -8,16 +8,18 @@ import {
   Skills,
   Timeline,
 } from '@/components/pages/about';
+import { createPageMetadata } from '@/lib/site';
 
-export const metadata: Metadata = {
-  title: 'About Me',
+export const metadata: Metadata = createPageMetadata({
+  title: 'About',
   description:
-    'Learn more about Gio Majadas, a passionate software developer specializing in full-stack development. Discover his skills, experience, and projects.',
-};
+    'Learn about Gio Majadas background, technical strengths, development services, and milestones as a full-stack software developer.',
+  pathname: '/about',
+});
 
 export default function AboutPage() {
   return (
-    <div className="relative">
+    <section className="relative" aria-label="About page content">
       <Hero />
       <Separator className="mx-auto max-w-2xl" />
       <QuickFacts />
@@ -28,6 +30,6 @@ export default function AboutPage() {
       <Separator className="mx-auto max-w-2xl" />
       <Timeline />
       <CallToAction />
-    </div>
+    </section>
   );
 }

@@ -29,15 +29,19 @@ export function RelatedProjects({
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
+        aria-labelledby="related-projects-heading"
       >
-        <h2 className="mb-8 text-center font-heading text-3xl font-bold">
+        <h2
+          id="related-projects-heading"
+          className="mb-8 text-center font-heading text-3xl font-bold"
+        >
           More Projects
         </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" role="list">
           {relatedProjects.map((relatedProject) => {
             const RelatedStatusIcon = statusConfig[relatedProject.status].icon;
             return (
-              <div key={relatedProject.projectId}>
+              <li key={relatedProject.projectId}>
                 <Link href={`/projects/${relatedProject.projectId}`}>
                   <Card className="group h-full overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl">
                     <div className="relative aspect-video overflow-hidden bg-muted">
@@ -74,10 +78,10 @@ export function RelatedProjects({
                     </CardContent>
                   </Card>
                 </Link>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </motion.section>
     </>
   );

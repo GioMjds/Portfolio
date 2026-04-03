@@ -1,56 +1,47 @@
 import type { MetadataRoute } from 'next';
 import { projects } from '@/constants/projects';
+import { SITE_URL } from '@/lib/site';
 
-const BASE_URL = 'https://giomjds.vercel.app';
+const currentDate = new Date();
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const currentDate = new Date();
-
-  // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     {
-      url: BASE_URL,
+      url: SITE_URL,
       lastModified: currentDate,
       changeFrequency: 'monthly',
-      priority: 1.0,
+      priority: 1,
     },
     {
-      url: `${BASE_URL}/about`,
+      url: `${SITE_URL}/about`,
       lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/projects`,
+      url: `${SITE_URL}/projects`,
       lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/services`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/certificates`,
+      url: `${SITE_URL}/certificates`,
       lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
-      url: `${BASE_URL}/contact`,
+      url: `${SITE_URL}/contact`,
       lastModified: currentDate,
       changeFrequency: 'yearly',
-      priority: 0.6,
+      priority: 0.7,
     },
   ];
 
-  // Dynamic project pages
   const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
-    url: `${BASE_URL}/projects/${project.projectId}`,
+    url: `${SITE_URL}/projects/${project.projectId}`,
     lastModified: currentDate,
-    changeFrequency: 'monthly' as const,
+    changeFrequency: 'monthly',
     priority: 0.7,
   }));
 

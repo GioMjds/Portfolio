@@ -8,7 +8,11 @@
     "start": "next start",
     "typegen": "next typegen",
     "lint": "eslint",
-    "analyze": "ANALYZE=true next build"
+    "analyze": "ANALYZE=true next build",
+    "audit:lighthouse:mobile": "set LIGHTHOUSE_CHROMIUM_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&& set CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&& lhci collect --config=.lighthouserc.mobile.json && lhci assert --config=.lighthouserc.mobile.json",
+    "audit:lighthouse:desktop": "set LIGHTHOUSE_CHROMIUM_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&& set CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&& lhci collect --config=.lighthouserc.desktop.json && lhci assert --config=.lighthouserc.desktop.json",
+    "audit:axe": "axe http://127.0.0.1:3000 http://127.0.0.1:3000/about http://127.0.0.1:3000/projects http://127.0.0.1:3000/certificates http://127.0.0.1:3000/contact --browser chrome --exit --load-delay 500",
+    "audit:a11y": "pnpm build && start-server-and-test \"pnpm start\" http://127.0.0.1:3000 \"pnpm audit:lighthouse:mobile && pnpm audit:lighthouse:desktop && pnpm audit:axe\""
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -38,6 +42,8 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@axe-core/cli": "^4.11.1",
+    "@lhci/cli": "^0.15.1",
     "@next/bundle-analyzer": "^16.2.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
@@ -45,6 +51,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
+    "start-server-and-test": "^3.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

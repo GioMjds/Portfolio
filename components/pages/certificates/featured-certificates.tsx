@@ -54,15 +54,16 @@ export function FeaturedCertificates({
             strengths.
           </p>
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
+        <ul className="grid gap-6 md:grid-cols-2" role="list">
           {featured.map((certificate) => (
-            <CertificateCard
-              key={certificate.name}
-              certificate={certificate}
-              onPreview={setSelected}
-            />
+            <li key={certificate.name}>
+              <CertificateCard
+                certificate={certificate}
+                onPreview={setSelected}
+              />
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
       <CertificatePreviewDialog
         certificate={selected}

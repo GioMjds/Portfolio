@@ -1,0 +1,30 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 1,
+      "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "settings": {
+        "preset": "desktop",
+        "formFactor": "desktop",
+        "chromeFlags": "--headless=new --disable-gpu --disable-dev-shm-usage --no-sandbox --disable-background-networking --disable-component-extensions-with-background-pages --disable-default-apps --disable-sync --metrics-recording-only --mute-audio --no-first-run --disable-extensions --disable-popup-blocking --window-size=1365,1024 --user-data-dir=C:\\\\Users\\\\giomj\\\\AppData\\\\Local\\\\Temp\\\\lhci-chrome-profile-desktop --disk-cache-dir=C:\\\\Users\\\\giomj\\\\AppData\\\\Local\\\\Temp\\\\lhci-chrome-cache-desktop"
+      },
+      "url": [
+        "http://127.0.0.1:3000/",
+        "http://127.0.0.1:3000/about",
+        "http://127.0.0.1:3000/projects",
+        "http://127.0.0.1:3000/certificates",
+        "http://127.0.0.1:3000/contact"
+      ]
+    },
+    "assert": {
+      "assertions": {
+        "categories:accessibility": [
+          "error",
+          {
+            "minScore": 1
+          }
+        ]
+      }
+    }
+  }
+}

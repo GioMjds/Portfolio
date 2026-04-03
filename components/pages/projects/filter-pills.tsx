@@ -30,29 +30,35 @@ export function FilterPills({
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <motion.div
+    <motion.section
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: shouldReduceMotion ? 0 : 0.3, duration: 0.6 }}
       className="mb-12 flex flex-wrap items-center justify-center gap-3"
+      aria-label="Project filters"
     >
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <h3 className="flex items-center gap-2 text-sm text-muted-foreground">
         <Filter className="size-4" />
         <span className="font-medium">Filter:</span>
-      </div>
-      {filters.map((filter) => (
-        <button
-          key={filter.value}
-          onClick={() => setActiveFilter(filter.value)}
-          className={`rounded-full border px-5 py-2 text-sm font-medium transition-all duration-300 ${
-            activeFilter === filter.value
-              ? 'border-primary/50 bg-primary/10 text-primary shadow-lg shadow-primary/25'
-              : 'border-border/50 bg-card/50 text-muted-foreground hover:border-primary/30 hover:bg-card hover:text-foreground'
-          }`}
-        >
-          {filter.label}
-        </button>
-      ))}
-    </motion.div>
+      </h3>
+      <ul className="flex flex-wrap items-center justify-center gap-3" role="list">
+        {filters.map((filter) => (
+          <li key={filter.value}>
+            <button
+              type="button"
+              onClick={() => setActiveFilter(filter.value)}
+              aria-pressed={activeFilter === filter.value}
+              className={`rounded-full border px-5 py-2 text-sm font-medium transition-all duration-300 ${
+                activeFilter === filter.value
+                  ? 'border-primary/50 bg-primary/10 text-primary shadow-lg shadow-primary/25'
+                  : 'border-border/50 bg-card/50 text-muted-foreground hover:border-primary/30 hover:bg-card hover:text-foreground'
+              }`}
+            >
+              {filter.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </motion.section>
   );
 }

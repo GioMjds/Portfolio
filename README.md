@@ -75,6 +75,20 @@ EMAILJS_TO_EMAIL=contact@your-domain.com
 - If `EMAILJS_PRIVATE_KEY` is set, the API includes it for strict-mode compatibility.
 - For backward compatibility, if `EMAILJS_SERVICE_ID` / `EMAILJS_TEMPLATE_ID` are missing, it falls back to `EMAILJS_SERVICE_ID_DEV` / `_PROD` and `EMAILJS_TEMPLATE_ID_DEV` / `_PROD`.
 
+## Accessibility audits
+
+The project includes Lighthouse and axe audit scripts for the accessibility target baseline:
+
+```bash
+pnpm audit:a11y
+```
+
+This command builds the app, starts a production server, and runs:
+
+1. Lighthouse CI mobile accessibility assertions (`categories:accessibility` must be `1.0`)
+2. Lighthouse CI desktop accessibility assertions (`categories:accessibility` must be `1.0`)
+3. axe CLI checks for core public routes
+
 ## Getting Started
 
 First, run the development server:
