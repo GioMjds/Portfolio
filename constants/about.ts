@@ -31,11 +31,6 @@ export const skills: Skill[] = [
     category: 'Programming Languages',
   },
   {
-    name: 'JavaScript',
-    icon: '/programming-icons-svg/javascript.svg',
-    category: 'Programming Languages',
-  },
-  {
     name: 'Python',
     icon: '/programming-icons-svg/python.svg',
     category: 'Programming Languages',

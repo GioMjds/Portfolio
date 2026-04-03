@@ -116,3 +116,12 @@ export const staggerContainerVariantsProject: Variants = {
     },
   },
 };
+
+export const glowVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.85 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.7, ease: 'easeOut' },
+  },
+};

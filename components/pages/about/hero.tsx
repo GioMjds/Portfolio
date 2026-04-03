@@ -2,11 +2,20 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import type { Route } from 'next';
 import { motion } from 'motion/react';
-import { ArrowRight, ExternalLink, MapPin } from 'lucide-react';
+import { ArrowRight, FileText, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { containerVariants, itemVariants } from '@/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export function Hero() {
   return (
@@ -58,12 +67,38 @@ export function Hero() {
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="gap-2">
-                <Link href="/contact">
-                  Get in Touch
-                  <ExternalLink className="size-4" />
-                </Link>
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="secondary" size="lg" className="gap-2 cursor-pointer">
+                    <FileText className="size-4" />
+                    View Resume
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-5xl p-0 sm:max-w-5xl">
+                  <DialogHeader className="px-6 pt-6">
+                    <DialogTitle>Gio Majadas Resume</DialogTitle>
+                    <DialogDescription>
+                      Preview the latest resume here, or{' '}
+                      <Link
+                        href={'/Gio_Majadas_Resume.pdf' as Route}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium"
+                      >
+                        open it in a new tab
+                      </Link>
+                      .
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="h-[70vh] px-6 pb-6">
+                    <iframe
+                      src="/Gio_Majadas_Resume.pdf"
+                      title="Gio Majadas Resume"
+                      className="h-full w-full rounded-lg border bg-background"
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </motion.div>
 

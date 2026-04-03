@@ -8,7 +8,7 @@ import {
 import { certificates } from '@/constants';
 
 export const metadata: Metadata = {
-  title: "Gio Majadas's Certificates",
+  title: "My Certificates",
   description:
     'Review verified certificates and credentials that highlight my learning journey across frontend, backend, databases, analytics, AI, and cybersecurity.',
 };

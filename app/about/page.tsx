@@ -10,7 +10,7 @@ import {
 } from '@/components/pages/about';
 
 export const metadata: Metadata = {
-  title: 'About Me - Giomjds Portfolio',
+  title: 'About Me',
   description:
     'Learn more about Gio Majadas, a passionate software developer specializing in full-stack development. Discover his skills, experience, and projects.',
 };

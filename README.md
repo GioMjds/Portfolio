@@ -48,6 +48,33 @@ Response body:
 2. Trigger a new deployment after saving env vars.
 3. Verify the assistant from any route (the panel is mounted globally in `app/layout.tsx`).
 
+## Contact Form (EmailJS)
+
+The Contact page submits through `POST /api/contact`, which validates payloads server-side, applies honeypot + rate limiting checks, and then sends via EmailJS.
+
+### Environment variables
+
+Set these server-side variables for both local and Vercel deployments:
+
+```bash
+# Required (single config used in all environments)
+EMAILJS_SERVICE_ID=your_service_id
+EMAILJS_TEMPLATE_ID=your_template_id
+EMAILJS_PUBLIC_KEY=your_emailjs_public_key
+
+# Optional (recommended when EmailJS strict mode is enabled)
+EMAILJS_PRIVATE_KEY=your_emailjs_private_key
+
+# Optional template param helper
+EMAILJS_TO_EMAIL=contact@your-domain.com
+```
+
+### Environment behavior
+
+- The API route uses `EMAILJS_SERVICE_ID`, `EMAILJS_TEMPLATE_ID`, and `EMAILJS_PUBLIC_KEY` as the primary configuration.
+- If `EMAILJS_PRIVATE_KEY` is set, the API includes it for strict-mode compatibility.
+- For backward compatibility, if `EMAILJS_SERVICE_ID` / `EMAILJS_TEMPLATE_ID` are missing, it falls back to `EMAILJS_SERVICE_ID_DEV` / `_PROD` and `EMAILJS_TEMPLATE_ID_DEV` / `_PROD`.
+
 ## Getting Started
 
 First, run the development server:

@@ -37,6 +37,16 @@ const GREETING: ChatEntry = {
   usedSections: ['homepage', 'identity'],
 };
 
+/**
+ * This function provides context-aware starter prompts that base in the current page route.
+ * 
+ * The prompts are designed to encourage users to ask about relevant content for each section of the portfolio, such as projects, skills, or certifications. By tailoring the prompts to the page context, it helps guide users in engaging with the assistant and discovering key information about Gio's experience and offerings.
+ * 
+ * Page routes and example prompts:
+ * - `/about`
+ * - `/projects`
+ * - `/certificates`
+ */
 function getStarterPrompts(pathname: string): string[] {
   if (pathname.startsWith('/projects')) {
     return [
