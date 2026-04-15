@@ -34,6 +34,34 @@ export interface AssistantChatResponse {
   safetyFlags: AssistantSafetyFlag[];
 }
 
+export type AssistantStreamEventType = 'chunk' | 'meta' | 'done' | 'error';
+
+export interface AssistantStreamChunkEvent {
+  type: 'chunk';
+  delta: string;
+}
+
+export interface AssistantStreamMetaEvent {
+  type: 'meta';
+  usedSections: AssistantSection[];
+  safetyFlags: AssistantSafetyFlag[];
+}
+
+export interface AssistantStreamDoneEvent {
+  type: 'done';
+}
+
+export interface AssistantStreamErrorEvent {
+  type: 'error';
+  message: string;
+}
+
+export type AssistantStreamEvent =
+  | AssistantStreamChunkEvent
+  | AssistantStreamMetaEvent
+  | AssistantStreamDoneEvent
+  | AssistantStreamErrorEvent;
+
 export interface KnowledgeSlice {
   id: string;
   section: AssistantSection;
@@ -52,4 +80,3 @@ export interface RelevanceResult {
   confidence: AssistantConfidence;
   totalKeywordMatches: number;
 }
-

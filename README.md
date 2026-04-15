@@ -12,6 +12,8 @@ Set these server-side variables for local and Vercel deployments:
 GEMINI_API_KEY=your_gemini_api_key
 # Optional override (default: gemini-2.0-flash)
 GEMINI_MODEL=gemini-2.0-flash
+# Optional: force verbose stream chunk logs on the server in development
+ASSISTANT_STREAM_DEBUG=1
 ```
 
 ### API route
@@ -32,7 +34,35 @@ Request body:
 }
 ```
 
-Response body:
+Success response (default): `text/event-stream`
+
+SSE events emitted in order:
+
+1. `chunk` (repeated)
+2. `meta` (once, near completion)
+3. `done` (once)
+
+Event payloads:
+
+```txt
+event: chunk
+data: {"type":"chunk","delta":"..."}
+
+event: meta
+data: {"type":"meta","usedSections":["identity","skills"],"safetyFlags":[]}
+
+event: done
+data: {"type":"done"}
+```
+
+Error event during stream:
+
+```txt
+event: error
+data: {"type":"error","message":"I'm having trouble reaching the AI provider right now. Please try again in a moment."}
+```
+
+JSON fallback response (non-stream), used when streaming cannot be initialized:
 
 ```json
 {
@@ -41,6 +71,24 @@ Response body:
   "safetyFlags": []
 }
 ```
+
+### Debugging chunking and typing behavior
+
+1. In the browser console, enable client debug logs:
+   ```js
+   localStorage.setItem('assistant-stream-debug', '1')
+   ```
+2. Reload, send a prompt, and watch console entries like:
+   - `[assistant-stream][client] chunk-received` (arrival cadence and chunk size)
+   - `[assistant-stream][client] stream-finished` (chunk totals vs rendered totals)
+3. In DevTools Network, open `POST /api/assistant/chat` and confirm response `Content-Type` is `text/event-stream`.
+4. In terminal/server logs (development), verify server-side chunk logs:
+   - `[assistant-chat] stream-chunk`
+   - `[assistant-chat] response-success-stream`
+5. Disable client debug logs when done:
+   ```js
+   localStorage.removeItem('assistant-stream-debug')
+   ```
 
 ### Vercel deployment notes
 

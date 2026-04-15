@@ -28,6 +28,7 @@ import type {
   AssistantChatResponse,
   AssistantSafetyFlag,
   AssistantSection,
+  AssistantStreamEvent,
 } from '@/lib/assistant/types';
 
 interface ChatEntry extends AssistantChatMessage {
@@ -43,6 +44,39 @@ const GREETING: ChatEntry = {
     "Hi! I'm Gio's portfolio assistant. Ask me about projects, skills, certifications, services, or background.",
   usedSections: ['homepage', 'identity'],
 };
+
+const STREAM_FALLBACK_MESSAGE =
+  "I'm having trouble responding right now. Please try again in a moment.";
+const ASSISTANT_SECTION_VALUES: AssistantSection[] = [
+  'identity',
+  'skills',
+  'projects',
+  'certifications',
+  'services',
+  'homepage',
+];
+const ASSISTANT_SAFETY_FLAG_VALUES: AssistantSafetyFlag[] = [
+  'low_context_confidence',
+  'out_of_scope_refusal',
+  'provider_fallback',
+  'missing_api_key',
+  'rate_limited',
+];
+const TYPING_BASE_INTERVAL_MS = 18;
+const TYPING_BACKLOG_FAST_THRESHOLD = 80;
+const TYPING_BACKLOG_FASTER_THRESHOLD = 160;
+
+function isAssistantStreamDebugEnabled(): boolean {
+  if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') {
+    return false;
+  }
+
+  try {
+    return window.localStorage.getItem('assistant-stream-debug') === '1';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * This function provides context-aware starter prompts that base in the current page route.
@@ -90,6 +124,96 @@ function makeId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+function isAssistantSection(value: string): value is AssistantSection {
+  return ASSISTANT_SECTION_VALUES.includes(value as AssistantSection);
+}
+
+function isAssistantSafetyFlag(value: string): value is AssistantSafetyFlag {
+  return ASSISTANT_SAFETY_FLAG_VALUES.includes(value as AssistantSafetyFlag);
+}
+
+function parseAssistantStreamEvent(
+  value: unknown,
+): AssistantStreamEvent | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const event = value as Record<string, unknown>;
+  if (event.type === 'chunk' && typeof event.delta === 'string') {
+    return {
+      type: 'chunk',
+      delta: event.delta,
+    };
+  }
+
+  if (
+    event.type === 'meta' &&
+    Array.isArray(event.usedSections) &&
+    Array.isArray(event.safetyFlags)
+  ) {
+    const usedSections = event.usedSections
+      .filter((item): item is string => typeof item === 'string')
+      .filter(isAssistantSection);
+    const safetyFlags = event.safetyFlags
+      .filter((item): item is string => typeof item === 'string')
+      .filter(isAssistantSafetyFlag);
+
+    return {
+      type: 'meta',
+      usedSections,
+      safetyFlags,
+    };
+  }
+
+  if (event.type === 'done') {
+    return { type: 'done' };
+  }
+
+  if (event.type === 'error' && typeof event.message === 'string') {
+    return {
+      type: 'error',
+      message: event.message,
+    };
+  }
+
+  return null;
+}
+
+function parseSseFrame(frame: string): AssistantStreamEvent | null {
+  const lines = frame.split('\n');
+  const dataLines: string[] = [];
+  let declaredType: string | null = null;
+
+  for (const line of lines) {
+    if (!line || line.startsWith(':')) continue;
+
+    if (line.startsWith('event:')) {
+      declaredType = line.slice('event:'.length).trim();
+      continue;
+    }
+
+    if (line.startsWith('data:')) {
+      dataLines.push(line.slice('data:'.length).trimStart());
+    }
+  }
+
+  if (dataLines.length === 0) return null;
+
+  try {
+    const parsed = parseAssistantStreamEvent(JSON.parse(dataLines.join('\n')));
+    if (!parsed) return null;
+
+    if (declaredType && parsed.type !== declaredType) {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 export function ChatPanel() {
   const pathname = usePathname() ?? '/';
   const panelId = 'portfolio-assistant-panel';
@@ -116,6 +240,7 @@ export function ChatPanel() {
     if (!content || isLoading) {
       return;
     }
+    const streamDebugEnabled = isAssistantStreamDebugEnabled();
 
     const userEntry: ChatEntry = {
       id: makeId('user'),
@@ -137,7 +262,10 @@ export function ChatPanel() {
 
       const response = await fetch('/api/assistant/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(streamDebugEnabled ? { 'x-assistant-debug-stream': '1' } : {}),
+        },
         body: JSON.stringify({
           message: content,
           route: pathname,
@@ -145,7 +273,11 @@ export function ChatPanel() {
         }),
       });
 
-      const data = await response.json().catch(() => null);
+      const contentType = response.headers.get('content-type') ?? '';
+      const isSseResponse = contentType.includes('text/event-stream');
+      const data = isSseResponse
+        ? null
+        : await response.json().catch(() => null);
 
       if (!response.ok) {
         const maybeAssistant = data as Partial<AssistantChatResponse> | null;
@@ -171,6 +303,248 @@ export function ChatPanel() {
         throw new Error(fallbackError);
       }
 
+      if (isSseResponse) {
+        const streamEntryId = makeId('assistant');
+        setMessages((current) => [
+          ...current,
+          {
+            id: streamEntryId,
+            role: 'assistant',
+            content: '',
+          },
+        ]);
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('Missing response body stream.');
+        }
+
+        const decoder = new TextDecoder();
+        let pending = '';
+        let typingQueue = '';
+        let typingTimer: number | null = null;
+        let renderedCharacters = 0;
+        let receivedChunkEvents = 0;
+        let receivedChunkCharacters = 0;
+        const typingIdleResolvers: Array<() => void> = [];
+
+        const resolveTypingIdle = () => {
+          if (typingQueue || typingTimer !== null) {
+            return;
+          }
+
+          while (typingIdleResolvers.length) {
+            typingIdleResolvers.shift()?.();
+          }
+        };
+
+        const waitForTypingIdle = () =>
+          new Promise<void>((resolve) => {
+            if (!typingQueue && typingTimer === null) {
+              resolve();
+              return;
+            }
+
+            typingIdleResolvers.push(resolve);
+          });
+
+        const appendRenderedText = (delta: string) => {
+          if (!delta) {
+            return;
+          }
+
+          renderedCharacters += delta.length;
+          setMessages((current) =>
+            current.map((entry) =>
+              entry.id === streamEntryId
+                ? { ...entry, content: `${entry.content}${delta}` }
+                : entry,
+            ),
+          );
+          scrollToBottom();
+        };
+
+        const applyMeta = (
+          usedSections: AssistantSection[],
+          safetyFlags: AssistantSafetyFlag[],
+        ) => {
+          setMessages((current) =>
+            current.map((entry) =>
+              entry.id === streamEntryId
+                ? { ...entry, usedSections, safetyFlags }
+                : entry,
+            ),
+          );
+        };
+
+        const charsPerTick = () => {
+          if (typingQueue.length >= TYPING_BACKLOG_FASTER_THRESHOLD) {
+            return 8;
+          }
+          if (typingQueue.length >= TYPING_BACKLOG_FAST_THRESHOLD) {
+            return 4;
+          }
+          return 2;
+        };
+
+        const drainTypingQueue = () => {
+          typingTimer = null;
+
+          if (!typingQueue) {
+            resolveTypingIdle();
+            return;
+          }
+
+          const take = charsPerTick();
+          const delta = typingQueue.slice(0, take);
+          typingQueue = typingQueue.slice(take);
+          appendRenderedText(delta);
+          scheduleDrain();
+        };
+
+        const scheduleDrain = () => {
+          if (typingTimer !== null) {
+            return;
+          }
+
+          typingTimer = window.setTimeout(drainTypingQueue, TYPING_BASE_INTERVAL_MS);
+        };
+
+        const enqueueChunkForTyping = (delta: string) => {
+          if (!delta) {
+            return;
+          }
+
+          typingQueue += delta;
+          scheduleDrain();
+        };
+
+        try {
+          let doneReceived = false;
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+              break;
+            }
+
+            pending += decoder
+              .decode(value, { stream: true })
+              .replace(/\r\n/g, '\n');
+            const frames = pending.split('\n\n');
+            pending = frames.pop() ?? '';
+
+            for (const frame of frames) {
+              const event = parseSseFrame(frame);
+              if (!event) {
+                continue;
+              }
+
+              if (event.type === 'chunk') {
+                receivedChunkEvents += 1;
+                receivedChunkCharacters += event.delta.length;
+                if (streamDebugEnabled) {
+                  console.info('[assistant-stream][client] chunk-received', {
+                    chunkIndex: receivedChunkEvents,
+                    chunkChars: event.delta.length,
+                    queuedChars: typingQueue.length,
+                  });
+                }
+                enqueueChunkForTyping(event.delta);
+                continue;
+              }
+
+              if (event.type === 'meta') {
+                applyMeta(event.usedSections, event.safetyFlags);
+                continue;
+              }
+
+              if (event.type === 'error') {
+                enqueueChunkForTyping(`\n\n${event.message}`);
+                continue;
+              }
+
+              if (event.type === 'done') {
+                doneReceived = true;
+              }
+            }
+          }
+
+          pending += decoder.decode().replace(/\r\n/g, '\n');
+          if (pending.trim()) {
+            const event = parseSseFrame(pending);
+            if (event?.type === 'chunk') {
+              receivedChunkEvents += 1;
+              receivedChunkCharacters += event.delta.length;
+              enqueueChunkForTyping(event.delta);
+            } else if (event?.type === 'meta') {
+              applyMeta(event.usedSections, event.safetyFlags);
+            } else if (event?.type === 'error') {
+              enqueueChunkForTyping(`\n\n${event.message}`);
+            } else if (event?.type === 'done') {
+              doneReceived = true;
+            }
+          }
+
+          await waitForTypingIdle();
+          if (streamDebugEnabled) {
+            console.info('[assistant-stream][client] stream-finished', {
+              doneReceived,
+              receivedChunkEvents,
+              receivedChunkCharacters,
+              renderedCharacters,
+            });
+          }
+
+          setMessages((current) =>
+            current.map((entry) => {
+              if (entry.id !== streamEntryId) {
+                return entry;
+              }
+
+              if (entry.content.trim()) {
+                return entry;
+              }
+
+              return {
+                ...entry,
+                content: doneReceived
+                  ? STREAM_FALLBACK_MESSAGE
+                  : `${STREAM_FALLBACK_MESSAGE} (stream ended unexpectedly)`,
+                safetyFlags: ['provider_fallback'],
+                usedSections: ['identity'],
+              };
+            }),
+          );
+        } catch {
+          if (typingTimer !== null) {
+            window.clearTimeout(typingTimer);
+            typingTimer = null;
+          }
+          typingQueue = '';
+          resolveTypingIdle();
+
+          setMessages((current) =>
+            current.map((entry) => {
+              if (entry.id !== streamEntryId) {
+                return entry;
+              }
+
+              return {
+                ...entry,
+                content: entry.content.trim()
+                  ? entry.content
+                  : STREAM_FALLBACK_MESSAGE,
+                safetyFlags: ['provider_fallback'],
+                usedSections: entry.usedSections ?? ['identity'],
+              };
+            }),
+          );
+        }
+
+        return;
+      }
+
       const payload = data as AssistantChatResponse | null;
 
       if (!payload || typeof payload.answer !== 'string') {
@@ -192,8 +566,7 @@ export function ChatPanel() {
         {
           id: makeId('assistant-error'),
           role: 'assistant',
-          content:
-            "I'm having trouble responding right now. Please try again in a moment.",
+          content: STREAM_FALLBACK_MESSAGE,
           safetyFlags: ['provider_fallback'],
           usedSections: ['identity'],
         },
@@ -273,178 +646,178 @@ export function ChatPanel() {
               exit="hidden"
               variants={scaleInVariants}
             >
-            <Card className="flex h-full flex-col gap-0 border-border/60 bg-card/95 shadow-xl backdrop-blur md:h-auto">
-              <CardHeader className="shrink-0 border-b py-4">
-                <CardTitle className="flex items-center justify-between gap-2 text-sm">
-                  <span className="inline-flex items-center gap-2">
-                    <Sparkles className="size-4 text-primary" />
-                    Portfolio AI Assistant
-                  </span>
-                  <div className="flex items-center gap-2">
+              <Card className="flex h-full flex-col gap-0 border-border/60 bg-card/95 shadow-xl backdrop-blur md:h-auto">
+                <CardHeader className="shrink-0 border-b py-4">
+                  <CardTitle className="flex items-center justify-between gap-2 text-sm">
+                    <span className="inline-flex items-center gap-2">
+                      <Sparkles className="size-4 text-primary" />
+                      Portfolio AI Assistant
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => setIsOpen(false)}
+                        aria-label="Close assistant panel"
+                      >
+                        <X className="size-4" />
+                      </Button>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+
+                <CardContent className="flex min-h-0 flex-1 flex-col pb-3 pt-3">
+                  <ScrollArea className="flex-1 pr-3 md:h-52 md:flex-none">
+                    <div className="space-y-3">
+                      <p id={statusId} className="sr-only" aria-live="polite">
+                        {isLoading
+                          ? 'Assistant is generating a response.'
+                          : 'Assistant is ready.'}
+                      </p>
+                      <AnimatePresence initial={false} mode="popLayout">
+                        {messages.map((message) => (
+                          <motion.div
+                            key={message.id}
+                            className={cn(
+                              'flex w-full',
+                              message.role === 'user'
+                                ? 'justify-end'
+                                : 'justify-start',
+                            )}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.3, ease: 'easeOut' }}
+                          >
+                            <div
+                              className={cn(
+                                'max-w-[90%] rounded-lg px-3 py-2 text-sm',
+                                message.role === 'user'
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-muted text-foreground',
+                              )}
+                            >
+                              <p className="whitespace-pre-wrap">
+                                {message.content}
+                              </p>
+                              {message.role === 'assistant' &&
+                              message.usedSections?.length ? (
+                                <div className="mt-2 flex flex-wrap gap-1">
+                                  {message.usedSections.map((section) => (
+                                    <Badge
+                                      key={`${message.id}-${section}`}
+                                      variant="outline"
+                                      className="h-4 px-1.5 text-[10px] uppercase"
+                                    >
+                                      {section}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+
+                      <AnimatePresence>
+                        {isLoading ? (
+                          <motion.div
+                            className="flex w-full justify-start"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <div className="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
+                              <Spinner className="size-3.5" />
+                              Thinking...
+                            </div>
+                          </motion.div>
+                        ) : null}
+                      </AnimatePresence>
+                      <div ref={bottomRef} />
+                    </div>
+                  </ScrollArea>
+
+                  <AnimatePresence>
+                    {messages.length <= 2 ? (
+                      <motion.div
+                        className="mt-3 flex flex-wrap gap-2"
+                        initial="hidden"
+                        animate="visible"
+                        exit={{ opacity: 0, height: 0 }}
+                        variants={staggerContainerVariants}
+                      >
+                        {starterPrompts.map((prompt) => (
+                          <motion.div key={prompt} variants={fadeInUpVariants}>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-auto whitespace-normal py-1.5 text-left text-xs"
+                              onClick={() => sendMessage(prompt)}
+                              disabled={isLoading}
+                            >
+                              {prompt}
+                            </Button>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
+                </CardContent>
+
+                <CardFooter className="shrink-0 flex-col items-stretch gap-2 border-t pb-3 pt-3">
+                  <label htmlFor="assistant-message" className="sr-only">
+                    Ask the portfolio assistant
+                  </label>
+                  <Textarea
+                    id="assistant-message"
+                    rows={2}
+                    value={draft}
+                    onChange={(event) => setDraft(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault();
+                        void sendMessage();
+                      }
+                    }}
+                    placeholder="Ask about skills, projects, or certifications..."
+                    disabled={isLoading}
+                    className="resize-none"
+                  />
+                  <div className="flex items-center justify-between gap-2">
                     <Button
                       type="button"
                       variant="ghost"
-                      size="icon-sm"
-                      onClick={() => setIsOpen(false)}
-                      aria-label="Close assistant panel"
+                      size="sm"
+                      onClick={handleClear}
+                      disabled={isLoading}
+                      aria-label="Clear conversation"
+                      className="text-muted-foreground"
                     >
-                      <X className="size-4" />
+                      <Trash2 className="size-4" />
+                      Clear
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => sendMessage()}
+                      disabled={!canSend}
+                      aria-label="Send message"
+                    >
+                      <Send className="size-4" />
+                      Send
                     </Button>
                   </div>
-                </CardTitle>
-              </CardHeader>
-
-              <CardContent className="flex min-h-0 flex-1 flex-col pb-3 pt-3">
-                <ScrollArea className="flex-1 pr-3 md:h-52 md:flex-none">
-                  <div className="space-y-3">
-                    <p id={statusId} className="sr-only" aria-live="polite">
-                      {isLoading
-                        ? 'Assistant is generating a response.'
-                        : 'Assistant is ready.'}
-                    </p>
-                    <AnimatePresence initial={false} mode="popLayout">
-                      {messages.map((message) => (
-                        <motion.div
-                          key={message.id}
-                          className={cn(
-                            'flex w-full',
-                            message.role === 'user'
-                              ? 'justify-end'
-                              : 'justify-start',
-                          )}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          transition={{ duration: 0.3, ease: 'easeOut' }}
-                        >
-                          <div
-                            className={cn(
-                              'max-w-[90%] rounded-lg px-3 py-2 text-sm',
-                              message.role === 'user'
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted text-foreground',
-                            )}
-                          >
-                            <p className="whitespace-pre-wrap">
-                              {message.content}
-                            </p>
-                            {message.role === 'assistant' &&
-                            message.usedSections?.length ? (
-                              <div className="mt-2 flex flex-wrap gap-1">
-                                {message.usedSections.map((section) => (
-                                  <Badge
-                                    key={`${message.id}-${section}`}
-                                    variant="outline"
-                                    className="h-4 px-1.5 text-[10px] uppercase"
-                                  >
-                                    {section}
-                                  </Badge>
-                                ))}
-                              </div>
-                            ) : null}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-
-                    <AnimatePresence>
-                      {isLoading ? (
-                        <motion.div
-                          className="flex w-full justify-start"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <div className="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
-                            <Spinner className="size-3.5" />
-                            Thinking...
-                          </div>
-                        </motion.div>
-                      ) : null}
-                    </AnimatePresence>
-                    <div ref={bottomRef} />
-                  </div>
-                </ScrollArea>
-
-                <AnimatePresence>
-                  {messages.length <= 2 ? (
-                    <motion.div
-                      className="mt-3 flex flex-wrap gap-2"
-                      initial="hidden"
-                      animate="visible"
-                      exit={{ opacity: 0, height: 0 }}
-                      variants={staggerContainerVariants}
-                    >
-                      {starterPrompts.map((prompt) => (
-                        <motion.div key={prompt} variants={fadeInUpVariants}>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="h-auto whitespace-normal py-1.5 text-left text-xs"
-                            onClick={() => sendMessage(prompt)}
-                            disabled={isLoading}
-                          >
-                            {prompt}
-                          </Button>
-                        </motion.div>
-                      ))}
-                    </motion.div>
-                  ) : null}
-                </AnimatePresence>
-              </CardContent>
-
-              <CardFooter className="shrink-0 flex-col items-stretch gap-2 border-t pb-3 pt-3">
-                <label htmlFor="assistant-message" className="sr-only">
-                  Ask the portfolio assistant
-                </label>
-                <Textarea
-                  id="assistant-message"
-                  rows={2}
-                  value={draft}
-                  onChange={(event) => setDraft(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' && !event.shiftKey) {
-                      event.preventDefault();
-                      void sendMessage();
-                    }
-                  }}
-                  placeholder="Ask about skills, projects, or certifications..."
-                  disabled={isLoading}
-                  className='resize-none'
-                />
-                <div className="flex items-center justify-between gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleClear}
-                    disabled={isLoading}
-                    aria-label="Clear conversation"
-                    className="text-muted-foreground"
-                  >
-                    <Trash2 className="size-4" />
-                    Clear
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => sendMessage()}
-                    disabled={!canSend}
-                    aria-label="Send message"
-                  >
-                    <Send className="size-4" />
-                    Send
-                  </Button>
-                </div>
-                <p className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-                  <Bot className="size-3.5" />
-                  Answers are limited to portfolio content.
-                </p>
-              </CardFooter>
-            </Card>
-          </motion.div>
+                  <p className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <Bot className="size-3.5" />
+                    Answers are limited to portfolio content.
+                  </p>
+                </CardFooter>
+              </Card>
+            </motion.div>
           </div>
         ) : null}
       </AnimatePresence>
@@ -460,7 +833,11 @@ export function ChatPanel() {
               transition={
                 hasAnimated
                   ? { duration: 0.15, ease: 'easeOut' }
-                  : { delay: 0.5, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
+                  : {
+                      delay: 0.5,
+                      duration: 0.4,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                    }
               }
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
