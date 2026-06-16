@@ -52,6 +52,20 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/favicon.ico',
   },
+  keywords: [
+    'Gio Majadas',
+    'gio majadas',
+    'giomjds',
+    'full-stack developer',
+    'software engineer',
+    'portfolio',
+    'ai-powered',
+    'personal website',
+    'student',
+    'developer',
+    'programmer',
+    'software development',
+  ],
 };
 
 export const viewport: Viewport = {

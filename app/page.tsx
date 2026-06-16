@@ -1,6 +1,14 @@
 import type { Metadata } from 'next';
 import { Separator } from '@/components/ui/separator';
-import { CallToAction, Hero, Highlights } from '@/components/pages/homepage';
+import {
+  CallToAction,
+  Hero,
+  Highlights,
+  TechStack,
+  FlagshipShowcase,
+  ExperienceTimeline,
+  GithubStats,
+} from '@/components/pages/homepage';
 import {
   createAbsoluteUrl,
   createPageMetadata,
@@ -34,6 +42,15 @@ export default function Home() {
       <Hero />
       <Separator className="mx-auto max-w-2xl" />
       <Highlights />
+      <Separator className="mx-auto max-w-2xl" />
+      <TechStack />
+      <Separator className="mx-auto max-w-2xl" />
+      <FlagshipShowcase />
+      <Separator className="mx-auto max-w-2xl" />
+      <ExperienceTimeline />
+      <Separator className="mx-auto max-w-2xl" />
+      <GithubStats />
+      <Separator className="mx-auto max-w-2xl" />
       <CallToAction />
     </section>
   );

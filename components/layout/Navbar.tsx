@@ -15,6 +15,8 @@ import {
 import { Separator } from '@/components/ui/separator';
 import ThemeToggle from '@/components/theme-switcher';
 import { GITHUB_IMAGE, navItems } from '@/constants';
+import { Download } from 'lucide-react';
+
 
 export function Navbar() {
   const pathname = usePathname();
@@ -86,12 +88,28 @@ export function Navbar() {
               })}
             </ul>
 
-            {/* Theme Toggle */}
+            {/* Theme Toggle & CV Download */}
             <div className="flex items-center gap-2">
               <Separator
                 orientation="vertical"
                 className="hidden h-6 sm:block"
               />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="icon"
+                    className="size-9"
+                    aria-label="Download Resume"
+                  >
+                    <a href="/Gio_Majadas_Resume.pdf" download>
+                      <Download className="size-4" />
+                    </a>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Download Resume</TooltipContent>
+              </Tooltip>
               <ThemeToggle />
             </div>
           </nav>

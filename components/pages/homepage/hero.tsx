@@ -11,7 +11,7 @@ import {
 import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight, Download, ExternalLink } from 'lucide-react';
 
 const techStack = [
   'TypeScript',
@@ -67,9 +67,9 @@ export function Hero() {
             style={transformOpacityStyle}
             className="font-heading text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
           >
-            <span className="block">Hi, I&apos;m</span>
+            <span className="block">Full-Stack Developer</span>
             <span className="mt-2 block bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent pb-2">
-              Gio Majadas
+              & AI Application Builder
             </span>
           </motion.h1>
           <motion.p
@@ -77,12 +77,11 @@ export function Hero() {
             style={transformOpacityStyle}
             className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl"
           >
-            A passionate{' '}
-            <span className="font-medium text-foreground">
-              software developer
-            </span>{' '}
-            crafting modern digital experiences. I transform ideas into elegant,
-            functional applications that make a difference.
+            I&apos;m{' '}
+            <span className="font-semibold text-foreground">Gio Majadas</span> —
+            a 4th-year BSIT student and freelance developer building
+            production-grade web apps, mobile tools, and AI-powered products
+            with React, Next.js, Django, and FastAPI.
           </motion.p>
         </motion.div>
 
@@ -110,6 +109,12 @@ export function Hero() {
               Get in Touch
               <ExternalLink className="size-4" />
             </Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="gap-2">
+            <a href="/Gio_Majadas_Resume.pdf" download>
+              <Download className="size-4" />
+              Download Resume
+            </a>
           </Button>
         </motion.div>
 

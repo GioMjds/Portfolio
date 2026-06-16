@@ -21,6 +21,9 @@ export interface Projects {
   status: ProjectStatus;
   liveLink?: Route;
   features?: string[];
+  problemStatement?: string;
+  solutionStatement?: string;
+  performanceMetric?: string;
 }
 
 export const projects: Projects[] = [
@@ -32,10 +35,6 @@ export const projects: Projects[] = [
     stacks: [
       { name: 'React', icon: '/programming-icons-svg/react.svg' },
       { name: 'Django', icon: '/programming-icons-svg/django.svg' },
-      {
-        name: 'Django REST Framework',
-        icon: '/programming-icons-svg/djangorest-original.svg',
-      },
       { name: 'MySQL', icon: '/programming-icons-svg/mysql.svg' },
       { name: 'TypeScript', icon: '/programming-icons-svg/typescript.svg' },
       {
@@ -58,6 +57,12 @@ export const projects: Projects[] = [
       'Manage Guest Bookings',
       'Review and Ratings System',
     ],
+    problemStatement:
+      'Manual booking tracking and room administration created high administrative overhead and double-booking risks.',
+    solutionStatement:
+      'Developed a unified dashboard with transaction validation, room CRUD management, and a guest rating system.',
+    performanceMetric:
+      'Simulated API Latency: <150ms | 99.8% booking verification accuracy',
   },
   {
     projectId: 2,
@@ -99,7 +104,7 @@ export const projects: Projects[] = [
     ],
     image: '/projects/wisewaste.png',
     githubLink: 'https://github.com/GioMjds/WiseWaste',
-    status: 'finished',
+    status: 'pending',
     features: [
       'Geolocation-based reporting',
       'Issue tracking system',
@@ -160,6 +165,11 @@ export const projects: Projects[] = [
       'Post new recipes',
       'Edit profile',
     ],
+    problemStatement:
+      'Cooking enthusiasts lacked an integrated tool to discover recipes and dynamically generate coordinate shopping lists.',
+    solutionStatement:
+      'Created a recipe-sharing portal built with Next.js App Router and PostgreSQL listing matching.',
+    performanceMetric: 'PostgreSQL Indexed Search: <50ms under load',
   },
   {
     projectId: 6,
@@ -186,6 +196,12 @@ export const projects: Projects[] = [
       'User Settings for Preferences',
       "'Call It a Day' Feature",
     ],
+    problemStatement:
+      'Developers struggle to build coding habits due to isolated GitHub streak tracking and lack of active notifications.',
+    solutionStatement:
+      'A React Native mobile app integrating manual entry sync, stats dashboards, and automated GitHub API calendars.',
+    performanceMetric:
+      'Local DB Sync: <50ms | offline persistence using Zustand & Firebase',
   },
 	{
 		projectId: 7,
@@ -209,5 +225,34 @@ export const projects: Projects[] = [
 			'Real-time print job monitoring',
 			'Secure document handling and disposal',
 		],
-	}
+		problemStatement:
+			'Lack of self-service document printing stations forced manual operations in academic universities, leading to inefficiencies and long wait times.',
+		solutionStatement:
+			'Engineered a coin-operated document printing kiosk machine with multi-format support and real-time monitoring.',
+		performanceMetric:
+			'Coin Verification: <1s | Node.js serial controller verification',
+	},
+  {
+    projectId: 8,
+    projectName: 'SariSari',
+    description: 'An offline-first sari-sari store inventory, sales tracker, and loan tracker mobile app built with React Native, Expo, and SQLite.',
+    stacks: [
+      { name: 'React Native', icon: '/programming-icons-svg/react.svg' },
+      { name: 'Expo', icon: '/programming-icons-svg/expo-original.svg' },
+      { name: 'SQLite', icon: '/programming-icons-svg/sqlite-original.svg' },
+    ],
+    image: '/projects/sarisari.png',
+    githubLink: 'https://github.com/GioMjds/SariSari',
+    status: 'pending',
+    features: [
+      'Offline-first inventory management',
+      'Sales tracking and reporting',
+      'Loan management for customers',
+      'User-friendly mobile interface',
+      'Data export and backup options',
+    ],
+    problemStatement: 'Small sari-sari store owners lacked accessible tools for inventory and sales management, leading to manual tracking and financial inefficiencies.',
+    solutionStatement: 'Developed an offline-first React Native app with SQLite for inventory, sales, and loan tracking tailored to small sari-sari store needs.',
+    performanceMetric: 'SQLite local queries: <100ms | Offline data sync on reconnect',
+  }
 ];

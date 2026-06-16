@@ -110,6 +110,11 @@ export const skills: Skill[] = [
     icon: '/programming-icons-svg/firebase.svg',
     category: 'Database',
   },
+  {
+    name: 'SQLite',
+    icon: '/programming-icons-svg/sqlite-original.svg',
+    category: 'Database',
+  },
   { name: 'Git', icon: '/programming-icons-svg/git.svg', category: 'Tools' },
   {
     name: 'Docker',
@@ -145,21 +150,21 @@ export interface JourneyMilestone {
 
 export const journeyMilestones: JourneyMilestone[] = [
   {
-    year: '2023 - Present',
+    year: '2024 - Present',
     title: 'Full-Stack Developer',
     description:
-      'Building modern web applications with React, Next.js, and Django. Focused on creating seamless user experiences.',
+      'Building modern web applications with React, Next.js, and NestJS. Focused on creating seamless user experiences.',
     iconName: 'Code2',
   },
   {
-    year: '2023',
+    year: '2024',
     title: 'Started Freelancing',
     description:
       'Began taking on freelance projects, building real-world applications for clients.',
     iconName: 'Briefcase',
   },
   {
-    year: '2022',
+    year: '2023',
     title: 'Information Technology Student',
     description:
       'Enrolled in Laguna University with the course of Bachelor of Science in Information Technology specialized in System Development.',
