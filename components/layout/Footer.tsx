@@ -84,6 +84,15 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <a
+                  href="/Gio_Majadas_Resume.pdf"
+                  download
+                  className="text-sm text-foreground/80 transition-colors duration-200 hover:text-primary"
+                >
+                  Download Resume
+                </a>
+              </li>
             </ul>
           </nav>
 
