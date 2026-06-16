@@ -35,10 +35,6 @@ export const projects: Projects[] = [
     stacks: [
       { name: 'React', icon: '/programming-icons-svg/react.svg' },
       { name: 'Django', icon: '/programming-icons-svg/django.svg' },
-      {
-        name: 'Django REST Framework',
-        icon: '/programming-icons-svg/djangorest-original.svg',
-      },
       { name: 'MySQL', icon: '/programming-icons-svg/mysql.svg' },
       { name: 'TypeScript', icon: '/programming-icons-svg/typescript.svg' },
       {
@@ -108,7 +104,7 @@ export const projects: Projects[] = [
     ],
     image: '/projects/wisewaste.png',
     githubLink: 'https://github.com/GioMjds/WiseWaste',
-    status: 'finished',
+    status: 'pending',
     features: [
       'Geolocation-based reporting',
       'Issue tracking system',
@@ -230,10 +226,33 @@ export const projects: Projects[] = [
 			'Secure document handling and disposal',
 		],
 		problemStatement:
-			'Lack of self-service document printing stations forced manual operations in academic environments.',
+			'Lack of self-service document printing stations forced manual operations in academic universities, leading to inefficiencies and long wait times.',
 		solutionStatement:
 			'Engineered a coin-operated document printing kiosk machine with multi-format support and real-time monitoring.',
 		performanceMetric:
 			'Coin Verification: <1s | Node.js serial controller verification',
-	}
+	},
+  {
+    projectId: 8,
+    projectName: 'SariSari',
+    description: 'An offline-first sari-sari store inventory, sales tracker, and loan tracker mobile app built with React Native, Expo, and SQLite.',
+    stacks: [
+      { name: 'React Native', icon: '/programming-icons-svg/react.svg' },
+      { name: 'Expo', icon: '/programming-icons-svg/expo-original.svg' },
+      { name: 'SQLite', icon: '/programming-icons-svg/sqlite-original.svg' },
+    ],
+    image: '/projects/sarisari.png',
+    githubLink: 'https://github.com/GioMjds/SariSari',
+    status: 'pending',
+    features: [
+      'Offline-first inventory management',
+      'Sales tracking and reporting',
+      'Loan management for customers',
+      'User-friendly mobile interface',
+      'Data export and backup options',
+    ],
+    problemStatement: 'Small sari-sari store owners lacked accessible tools for inventory and sales management, leading to manual tracking and financial inefficiencies.',
+    solutionStatement: 'Developed an offline-first React Native app with SQLite for inventory, sales, and loan tracking tailored to small sari-sari store needs.',
+    performanceMetric: 'SQLite local queries: <100ms | Offline data sync on reconnect',
+  }
 ];

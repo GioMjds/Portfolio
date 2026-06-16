@@ -15,7 +15,7 @@ const filters: Filters[] = [
   { label: 'All Projects', value: 'all' },
   { label: 'Completed', value: 'finished' },
   { label: 'In Progress', value: 'in-development' },
-  { label: 'Planned', value: 'pending' },
+  { label: 'Pending', value: 'pending' },
 ];
 
 interface FilterPillsProps {

@@ -26,7 +26,7 @@ export const statusConfig: Record<
     border: 'border-blue-500/30',
   },
   pending: {
-    label: 'Planned',
+    label: 'Pending',
     icon: Clock,
     color: 'text-amber-500',
     bg: 'bg-amber-500/10',

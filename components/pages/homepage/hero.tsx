@@ -78,10 +78,8 @@ export function Hero() {
             className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl"
           >
             I&apos;m{' '}
-            <span className="font-semibold text-foreground">
-              Gio Majadas
-            </span>{' '}
-            — a 4th-year BSIT student and freelance developer building
+            <span className="font-semibold text-foreground">Gio Majadas</span> —
+            a 4th-year BSIT student and freelance developer building
             production-grade web apps, mobile tools, and AI-powered products
             with React, Next.js, Django, and FastAPI.
           </motion.p>
