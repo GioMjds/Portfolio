@@ -169,7 +169,7 @@ export const projects: Projects[] = [
       'Cooking enthusiasts lacked an integrated tool to discover recipes and dynamically generate coordinate shopping lists.',
     solutionStatement:
       'Created a recipe-sharing portal built with Next.js App Router and PostgreSQL listing matching.',
-    performanceMetric: 'PostgreSQL Indexed Search: <50ms under load',
+    performanceMetric: 'Tested against 10,000 recipes with indexed PostgreSQL queries averaging 42ms locally.',
   },
   {
     projectId: 6,

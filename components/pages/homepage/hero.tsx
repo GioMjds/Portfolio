@@ -79,9 +79,9 @@ export function Hero() {
           >
             I&apos;m{' '}
             <span className="font-semibold text-foreground">Gio Majadas</span> —
-            a 4th-year BSIT student and freelance developer building
+            a freelance developer and a student building
             production-grade web apps, mobile tools, and AI-powered products
-            with React, Next.js, Django, and FastAPI.
+            with React, Next.js, NestJS, and FastAPI.
           </motion.p>
         </motion.div>
 

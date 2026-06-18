@@ -16,7 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import ThemeToggle from '@/components/theme-switcher';
 import { GITHUB_IMAGE, navItems } from '@/constants';
 import { Download } from 'lucide-react';
-
+import { isBirthdayToday } from '@/lib/birthday';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -47,6 +47,20 @@ export function Navbar() {
               </div>
               <span className="hidden font-heading text-lg font-bold tracking-tight sm:block">
                 Gio<span className="text-primary">Mjds</span>
+                {isBirthdayToday() && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span
+                        className="ml-1 inline-block cursor-default animate-birthday-pulse text-sm"
+                        role="img"
+                        aria-label="birthday cake"
+                      >
+                        🎂
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>Happy Birthday, Gio!</TooltipContent>
+                  </Tooltip>
+                )}
               </span>
             </Link>
 

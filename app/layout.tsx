@@ -2,7 +2,12 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Navbar, Footer, ChatPanel } from '@/components/layout';
+import {
+  Navbar,
+  Footer,
+  ChatPanel,
+  BirthdayTrigger,
+} from '@/components/layout';
 import { cn } from '@/lib/utils';
 import {
   SITE_DESCRIPTION,
@@ -61,6 +66,7 @@ export const metadata: Metadata = {
     'portfolio',
     'ai-powered',
     'personal website',
+    'personal portfolio',
     'student',
     'developer',
     'programmer',
@@ -115,6 +121,7 @@ export default function RootLayout({
         >
           <div className="gradient-bg" aria-hidden="true" />
           <div className="noise-overlay" aria-hidden="true" />
+          <BirthdayTrigger />
           <Navbar />
           <main id="main-content" className="flex-1">
             {children}
