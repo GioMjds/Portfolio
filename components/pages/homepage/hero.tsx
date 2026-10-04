@@ -21,9 +21,12 @@ const techStack = [
   'Next.js',
   'NestJS',
   'C#',
+  'ASP.NET Core',
   'Python',
   'FastAPI',
-  'ASP.NET Core',
+  'SQLite',
+  'ESP32',
+  'Arduino',
 ];
 
 export function Hero() {
@@ -35,7 +38,7 @@ export function Hero() {
   );
 
   return (
-    <section className="relative overflow-hidden px-4 pb-8 pt-24 sm:pb-24 sm:pt-32">
+    <section className="relative overflow-hidden px-4 pb-8 pt-24 sm:pb-24 sm:pt-16">
       <Spotlight />
       <div className="relative mx-auto max-w-5xl">
         {/* Status Badge */}
@@ -44,7 +47,7 @@ export function Hero() {
           animate="visible"
           variants={heroVariants}
           style={transformOpacityStyle}
-          className="mb-8 flex justify-center"
+          className="mb-6 flex justify-center"
         >
           <Badge
             variant="outline"
@@ -54,7 +57,7 @@ export function Hero() {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-green-400 opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-green-500" />
             </span>
-            Available for new opportunities
+            Open to freelance and full-time work
           </Badge>
         </motion.div>
 
@@ -70,21 +73,20 @@ export function Hero() {
             style={transformOpacityStyle}
             className="font-heading text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
           >
-            <span className="block">Full-Stack Developer</span>
+            <span className="block">One developer.</span>
             <span className="mt-2 block bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent pb-2">
-              & AI Application Builder
+              Whole product.
             </span>
           </motion.h1>
           <motion.p
             variants={fadeInUpVariants}
             style={transformOpacityStyle}
-            className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl"
+            className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground sm:text-xl"
           >
             I&apos;m{' '}
-            <span className="font-semibold text-foreground">Gio Majadas</span> —
-            a freelance developer and a student building
-            production-grade web apps, mobile tools, and AI-powered products
-            with React, Next.js, NestJS, and FastAPI.
+            <span className="font-semibold text-foreground">Gio Majadas</span>.
+            I design, build, and deploy full-stack web, mobile, and AI products
+            on my own, from database to interface.
           </motion.p>
         </motion.div>
 
@@ -98,7 +100,7 @@ export function Hero() {
           variants={heroVariants}
           style={transformOpacityStyle}
           transition={{ delay: shouldReduceMotion ? 0 : 0.4 }}
-          className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row"
+          className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
           <Button
             asChild
@@ -106,7 +108,7 @@ export function Hero() {
             className="group gap-2 shadow-lg shadow-primary/25"
           >
             <Link href="/projects">
-              View My Work
+              See what I&apos;ve built
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
@@ -130,13 +132,13 @@ export function Hero() {
           animate="visible"
           variants={staggerContainerVariants}
           transition={{ delay: shouldReduceMotion ? 0 : 0.6 }}
-          className="mt-16"
+          className="mt-12"
         >
           <motion.p
             variants={fadeInUpVariants}
             className="mb-4 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground"
           >
-            Technologies I Work With
+            What I ship with
           </motion.p>
           <motion.div
             variants={staggerContainerVariants}

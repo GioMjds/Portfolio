@@ -83,7 +83,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export const jsonLd = {
+const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Gio Majadas',
