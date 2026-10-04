@@ -1,8 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
+import Markdown, { type Components } from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
+import remarkGfm from 'remark-gfm';
 import { Bot, BotMessageSquare, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -173,6 +176,137 @@ function parseSseFrame(frame: string): AssistantStreamEvent | null {
     return null;
   }
 }
+
+const REMARK_PLUGINS = [remarkGfm, remarkBreaks];
+
+const CHAT_MARKDOWN_COMPONENTS: Components = {
+  h1: ({ children }) => (
+    <h1 className="text-base font-bold mt-2.5 mb-1.5 first:mt-0 tracking-tight text-foreground">
+      {children}
+    </h1>
+  ),
+  h2: ({ children }) => (
+    <h2 className="text-sm font-semibold mt-2 mb-1 first:mt-0 text-foreground">
+      {children}
+    </h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="text-xs font-semibold uppercase tracking-wider mt-1.5 mb-1 first:mt-0 text-foreground/90">
+      {children}
+    </h3>
+  ),
+  h4: ({ children }) => (
+    <h4 className="text-xs font-semibold mt-1.5 mb-0.5 first:mt-0 text-foreground">
+      {children}
+    </h4>
+  ),
+  h5: ({ children }) => (
+    <h5 className="text-xs font-semibold mt-1.5 mb-0.5 first:mt-0 text-foreground">
+      {children}
+    </h5>
+  ),
+  h6: ({ children }) => (
+    <h6 className="text-xs font-semibold mt-1.5 mb-0.5 first:mt-0 text-foreground">
+      {children}
+    </h6>
+  ),
+  p: ({ children }) => (
+    <p className="mb-2 last:mb-0 leading-relaxed text-sm">
+      {children}
+    </p>
+  ),
+  ul: ({ children }) => (
+    <ul className="my-1.5 pl-4 list-disc space-y-0.5 text-sm last:mb-0">
+      {children}
+    </ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="my-1.5 pl-4 list-decimal space-y-0.5 text-sm last:mb-0">
+      {children}
+    </ol>
+  ),
+  li: ({ children }) => (
+    <li className="leading-relaxed">
+      {children}
+    </li>
+  ),
+  strong: ({ children }) => (
+    <strong className="font-semibold text-foreground">
+      {children}
+    </strong>
+  ),
+  a: ({ href, children }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary underline underline-offset-2 hover:opacity-80 transition-opacity"
+    >
+      {children}
+    </a>
+  ),
+  code: ({ className, children, ...props }) => {
+    const isMultiLine = typeof children === 'string' && children.includes('\n');
+    if (isMultiLine || className) {
+      return (
+        <code className={cn('font-mono text-xs', className)} {...props}>
+          {children}
+        </code>
+      );
+    }
+    return (
+      <code
+        className="rounded bg-background/60 px-1 py-0.5 font-mono text-xs border border-border/40 text-foreground"
+        {...props}
+      >
+        {children}
+      </code>
+    );
+  },
+  pre: ({ children }) => (
+    <pre className="my-2 overflow-x-auto rounded-md bg-background/80 p-2.5 font-mono text-xs border border-border/50">
+      {children}
+    </pre>
+  ),
+  blockquote: ({ children }) => (
+    <blockquote className="my-1.5 border-l-2 border-primary/50 pl-2.5 italic text-muted-foreground text-xs">
+      {children}
+    </blockquote>
+  ),
+  hr: () => <hr className="my-2 border-border/50" />,
+  table: ({ children }) => (
+    <div className="my-2 overflow-x-auto">
+      <table className="w-full text-xs border-collapse border border-border/50">
+        {children}
+      </table>
+    </div>
+  ),
+  th: ({ children }) => (
+    <th className="border border-border/50 bg-background/50 px-2 py-1 text-left font-semibold">
+      {children}
+    </th>
+  ),
+  td: ({ children }) => (
+    <td className="border border-border/50 px-2 py-1">
+      {children}
+    </td>
+  ),
+};
+
+const ChatMessageMarkdown = memo(function ChatMessageMarkdown({
+  content,
+}: {
+  content: string;
+}) {
+  return (
+    <Markdown
+      remarkPlugins={REMARK_PLUGINS}
+      components={CHAT_MARKDOWN_COMPONENTS}
+    >
+      {content}
+    </Markdown>
+  );
+});
 
 export function ChatPanel() {
   const pathname = usePathname() ?? '/';
@@ -690,9 +824,13 @@ export function ChatPanel() {
                                   : 'bg-muted text-foreground',
                               )}
                             >
-                              <p className="whitespace-pre-wrap">
-                                {message.content}
-                              </p>
+                              {message.role === 'user' ? (
+                                <p className="whitespace-pre-wrap">
+                                  {message.content}
+                                </p>
+                              ) : (
+                                <ChatMessageMarkdown content={message.content} />
+                              )}
                               {message.role === 'assistant' &&
                               message.usedSections?.length ? (
                                 <div className="mt-2 flex flex-wrap gap-1">
