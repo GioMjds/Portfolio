@@ -1,4 +1,5 @@
 export * from './hero';
+export * from './hero-ask-bar';
 export * from './highlights';
 export * from './tech-stack';
 export * from './flagship-showcase';

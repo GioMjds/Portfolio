@@ -9,6 +9,9 @@ import {
   ExperienceTimeline,
   GithubStats,
 } from '@/components/pages/homepage';
+import { skills } from '@/constants/about';
+import { getProjects } from '@/lib/projects-data';
+import { buildSkillProjects } from '@/lib/skill-projects';
 import {
   createAbsoluteUrl,
   createPageMetadata,
@@ -23,7 +26,9 @@ export const metadata: Metadata = createPageMetadata({
   pathname: '/',
 });
 
-export default function Home() {
+export default async function Home() {
+  const skillProjects = buildSkillProjects(skills, await getProjects());
+
   const webSiteJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -37,13 +42,16 @@ export default function Home() {
     <section className="relative" aria-label="Homepage content">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(webSiteJsonLd).replace(/</g, '\\u003c'),
+        }}
       />
       <Hero />
       <Separator className="mx-auto max-w-2xl" />
       <Highlights />
       <Separator className="mx-auto max-w-2xl" />
-      <TechStack />
+      <TechStack skillProjects={skillProjects} />
       <Separator className="mx-auto max-w-2xl" />
       <FlagshipShowcase />
       <Separator className="mx-auto max-w-2xl" />

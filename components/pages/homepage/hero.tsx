@@ -12,6 +12,8 @@ import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Download, ExternalLink } from 'lucide-react';
+import { HeroAskBar } from './hero-ask-bar';
+import { Spotlight } from '@/components/ui/spotlight';
 
 const techStack = [
   'TypeScript',
@@ -34,7 +36,8 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden px-4 pb-8 pt-24 sm:pb-24 sm:pt-32">
-      <div className="mx-auto max-w-5xl">
+      <Spotlight />
+      <div className="relative mx-auto max-w-5xl">
         {/* Status Badge */}
         <motion.div
           initial="hidden"
@@ -85,6 +88,9 @@ export function Hero() {
           </motion.p>
         </motion.div>
 
+        {/* Ask my portfolio */}
+        <HeroAskBar />
+
         {/* CTA Buttons */}
         <motion.div
           initial="hidden"
@@ -92,7 +98,7 @@ export function Hero() {
           variants={heroVariants}
           style={transformOpacityStyle}
           transition={{ delay: shouldReduceMotion ? 0 : 0.4 }}
-          className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+          className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
           <Button
             asChild
@@ -110,7 +116,7 @@ export function Hero() {
               <ExternalLink className="size-4" />
             </Link>
           </Button>
-          <Button asChild variant="outline" size="lg" className="gap-2">
+          <Button asChild variant="ghost" size="lg" className="gap-2">
             <a href="/Gio_Majadas_Resume.pdf" download>
               <Download className="size-4" />
               Download Resume

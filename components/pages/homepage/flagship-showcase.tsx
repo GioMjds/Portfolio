@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import { Trophy, ArrowUpRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { TiltCard } from '@/components/ui/tilt-card';
 import {
   fadeInUpVariants,
   staggerContainerVariants,
@@ -61,75 +62,77 @@ export function FlagshipShowcase() {
               variants={cardVariants}
               style={transformOpacityStyle}
             >
-              <Card className="group h-full overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5">
-                <div className="relative aspect-video overflow-hidden">
-                  <Image
-                    src={project.image}
-                    alt={project.projectName}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-
-                <CardContent className="p-6">
-                  <h3 className="font-heading text-lg font-semibold">
-                    {project.projectName}
-                  </h3>
-
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {project.stacks.map((stack) => (
-                      <Badge
-                        key={stack.name}
-                        variant="secondary"
-                        className="text-xs"
-                      >
-                        {stack.name}
-                      </Badge>
-                    ))}
+              <TiltCard className="h-full">
+                <Card className="group h-full overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5">
+                  <div className="relative aspect-video overflow-hidden">
+                    <Image
+                      src={project.image}
+                      alt={project.projectName}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
 
-                  <div className="mt-4">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Problem
-                    </p>
-                    <p className="mt-1 text-sm text-foreground/80">
-                      {project.problemStatement}
-                    </p>
-                  </div>
+                  <CardContent className="p-6">
+                    <h3 className="font-heading text-lg font-semibold">
+                      {project.projectName}
+                    </h3>
 
-                  {project.solutionStatement && (
-                    <div className="mt-3">
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {project.stacks.map((stack) => (
+                        <Badge
+                          key={stack.name}
+                          variant="secondary"
+                          className="text-xs"
+                        >
+                          {stack.name}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <div className="mt-4">
                       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Solution
+                        Problem
                       </p>
                       <p className="mt-1 text-sm text-foreground/80">
-                        {project.solutionStatement}
+                        {project.problemStatement}
                       </p>
                     </div>
-                  )}
 
-                  {project.performanceMetric && (
-                    <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2">
-                      <p className="text-sm font-semibold text-primary">
-                        {project.performanceMetric}
-                      </p>
-                    </div>
-                  )}
+                    {project.solutionStatement && (
+                      <div className="mt-3">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          Solution
+                        </p>
+                        <p className="mt-1 text-sm text-foreground/80">
+                          {project.solutionStatement}
+                        </p>
+                      </div>
+                    )}
 
-                  {project.githubLink && (
-                    <Link
-                      href={project.githubLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                    >
-                      View on GitHub
-                      <ArrowUpRight className="size-3" />
-                    </Link>
-                  )}
-                </CardContent>
-              </Card>
+                    {project.performanceMetric && (
+                      <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2">
+                        <p className="text-sm font-semibold text-primary">
+                          {project.performanceMetric}
+                        </p>
+                      </div>
+                    )}
+
+                    {project.githubLink && (
+                      <Link
+                        href={project.githubLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                      >
+                        View on GitHub
+                        <ArrowUpRight className="size-3" />
+                      </Link>
+                    )}
+                  </CardContent>
+                </Card>
+              </TiltCard>
             </motion.div>
           ))}
         </motion.div>

@@ -1,8 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
+import Markdown, { type Components } from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
+import remarkGfm from 'remark-gfm';
 import { Bot, BotMessageSquare, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +26,8 @@ import {
   staggerContainerVariants,
   backdropVariants,
 } from '@/utils/variants';
+import { ASSISTANT_ASK_EVENT, type AssistantAskDetail } from '@/lib/assistant/ask-event';
+import { getStarterPrompts } from '@/lib/assistant/starter-prompts';
 import type {
   AssistantChatMessage,
   AssistantChatResponse,
@@ -76,48 +81,6 @@ function isAssistantStreamDebugEnabled(): boolean {
   } catch {
     return false;
   }
-}
-
-/**
- * This function provides context-aware starter prompts that base in the current page route.
- *
- * The prompts are designed to encourage users to ask about relevant content for each section of the portfolio, such as projects, skills, or certifications. By tailoring the prompts to the page context, it helps guide users in engaging with the assistant and discovering key information about Gio's experience and offerings.
- *
- * Page routes and example prompts:
- * - `/about`
- * - `/projects`
- * - `/certificates`
- */
-function getStarterPrompts(pathname: string): string[] {
-  if (pathname.startsWith('/projects')) {
-    return [
-      'Which project best shows full-stack experience?',
-      'What technologies were used across the projects?',
-      'Can you summarize the Commitly project?',
-    ];
-  }
-
-  if (pathname === '/about') {
-    return [
-      'Who is Gio Majadas?',
-      'What are Gio’s strongest technical skills?',
-      'What services does Gio offer?',
-    ];
-  }
-
-  if (pathname === '/certificates') {
-    return [
-      'What certifications are showcased here?',
-      'Which certificates relate to backend development?',
-      'Any certification related to cybersecurity?',
-    ];
-  }
-
-  return [
-    'Who is Gio Majadas?',
-    'What are the highlighted skills?',
-    'Which projects are best to review first?',
-  ];
 }
 
 function makeId(prefix: string): string {
@@ -213,6 +176,137 @@ function parseSseFrame(frame: string): AssistantStreamEvent | null {
     return null;
   }
 }
+
+const REMARK_PLUGINS = [remarkGfm, remarkBreaks];
+
+const CHAT_MARKDOWN_COMPONENTS: Components = {
+  h1: ({ children }) => (
+    <h1 className="text-base font-bold mt-2.5 mb-1.5 first:mt-0 tracking-tight text-foreground">
+      {children}
+    </h1>
+  ),
+  h2: ({ children }) => (
+    <h2 className="text-sm font-semibold mt-2 mb-1 first:mt-0 text-foreground">
+      {children}
+    </h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="text-xs font-semibold uppercase tracking-wider mt-1.5 mb-1 first:mt-0 text-foreground/90">
+      {children}
+    </h3>
+  ),
+  h4: ({ children }) => (
+    <h4 className="text-xs font-semibold mt-1.5 mb-0.5 first:mt-0 text-foreground">
+      {children}
+    </h4>
+  ),
+  h5: ({ children }) => (
+    <h5 className="text-xs font-semibold mt-1.5 mb-0.5 first:mt-0 text-foreground">
+      {children}
+    </h5>
+  ),
+  h6: ({ children }) => (
+    <h6 className="text-xs font-semibold mt-1.5 mb-0.5 first:mt-0 text-foreground">
+      {children}
+    </h6>
+  ),
+  p: ({ children }) => (
+    <p className="mb-2 last:mb-0 leading-relaxed text-sm">
+      {children}
+    </p>
+  ),
+  ul: ({ children }) => (
+    <ul className="my-1.5 pl-4 list-disc space-y-0.5 text-sm last:mb-0">
+      {children}
+    </ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="my-1.5 pl-4 list-decimal space-y-0.5 text-sm last:mb-0">
+      {children}
+    </ol>
+  ),
+  li: ({ children }) => (
+    <li className="leading-relaxed">
+      {children}
+    </li>
+  ),
+  strong: ({ children }) => (
+    <strong className="font-semibold text-foreground">
+      {children}
+    </strong>
+  ),
+  a: ({ href, children }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary underline underline-offset-2 hover:opacity-80 transition-opacity"
+    >
+      {children}
+    </a>
+  ),
+  code: ({ className, children, ...props }) => {
+    const isMultiLine = typeof children === 'string' && children.includes('\n');
+    if (isMultiLine || className) {
+      return (
+        <code className={cn('font-mono text-xs', className)} {...props}>
+          {children}
+        </code>
+      );
+    }
+    return (
+      <code
+        className="rounded bg-background/60 px-1 py-0.5 font-mono text-xs border border-border/40 text-foreground"
+        {...props}
+      >
+        {children}
+      </code>
+    );
+  },
+  pre: ({ children }) => (
+    <pre className="my-2 overflow-x-auto rounded-md bg-background/80 p-2.5 font-mono text-xs border border-border/50">
+      {children}
+    </pre>
+  ),
+  blockquote: ({ children }) => (
+    <blockquote className="my-1.5 border-l-2 border-primary/50 pl-2.5 italic text-muted-foreground text-xs">
+      {children}
+    </blockquote>
+  ),
+  hr: () => <hr className="my-2 border-border/50" />,
+  table: ({ children }) => (
+    <div className="my-2 overflow-x-auto">
+      <table className="w-full text-xs border-collapse border border-border/50">
+        {children}
+      </table>
+    </div>
+  ),
+  th: ({ children }) => (
+    <th className="border border-border/50 bg-background/50 px-2 py-1 text-left font-semibold">
+      {children}
+    </th>
+  ),
+  td: ({ children }) => (
+    <td className="border border-border/50 px-2 py-1">
+      {children}
+    </td>
+  ),
+};
+
+const ChatMessageMarkdown = memo(function ChatMessageMarkdown({
+  content,
+}: {
+  content: string;
+}) {
+  return (
+    <Markdown
+      remarkPlugins={REMARK_PLUGINS}
+      components={CHAT_MARKDOWN_COMPONENTS}
+    >
+      {content}
+    </Markdown>
+  );
+});
 
 export function ChatPanel() {
   const pathname = usePathname() ?? '/';
@@ -585,6 +679,38 @@ export function ChatPanel() {
     setDraft('');
   }
 
+  // Latest sendMessage/isLoading for the window listener below, which is
+  // registered once and would otherwise close over stale state.
+  const askRef = useRef({ send: sendMessage, busy: isLoading });
+  useEffect(() => {
+    askRef.current = { send: sendMessage, busy: isLoading };
+  });
+
+  // Lets other components (e.g. the homepage hero) ask the assistant a question.
+  useEffect(() => {
+    function onAsk(event: Event) {
+      const detail = (event as CustomEvent<AssistantAskDetail>).detail;
+      const message = detail?.message?.trim();
+      if (!message) {
+        return;
+      }
+
+      setIsOpen(true);
+
+      // A reply is still streaming: show the panel but leave the question with
+      // the sender (detail.accepted stays false) instead of dropping it.
+      if (askRef.current.busy) {
+        return;
+      }
+
+      detail.accepted = true;
+      void askRef.current.send(message);
+    }
+
+    window.addEventListener(ASSISTANT_ASK_EVENT, onAsk);
+    return () => window.removeEventListener(ASSISTANT_ASK_EVENT, onAsk);
+  }, []);
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -698,9 +824,13 @@ export function ChatPanel() {
                                   : 'bg-muted text-foreground',
                               )}
                             >
-                              <p className="whitespace-pre-wrap">
-                                {message.content}
-                              </p>
+                              {message.role === 'user' ? (
+                                <p className="whitespace-pre-wrap">
+                                  {message.content}
+                                </p>
+                              ) : (
+                                <ChatMessageMarkdown content={message.content} />
+                              )}
                               {message.role === 'assistant' &&
                               message.usedSections?.length ? (
                                 <div className="mt-2 flex flex-wrap gap-1">
