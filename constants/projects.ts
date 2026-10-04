@@ -26,7 +26,7 @@ export interface Projects {
   performanceMetric?: string;
 }
 
-export const projects = [
+export const projects: Projects[] = [
   {
     projectId: 1,
     projectName: 'Azurea Hotel Management System',
@@ -284,4 +284,4 @@ export const projects = [
     performanceMetric:
       'Fully functional with zero connectivity | Local SQLite queries under 100ms | Built for low-end Android phones',
   },
-] as const satisfies Projects[];
+];
