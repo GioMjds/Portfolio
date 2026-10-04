@@ -7,12 +7,7 @@
     "build": "next build",
     "start": "next start",
     "typegen": "next typegen",
-    "lint": "eslint",
-    "analyze": "ANALYZE=true next build",
-    "audit:lighthouse:mobile": "set LIGHTHOUSE_CHROMIUM_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&& set CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&& lhci collect --config=.lighthouserc.mobile.json && lhci assert --config=.lighthouserc.mobile.json",
-    "audit:lighthouse:desktop": "set LIGHTHOUSE_CHROMIUM_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&& set CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&& lhci collect --config=.lighthouserc.desktop.json && lhci assert --config=.lighthouserc.desktop.json",
-    "audit:axe": "axe http://127.0.0.1:3000 http://127.0.0.1:3000/about http://127.0.0.1:3000/projects http://127.0.0.1:3000/certificates http://127.0.0.1:3000/contact --browser chrome --exit --load-delay 500",
-    "audit:a11y": "pnpm build && start-server-and-test \"pnpm start\" http://127.0.0.1:3000 \"pnpm audit:lighthouse:mobile && pnpm audit:lighthouse:desktop && pnpm audit:axe\""
+    "lint": "eslint ."
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -25,15 +20,16 @@
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^1.7.0",
     "motion": "^12.38.0",
-    "next": "16.2.9",
+    "next": "16.3.8",
     "next-themes": "^0.4.6",
     "nodemailer": "^8.0.4",
     "radix-ui": "^1.4.3",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-hook-form": "^7.72.0",
     "react-loading-skeleton": "^3.5.0",
     "react-resizable-panels": "^4.8.0",
+    "server-only": "^0.0.1",
     "shadcn": "^4.1.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
@@ -45,16 +41,17 @@
   "devDependencies": {
     "@axe-core/cli": "^4.11.1",
     "@lhci/cli": "^0.15.1",
-    "@next/bundle-analyzer": "^16.2.2",
+    "@next/bundle-analyzer": "^16.2.10",
     "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
-    "@types/node": "^20",
+    "@types/node": "^26.1.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.2",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.2.10",
     "start-server-and-test": "^3.0.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.63.0"
   }
 }

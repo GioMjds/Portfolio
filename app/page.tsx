@@ -15,6 +15,7 @@ import {
   SITE_DESCRIPTION,
   SITE_NAME,
 } from '@/lib/site';
+import { getProjects } from '@/lib/projects-data';
 
 export const metadata: Metadata = createPageMetadata({
   title: 'Gio Majadas | Personal Portfolio',
@@ -23,7 +24,29 @@ export const metadata: Metadata = createPageMetadata({
   pathname: '/',
 });
 
-export default function Home() {
+function normalizeKey(name: string): string {
+  return name.toLowerCase().replace(/[\s.\-_]/g, '');
+}
+
+export default async function Home() {
+  const allProjects = await getProjects();
+  const skillProjects: Record<string, { id: number; name: string }[]> = {};
+
+  for (const project of allProjects) {
+    for (const stack of project.stacks) {
+      const key = normalizeKey(stack.name);
+      if (!skillProjects[key]) {
+        skillProjects[key] = [];
+      }
+      if (!skillProjects[key].some((p) => p.id === project.projectId)) {
+        skillProjects[key].push({
+          id: project.projectId,
+          name: project.projectName,
+        });
+      }
+    }
+  }
+
   const webSiteJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -43,7 +66,7 @@ export default function Home() {
       <Separator className="mx-auto max-w-2xl" />
       <Highlights />
       <Separator className="mx-auto max-w-2xl" />
-      <TechStack />
+      <TechStack skillProjects={skillProjects} />
       <Separator className="mx-auto max-w-2xl" />
       <FlagshipShowcase />
       <Separator className="mx-auto max-w-2xl" />

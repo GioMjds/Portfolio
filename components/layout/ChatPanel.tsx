@@ -23,6 +23,8 @@ import {
   staggerContainerVariants,
   backdropVariants,
 } from '@/utils/variants';
+import { ASSISTANT_ASK_EVENT, type AssistantAskDetail } from '@/lib/assistant/ask-event';
+import { getStarterPrompts } from '@/lib/assistant/starter-prompts';
 import type {
   AssistantChatMessage,
   AssistantChatResponse,
@@ -76,48 +78,6 @@ function isAssistantStreamDebugEnabled(): boolean {
   } catch {
     return false;
   }
-}
-
-/**
- * This function provides context-aware starter prompts that base in the current page route.
- *
- * The prompts are designed to encourage users to ask about relevant content for each section of the portfolio, such as projects, skills, or certifications. By tailoring the prompts to the page context, it helps guide users in engaging with the assistant and discovering key information about Gio's experience and offerings.
- *
- * Page routes and example prompts:
- * - `/about`
- * - `/projects`
- * - `/certificates`
- */
-function getStarterPrompts(pathname: string): string[] {
-  if (pathname.startsWith('/projects')) {
-    return [
-      'Which project best shows full-stack experience?',
-      'What technologies were used across the projects?',
-      'Can you summarize the Commitly project?',
-    ];
-  }
-
-  if (pathname === '/about') {
-    return [
-      'Who is Gio Majadas?',
-      'What are Gio’s strongest technical skills?',
-      'What services does Gio offer?',
-    ];
-  }
-
-  if (pathname === '/certificates') {
-    return [
-      'What certifications are showcased here?',
-      'Which certificates relate to backend development?',
-      'Any certification related to cybersecurity?',
-    ];
-  }
-
-  return [
-    'Who is Gio Majadas?',
-    'What are the highlighted skills?',
-    'Which projects are best to review first?',
-  ];
 }
 
 function makeId(prefix: string): string {
@@ -584,6 +544,38 @@ export function ChatPanel() {
     setMessages([GREETING]);
     setDraft('');
   }
+
+  // Latest sendMessage/isLoading for the window listener below, which is
+  // registered once and would otherwise close over stale state.
+  const askRef = useRef({ send: sendMessage, busy: isLoading });
+  useEffect(() => {
+    askRef.current = { send: sendMessage, busy: isLoading };
+  });
+
+  // Lets other components (e.g. the homepage hero) ask the assistant a question.
+  useEffect(() => {
+    function onAsk(event: Event) {
+      const detail = (event as CustomEvent<AssistantAskDetail>).detail;
+      const message = detail?.message?.trim();
+      if (!message) {
+        return;
+      }
+
+      setIsOpen(true);
+
+      // A reply is still streaming: show the panel but leave the question with
+      // the sender (detail.accepted stays false) instead of dropping it.
+      if (askRef.current.busy) {
+        return;
+      }
+
+      detail.accepted = true;
+      void askRef.current.send(message);
+    }
+
+    window.addEventListener(ASSISTANT_ASK_EVENT, onAsk);
+    return () => window.removeEventListener(ASSISTANT_ASK_EVENT, onAsk);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) {

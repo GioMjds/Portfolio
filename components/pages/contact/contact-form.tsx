@@ -1,6 +1,6 @@
 'use client';
 
-import { useOptimistic, useState, useTransition } from 'react';
+import { useOptimistic, useState, useTransition, type ReactNode } from 'react';
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { useForm, type UseFormSetError } from 'react-hook-form';
 import { motion, AnimatePresence } from 'motion/react';
@@ -40,6 +40,24 @@ interface SubmissionState {
   requestId?: string;
 }
 
+type ContactFieldName = 'name' | 'email' | 'subject' | 'message';
+
+interface ContactFieldConfig {
+  name: ContactFieldName;
+  label: string;
+  delay: number;
+  placeholder: string;
+  description?: string;
+  input?: {
+    type?: string;
+    inputMode?: 'email' | 'text';
+    autoComplete?: string;
+  };
+  textarea?: {
+    rows: number;
+  };
+}
+
 const initialSubmissionState: SubmissionState = {
   phase: 'idle',
   message: '',
@@ -53,6 +71,49 @@ const defaultValues: ContactFormValues = {
   companyWebsite: '',
 };
 
+const fieldVariants = {
+  hidden: { opacity: 0, x: -10 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.3,
+      ease: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number],
+    },
+  },
+};
+
+const CONTACT_FIELDS = [
+  {
+    name: 'name',
+    label: 'Name',
+    delay: 0.1,
+    placeholder: 'Your name',
+  },
+  {
+    name: 'email',
+    label: 'Email',
+    delay: 0.2,
+    placeholder: 'you@example.com',
+    input: { type: 'email', inputMode: 'email', autoComplete: 'email' },
+  },
+  {
+    name: 'subject',
+    label: 'Subject',
+    delay: 0.3,
+    placeholder: 'Project inquiry',
+  },
+  {
+    name: 'message',
+    label: 'Message',
+    delay: 0.4,
+    placeholder: 'Tell me about your project, timeline, and goals...',
+    description:
+      'Please include enough context so I can provide a meaningful reply.',
+    textarea: { rows: 7 },
+  },
+] satisfies readonly ContactFieldConfig[];
+
 function applyServerFieldErrors(
   fieldErrors: NonNullable<ContactApiErrorResponse['fieldErrors']>,
   setError: UseFormSetError<ContactFormValues>,
@@ -63,8 +124,9 @@ function applyServerFieldErrors(
 
   for (const [fieldName, messages] of entries) {
     const firstMessage = messages?.[0];
-    if (!firstMessage) continue;
-    setError(fieldName, { type: 'server', message: firstMessage });
+    if (firstMessage) {
+      setError(fieldName, { type: 'server', message: firstMessage });
+    }
   }
 }
 
@@ -76,18 +138,63 @@ function getErrorMessage(
   return response.message || fallback;
 }
 
+function AnimatedField({
+  delay,
+  children,
+}: {
+  delay: number;
+  children: ReactNode;
+}) {
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={fieldVariants}
+      transition={{ delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function SubmissionAlert({ state }: { state: SubmissionState }) {
+  const title =
+    state.phase === 'success'
+      ? 'Message sent successfully'
+      : state.phase === 'error'
+        ? 'Send failed'
+        : 'Sending';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Alert variant={state.phase === 'error' ? 'destructive' : 'default'}>
+        {state.phase === 'success' && <CheckCircle2 className="size-4" />}
+        {state.phase === 'error' && <AlertCircle className="size-4" />}
+        {state.phase === 'sending' && <Spinner className="size-4" />}
+        <AlertTitle>{title}</AlertTitle>
+        <p className="text-sm text-muted-foreground">
+          {state.message}
+          {state.requestId ? ` Reference: ${state.requestId}.` : ''}
+        </p>
+      </Alert>
+    </motion.div>
+  );
+}
+
 export function ContactForm() {
-  const [submissionState, setSubmissionState] = useState(
+  const [submissionState, setSubmissionState] = useState<SubmissionState>(
     initialSubmissionState,
   );
   const [isPending, startTransition] = useTransition();
   const [optimisticSubmissionState, addOptimisticSubmissionState] =
     useOptimistic(
       submissionState,
-      (
-        currentState: SubmissionState,
-        patch: Partial<SubmissionState>,
-      ): SubmissionState => ({
+      (currentState: SubmissionState, patch: Partial<SubmissionState>) => ({
         ...currentState,
         ...patch,
       }),
@@ -116,9 +223,7 @@ export function ContactForm() {
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
 
@@ -128,7 +233,6 @@ export function ContactForm() {
         if (!body.ok && body.fieldErrors) {
           applyServerFieldErrors(body.fieldErrors, setError);
         }
-
         setSubmissionState({
           phase: 'error',
           message: getErrorMessage(
@@ -148,7 +252,6 @@ export function ContactForm() {
       console.error('[contact-form] submit-failed', {
         error: error instanceof Error ? error.message : String(error),
       });
-
       setSubmissionState({
         phase: 'error',
         message:
@@ -159,7 +262,6 @@ export function ContactForm() {
 
   const onSubmit = handleSubmit((values) => {
     clearErrors();
-
     startTransition(() => {
       addOptimisticSubmissionState({
         phase: 'sending',
@@ -169,21 +271,13 @@ export function ContactForm() {
     });
   });
 
-  const resetSubmissionState = () => {
-    setSubmissionState(initialSubmissionState);
-  };
+  const resetSubmissionState = () => setSubmissionState(initialSubmissionState);
 
-  const fieldVariants = {
-    hidden: { opacity: 0, x: -10 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.3,
-        ease: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number],
-      },
-    },
-  };
+  const submitButtonLabel = isSending
+    ? 'Sending...'
+    : optimisticSubmissionState.phase === 'error'
+      ? 'Retry send'
+      : 'Send message';
 
   return (
     <Card
@@ -211,139 +305,49 @@ export function ContactForm() {
           />
 
           <FieldGroup className="gap-5">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={fieldVariants}
-              transition={{ delay: 0.1 }}
-            >
-              <Field data-invalid={Boolean(errors.name)}>
-                <FieldLabel htmlFor="contact-name">Name</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id="contact-name"
-                    placeholder="Your name"
-                    aria-invalid={Boolean(errors.name)}
-                    disabled={isSending}
-                    {...register('name')}
-                  />
-                  <FieldError errors={[errors.name]} />
-                </FieldContent>
-              </Field>
-            </motion.div>
+            {CONTACT_FIELDS.map((field) => {
+              const id = `contact-${field.name}`;
+              const error = errors[field.name];
+              const invalid = Boolean(error);
 
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={fieldVariants}
-              transition={{ delay: 0.2 }}
-            >
-              <Field data-invalid={Boolean(errors.email)}>
-                <FieldLabel htmlFor="contact-email">Email</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id="contact-email"
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    aria-invalid={Boolean(errors.email)}
-                    disabled={isSending}
-                    {...register('email')}
-                  />
-                  <FieldError errors={[errors.email]} />
-                </FieldContent>
-              </Field>
-            </motion.div>
-
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={fieldVariants}
-              transition={{ delay: 0.3 }}
-            >
-              <Field data-invalid={Boolean(errors.subject)}>
-                <FieldLabel htmlFor="contact-subject">Subject</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id="contact-subject"
-                    placeholder="Project inquiry"
-                    aria-invalid={Boolean(errors.subject)}
-                    disabled={isSending}
-                    {...register('subject')}
-                  />
-                  <FieldError errors={[errors.subject]} />
-                </FieldContent>
-              </Field>
-            </motion.div>
-
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={fieldVariants}
-              transition={{ delay: 0.4 }}
-            >
-              <Field data-invalid={Boolean(errors.message)}>
-                <FieldLabel htmlFor="contact-message">Message</FieldLabel>
-                <FieldContent>
-                  <Textarea
-                    id="contact-message"
-                    rows={7}
-                    placeholder="Tell me about your project, timeline, and goals..."
-                    aria-invalid={Boolean(errors.message)}
-                    disabled={isSending}
-                    {...register('message')}
-                  />
-                  <FieldDescription>
-                    Please include enough context so I can provide a meaningful
-                    reply.
-                  </FieldDescription>
-                  <FieldError errors={[errors.message]} />
-                </FieldContent>
-              </Field>
-            </motion.div>
+              return (
+                <AnimatedField key={field.name} delay={field.delay}>
+                  <Field data-invalid={invalid}>
+                    <FieldLabel htmlFor={id}>{field.label}</FieldLabel>
+                    <FieldContent>
+                      {field.textarea ? (
+                        <Textarea
+                          id={id}
+                          rows={field.textarea.rows}
+                          placeholder={field.placeholder}
+                          aria-invalid={invalid}
+                          disabled={isSending}
+                          {...register(field.name)}
+                        />
+                      ) : (
+                        <Input
+                          {...field.input}
+                          id={id}
+                          placeholder={field.placeholder}
+                          aria-invalid={invalid}
+                          disabled={isSending}
+                          {...register(field.name)}
+                        />
+                      )}
+                      {field.description ? (
+                        <FieldDescription>{field.description}</FieldDescription>
+                      ) : null}
+                      <FieldError errors={[error]} />
+                    </FieldContent>
+                  </Field>
+                </AnimatedField>
+              );
+            })}
           </FieldGroup>
 
           <AnimatePresence mode="wait">
             {optimisticSubmissionState.phase !== 'idle' ? (
-              <motion.div
-                key="alert"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-              <Alert
-                variant={
-                  optimisticSubmissionState.phase === 'error'
-                    ? 'destructive'
-                    : 'default'
-                }
-              >
-              {optimisticSubmissionState.phase === 'success' ? (
-                <CheckCircle2 className="size-4" />
-              ) : null}
-              {optimisticSubmissionState.phase === 'error' ? (
-                <AlertCircle className="size-4" />
-              ) : null}
-              {optimisticSubmissionState.phase === 'sending' ? (
-                <Spinner className="size-4" />
-              ) : null}
-              <AlertTitle>
-                {optimisticSubmissionState.phase === 'success'
-                  ? 'Message sent successfully'
-                  : optimisticSubmissionState.phase === 'error'
-                    ? 'Send failed'
-                    : 'Sending'}
-              </AlertTitle>
-              <p className="text-sm text-muted-foreground">
-                {optimisticSubmissionState.message}
-                {optimisticSubmissionState.requestId
-                  ? ` Reference: ${optimisticSubmissionState.requestId}.`
-                  : ''}
-              </p>
-            </Alert>
-              </motion.div>
+              <SubmissionAlert key="alert" state={optimisticSubmissionState} />
             ) : null}
           </AnimatePresence>
 
@@ -359,11 +363,7 @@ export function ContactForm() {
               className="w-full gap-2 sm:w-auto"
             >
               {isSending ? <Spinner /> : <Send className="size-4" />}
-              {isSending
-                ? 'Sending...'
-                : optimisticSubmissionState.phase === 'error'
-                  ? 'Retry send'
-                  : 'Send message'}
+              {submitButtonLabel}
             </Button>
 
             {optimisticSubmissionState.phase === 'success' ? (

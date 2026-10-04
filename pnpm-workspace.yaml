@@ -1,6 +1,8 @@
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
-
+allowBuilds:
+  chromedriver: true
+  sharp: true
+  unrs-resolver: true
 onlyBuiltDependencies:
   - chromedriver
+  - sharp
+  - unrs-resolver
