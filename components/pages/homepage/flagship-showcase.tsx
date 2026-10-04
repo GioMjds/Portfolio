@@ -62,7 +62,7 @@ export function FlagshipShowcase() {
               variants={cardVariants}
               style={transformOpacityStyle}
             >
-              <TiltCard maxTilt={5}>
+              <TiltCard className="h-full">
                 <Card className="group h-full overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5">
                   <div className="relative aspect-video overflow-hidden">
                     <Image

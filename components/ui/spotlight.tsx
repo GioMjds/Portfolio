@@ -1,77 +1,77 @@
 'use client';
 
-import { useRef, useState, useSyncExternalStore, type ReactNode, type HTMLAttributes } from 'react';
-import { useReducedMotion } from 'motion/react';
+import { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
-interface SpotlightProps extends HTMLAttributes<HTMLDivElement> {
-  children?: ReactNode;
+interface SpotlightProps {
   className?: string;
-  size?: number;
 }
 
-function subscribeFinePointer(onStoreChange: () => void) {
-  const media = window.matchMedia('(pointer: fine)');
-  media.addEventListener('change', onStoreChange);
-  return () => media.removeEventListener('change', onStoreChange);
-}
+/**
+ * Cursor-following glow. Render it as the first child of a `relative`,
+ * `overflow-hidden` container: it listens on that parent and paints a soft
+ * radial gradient behind the (positioned) content.
+ *
+ * Disabled for touch / coarse pointers and `prefers-reduced-motion`.
+ * Only a CSS variable and opacity change per frame: no layout work.
+ */
+export function Spotlight({ className }: SpotlightProps) {
+  const glowRef = useRef<HTMLDivElement>(null);
 
-function getFinePointerSnapshot() {
-  return window.matchMedia('(pointer: fine)').matches;
-}
+  useEffect(() => {
+    const glow = glowRef.current;
+    const host = glow?.parentElement;
+    if (!glow || !host) return;
 
-function getFinePointerServerSnapshot() {
-  return false;
-}
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!canHover.matches || reduceMotion.matches) return;
 
-export function Spotlight({
-  children,
-  className,
-  size = 600,
-  ...props
-}: SpotlightProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const shouldReduceMotion = useReducedMotion();
-  const isFinePointer = useSyncExternalStore(
-    subscribeFinePointer,
-    getFinePointerSnapshot,
-    getFinePointerServerSnapshot,
-  );
-  const [isHovered, setIsHovered] = useState(false);
+    let frame = 0;
+    let x = 0;
+    let y = 0;
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (shouldReduceMotion || !isFinePointer || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    containerRef.current.style.setProperty('--spotlight-x', `${x}px`);
-    containerRef.current.style.setProperty('--spotlight-y', `${y}px`);
-  };
+    function paint() {
+      frame = 0;
+      glow?.style.setProperty('--mx', `${x}px`);
+      glow?.style.setProperty('--my', `${y}px`);
+    }
 
-  const showDynamicSpotlight = !shouldReduceMotion && isFinePointer;
+    function onMove(event: PointerEvent) {
+      if (event.pointerType !== 'mouse' || !glow || !host) return;
+      const rect = host.getBoundingClientRect();
+      x = event.clientX - rect.left;
+      y = event.clientY - rect.top;
+      glow.style.opacity = '1';
+      if (!frame) frame = requestAnimationFrame(paint);
+    }
+
+    function onLeave() {
+      if (glow) glow.style.opacity = '0';
+    }
+
+    host.addEventListener('pointermove', onMove);
+    host.addEventListener('pointerleave', onLeave);
+
+    return () => {
+      host.removeEventListener('pointermove', onMove);
+      host.removeEventListener('pointerleave', onLeave);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
 
   return (
     <div
-      ref={containerRef}
-      onPointerMove={handlePointerMove}
-      onPointerEnter={() => setIsHovered(true)}
-      onPointerLeave={() => setIsHovered(false)}
-      className={cn('relative overflow-hidden', className)}
-      {...props}
-    >
-      {showDynamicSpotlight && (
-        <div
-          aria-hidden="true"
-          className={cn(
-            'pointer-events-none absolute -inset-px transition-opacity duration-300',
-            isHovered ? 'opacity-100' : 'opacity-0',
-          )}
-          style={{
-            background: `radial-gradient(${size}px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%), color-mix(in oklch, var(--primary) 12%, transparent), transparent 70%)`,
-          }}
-        />
+      ref={glowRef}
+      aria-hidden
+      className={cn(
+        'pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500',
+        className,
       )}
-      {children}
-    </div>
+      style={{
+        background:
+          'radial-gradient(520px circle at var(--mx, 50%) var(--my, 30%), color-mix(in oklab, var(--primary) 16%, transparent), transparent 70%)',
+      }}
+    />
   );
 }

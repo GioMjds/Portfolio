@@ -1,95 +1,63 @@
 'use client';
 
-import { useRef, useSyncExternalStore, type ReactNode, type HTMLAttributes } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
-import { cn } from '@/lib/utils';
+import type { PointerEvent, ReactNode } from 'react';
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from 'motion/react';
 
-interface TiltCardProps extends HTMLAttributes<HTMLDivElement> {
+interface TiltCardProps {
   children: ReactNode;
   className?: string;
+  /** Maximum rotation in degrees. Keep it subtle. */
   maxTilt?: number;
 }
 
-function subscribeFinePointer(onStoreChange: () => void) {
-  const media = window.matchMedia('(pointer: fine)');
-  media.addEventListener('change', onStoreChange);
-  return () => media.removeEventListener('change', onStoreChange);
-}
+const SPRING = { stiffness: 220, damping: 22, mass: 0.6 };
 
-function getFinePointerSnapshot() {
-  return window.matchMedia('(pointer: fine)').matches;
-}
-
-function getFinePointerServerSnapshot() {
-  return false;
-}
-
-export function TiltCard({
-  children,
-  className,
-  maxTilt = 6,
-  ...props
-}: TiltCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
+/**
+ * Subtle 3D tilt toward the cursor. Pointer listeners sit on the static outer
+ * element, so the hit area doesn't shift while the inner element rotates.
+ *
+ * No-op (plain wrapper) for reduced motion; ignores touch and pen input.
+ * Never changes focus order or semantics.
+ */
+export function TiltCard({ children, className, maxTilt = 4 }: TiltCardProps) {
   const shouldReduceMotion = useReducedMotion();
-  const isFinePointer = useSyncExternalStore(
-    subscribeFinePointer,
-    getFinePointerSnapshot,
-    getFinePointerServerSnapshot,
+  const px = useMotionValue(0.5);
+  const py = useMotionValue(0.5);
+  const rotateX = useSpring(
+    useTransform(py, [0, 1], [maxTilt, -maxTilt]),
+    SPRING,
+  );
+  const rotateY = useSpring(
+    useTransform(px, [0, 1], [-maxTilt, maxTilt]),
+    SPRING,
   );
 
-  const x = useMotionValue(0.5);
-  const y = useMotionValue(0.5);
-
-  const springConfig = { damping: 20, stiffness: 180, mass: 0.5 };
-  const smoothX = useSpring(x, springConfig);
-  const smoothY = useSpring(y, springConfig);
-
-  const rotateX = useTransform(smoothY, [0, 1], [maxTilt, -maxTilt]);
-  const rotateY = useTransform(smoothX, [0, 1], [-maxTilt, maxTilt]);
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (shouldReduceMotion || !isFinePointer || !cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = (e.clientX - rect.left) / width;
-    const mouseY = (e.clientY - rect.top) / height;
-
-    x.set(mouseX);
-    y.set(mouseY);
+  function handleMove(event: PointerEvent<HTMLDivElement>) {
+    if (shouldReduceMotion || event.pointerType !== 'mouse') return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    px.set((event.clientX - rect.left) / rect.width);
+    py.set((event.clientY - rect.top) / rect.height);
   }
 
-  function handleMouseLeave() {
-    x.set(0.5);
-    y.set(0.5);
-  }
-
-  if (shouldReduceMotion || !isFinePointer) {
-    return (
-      <div className={cn('h-full', className)} {...props}>
-        {children}
-      </div>
-    );
+  function reset() {
+    px.set(0.5);
+    py.set(0.5);
   }
 
   return (
     <div
+      className={className}
       style={{ perspective: 1000 }}
-      className={cn('h-full', className)}
-      {...props}
+      onPointerMove={handleMove}
+      onPointerLeave={reset}
     >
-      <motion.div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: 'preserve-3d',
-        }}
-        className="h-full transition-shadow duration-300"
-      >
+      <motion.div style={{ rotateX, rotateY }} className="h-full">
         {children}
       </motion.div>
     </div>

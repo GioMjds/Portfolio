@@ -9,13 +9,15 @@ import {
   ExperienceTimeline,
   GithubStats,
 } from '@/components/pages/homepage';
+import { skills } from '@/constants/about';
+import { getProjects } from '@/lib/projects-data';
+import { buildSkillProjects } from '@/lib/skill-projects';
 import {
   createAbsoluteUrl,
   createPageMetadata,
   SITE_DESCRIPTION,
   SITE_NAME,
 } from '@/lib/site';
-import { getProjects } from '@/lib/projects-data';
 
 export const metadata: Metadata = createPageMetadata({
   title: 'Gio Majadas | Personal Portfolio',
@@ -24,28 +26,8 @@ export const metadata: Metadata = createPageMetadata({
   pathname: '/',
 });
 
-function normalizeKey(name: string): string {
-  return name.toLowerCase().replace(/[\s.\-_]/g, '');
-}
-
 export default async function Home() {
-  const allProjects = await getProjects();
-  const skillProjects: Record<string, { id: number; name: string }[]> = {};
-
-  for (const project of allProjects) {
-    for (const stack of project.stacks) {
-      const key = normalizeKey(stack.name);
-      if (!skillProjects[key]) {
-        skillProjects[key] = [];
-      }
-      if (!skillProjects[key].some((p) => p.id === project.projectId)) {
-        skillProjects[key].push({
-          id: project.projectId,
-          name: project.projectName,
-        });
-      }
-    }
-  }
+  const skillProjects = buildSkillProjects(skills, await getProjects());
 
   const webSiteJsonLd = {
     '@context': 'https://schema.org',
@@ -60,7 +42,10 @@ export default async function Home() {
     <section className="relative" aria-label="Homepage content">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(webSiteJsonLd).replace(/</g, '\\u003c'),
+        }}
       />
       <Hero />
       <Separator className="mx-auto max-w-2xl" />

@@ -12,7 +12,8 @@ import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Download, ExternalLink } from 'lucide-react';
-import { HeroAskBar } from '@/components/pages/homepage/hero-ask-bar';
+import { HeroAskBar } from './hero-ask-bar';
+import { Spotlight } from '@/components/ui/spotlight';
 
 const techStack = [
   'TypeScript',
@@ -35,7 +36,8 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden px-4 pb-8 pt-24 sm:pb-24 sm:pt-32">
-      <div className="mx-auto max-w-5xl">
+      <Spotlight />
+      <div className="relative mx-auto max-w-5xl">
         {/* Status Badge */}
         <motion.div
           initial="hidden"
