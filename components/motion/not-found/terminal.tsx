@@ -1,0 +1,98 @@
+"use client";
+// beui.dev/components/blocks/not-found
+
+import { TextReveal } from "@/components/motion/text-reveal";
+import {
+  NOT_FOUND_DEFAULTS,
+  NotFoundActions,
+  type NotFoundProps,
+  NotFoundStage,
+  useNotFoundMessages,
+} from "./shared";
+
+const TYPE_SPRING = { stiffness: 320, damping: 30, mass: 0.6 };
+
+// Project patch: configurable prompt and path, and an <h1> title.
+export interface NotFoundTerminalProps extends NotFoundProps {
+  /** Directory shown in the window title bar. */
+  cwd?: string;
+  /** Path the fake `cd` tries to enter. */
+  path?: string;
+}
+
+export function NotFoundTerminal({
+  className,
+  code = NOT_FOUND_DEFAULTS.code,
+  title,
+  description,
+  homeHref,
+  homeLabel,
+  browseHref,
+  browseLabel,
+  labels,
+  cwd = "~",
+  path = "/page",
+}: NotFoundTerminalProps) {
+  const t = useNotFoundMessages(labels);
+  return (
+    <NotFoundStage className={className}>
+      <div className="w-full max-w-md overflow-hidden rounded-xl border border-border bg-neutral-950 text-left shadow-lg">
+        <div className="flex items-center gap-1.5 border-b border-white/10 px-4 py-3">
+          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+          <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
+          <span className="h-3 w-3 rounded-full bg-[#28c840]" />
+          <span className="ml-2 text-xs text-white/60">{cwd}</span>
+        </div>
+        <div className="space-y-1.5 p-4 font-mono text-sm leading-relaxed">
+          <TextReveal
+            as="p"
+            split="char"
+            stagger={0.018}
+            blur={6}
+            yOffset={0}
+            spring={TYPE_SPRING}
+            className="text-white/80"
+            text={`$ cd ${path}`}
+          />
+          <TextReveal
+            as="p"
+            split="char"
+            stagger={0.012}
+            delay={0.45}
+            blur={6}
+            yOffset={0}
+            spring={TYPE_SPRING}
+            className="text-[#ff5f57]"
+            text={t("terminalError")}
+          />
+          <p className="flex items-center text-white/80">
+            <TextReveal
+              as="span"
+              split="char"
+              stagger={0.018}
+              delay={1.1}
+              blur={6}
+              yOffset={0}
+              spring={TYPE_SPRING}
+              text={`$ status ${code}`}
+            />
+            <span className="ml-1 inline-block h-[1.1em] w-[0.55ch] translate-y-[0.12em] bg-white/80 motion-safe:animate-pulse" />
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-2">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">{title ?? t("title")}</h1>
+        <p className="max-w-sm text-sm text-muted-foreground">{description ?? t("description")}</p>
+      </div>
+
+      <NotFoundActions
+        homeHref={homeHref}
+        homeLabel={homeLabel}
+        browseHref={browseHref}
+        browseLabel={browseLabel}
+        labels={labels}
+      />
+    </NotFoundStage>
+  );
+}

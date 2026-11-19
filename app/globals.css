@@ -50,6 +50,28 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@theme {
+  /* beUI Marquee: each of the two tracks shifts by its own width + gap. */
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-marquee-vertical: marquee-vertical 40s linear infinite;
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+}
+
 /*
  * Palette: warm neutral surfaces (hue 80, near-zero chroma) plus one warm
  * signal colour, --brand. Keep --brand for focus, active/selected state, the
