@@ -51,6 +51,20 @@ Every change should improve one or more of these outcomes:
 3. **Accessibility is required, not optional:**  
    Preserve semantic HTML, keyboard usability, and readable contrast when modifying UI.
 
+## Motion rules
+
+1. **Two engines, separate territory. Never animate one element with both.**
+   - `motion` (and beUI components): micro-interactions, in-view reveals, hover/press, layout and presence animation (including list/grid reordering).
+   - GSAP: only scroll-driven sequences (ScrollTrigger pin/scrub) and split-text headline timelines (SplitText).
+2. **Import GSAP only from `@/lib/gsap`**, which registers plugins once. Use it only in `"use client"` leaves, with `useGSAP` for cleanup and `gsap.matchMedia()` with `MEDIA.motionOK` so reduced-motion users get the static end state.
+3. **Reduced motion is required.** Every new animation must have a no-motion path (`useReducedMotion`, `gsap.matchMedia`, or `motion-reduce:` utilities).
+4. **beUI components** install with `pnpm dlx shadcn@latest add @beui/<slug>` into `components/motion/*`. After each install:
+   - decline overwriting `lib/utils.ts` (ours is identical);
+   - replace beUI's `text-muted` (a text grey in beUI) with `text-muted-foreground`. In this project `--muted` is a background colour;
+   - replace any hard-coded colours with design tokens.
+5. **Don't install a beUI component that duplicates a primitive in `components/ui/*`** (tabs, tooltip, command, card, tilt-card, …). Use beUI for effects only.
+6. **Colour:** `--brand` (warm amber) is the only accent. Use it for focus, active/selected state, AI touchpoints and small highlights. Don't use it for large surfaces or body text, and don't put it in `--accent`.
+
 ## Delivery and verification rules
 
 1. **Run checks before handoff:**  

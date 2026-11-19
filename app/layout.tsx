@@ -7,6 +7,7 @@ import {
   Footer,
   ChatPanel,
   BirthdayTrigger,
+  ScrollProgress,
 } from '@/components/layout';
 import { cn } from '@/lib/utils';
 import {
@@ -120,6 +121,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="noise-overlay" aria-hidden="true" />
+          <ScrollProgress />
           <BirthdayTrigger />
           <Navbar />
           <main id="main-content" className="flex-1">
