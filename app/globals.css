@@ -213,3 +213,23 @@
 .animate-birthday-pulse {
   animation: birthday-pulse 2s ease-in-out infinite;
 }
+
+/*
+ * Hero intro (GSAP, components/pages/homepage/hero.tsx). Items start hidden
+ * only when motion is allowed, so GSAP can reveal them without a flash. If
+ * the script never runs, the fallback animation shows them after 3s.
+ * Animations outrank inline styles, but this one only touches visibility
+ * and starts after the intro has finished.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-intro-item] {
+    visibility: hidden;
+    animation: intro-fallback 0s linear 3s forwards;
+  }
+}
+
+@keyframes intro-fallback {
+  to {
+    visibility: visible;
+  }
+}

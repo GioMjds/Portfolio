@@ -22,6 +22,8 @@ export const MEDIA = {
   motionOK: '(prefers-reduced-motion: no-preference)',
   reduceMotion: '(prefers-reduced-motion: reduce)',
   desktop: '(min-width: 1024px)',
+  /** Wide and tall enough to pin a full card row under the sticky navbar. */
+  pinnable: '(min-width: 1024px) and (min-height: 800px)',
 } as const;
 
 /** Shared easing, in line with motion's EASE_OUT feel. */

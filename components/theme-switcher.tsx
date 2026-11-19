@@ -51,7 +51,7 @@ export default function ThemeToggle() {
       <ActionSwapIcon value={isDark ? 'dark' : 'light'} animation="blur">
         {isDark ? <Moon size={20} /> : <Sun size={20} />}
       </ActionSwapIcon>
-      <Kbd className="transition-colors">D</Kbd>
+      <Kbd className="hidden transition-colors sm:inline-flex">D</Kbd>
     </Button>
   );
 }

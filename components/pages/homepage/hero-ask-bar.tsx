@@ -2,7 +2,6 @@
 
 import { useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { motion, useReducedMotion } from 'motion/react';
 import { ArrowUp, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,6 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { askAssistant } from '@/lib/assistant/ask-event';
 import { getStarterPrompts } from '@/lib/assistant/starter-prompts';
-import { fadeInUpVariants } from '@/utils/variants';
 import { TextShimmer } from '@/components/motion/text-shimmer';
 
 const CHIPS = getStarterPrompts('/');
@@ -22,7 +20,6 @@ type AskFormValues = {
 
 export function HeroAskBar() {
   const inputId = useId();
-  const shouldReduceMotion = useReducedMotion();
 
   const {
     register,
@@ -51,13 +48,8 @@ export function HeroAskBar() {
   });
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={fadeInUpVariants}
-      transition={{ delay: shouldReduceMotion ? 0 : 0.3 }}
-      className="mx-auto mt-10 w-full max-w-xl"
-    >
+    // Entrance is driven by the hero's GSAP intro timeline (on its wrapper).
+    <div className="mx-auto mt-10 w-full max-w-xl">
       <form onSubmit={onSubmit} noValidate>
         <Label
           htmlFor={inputId}
@@ -107,6 +99,6 @@ export function HeroAskBar() {
           </li>
         ))}
       </ul>
-    </motion.div>
+    </div>
   );
 }
