@@ -11,12 +11,23 @@ export interface TechStack {
   icon: string;
 }
 
+export interface ProjectScreenshot {
+  src: `/${string}`;
+  /** Short visible label shown under the screenshot. */
+  caption: string;
+  /** Full description for screen readers. */
+  alt: string;
+  /** Desktop shots are 16:9; mobile shots are 9:20 phone captures. */
+  device: 'desktop' | 'mobile';
+}
+
 export interface Projects {
   projectId: number;
   projectName: string;
   description: string;
   stacks: TechStack[];
-  image: string;
+  image: `/${string}`;
+  screenshots?: ProjectScreenshot[];
   githubLink?: Route;
   status: ProjectStatus;
   liveLink?: Route;
@@ -61,163 +72,6 @@ export const projects: Projects[] = [
       'Server-side availability check on every reservation | Zero double-bookings in test runs | Local API responses under 150ms',
   },
   {
-    projectId: 2,
-    projectName: 'Chatify',
-    description:
-      'A real-time chat app built with React and Firebase. Users sign up, see who is online, and message each other instantly with history that persists across sessions.',
-    stacks: [
-      { name: 'React', icon: '/programming-icons-svg/react.svg' },
-      { name: 'Firebase', icon: '/programming-icons-svg/firebase.svg' },
-      { name: 'JavaScript', icon: '/programming-icons-svg/javascript.svg' },
-      { name: 'CSS', icon: '/programming-icons-svg/css.svg' },
-      { name: 'HTML', icon: '/programming-icons-svg/html.svg' },
-    ],
-    image: '/projects/chatify.png',
-    githubLink: 'https://github.com/GioMjds/Chatify',
-    status: 'finished',
-    features: [
-      'Instant messaging that updates live without refreshing the page',
-      'Email-based sign-up and login through Firebase Authentication',
-      'Online and offline presence indicators',
-      'Persistent chat history, so conversations pick up where they left off',
-      'Responsive layout that works on phones and desktops',
-    ],
-    problemStatement:
-      'Building real-time features usually means standing up and maintaining your own socket server, which is heavy for a small app. Many simple chat clones also lose messages on refresh and give no sense of who is actually available.',
-    solutionStatement:
-      'Chatify uses Firebase real-time listeners instead of a custom backend, so messages sync to every connected client as they are written. Auth, presence, and message storage all come from one managed service, which keeps the codebase small and the experience instant.',
-    performanceMetric:
-      'Live message sync with no page refresh | Full history restored on every login | Zero custom servers to maintain',
-  },
-  {
-    projectId: 3,
-    projectName: 'WiseWaste',
-    description:
-      'A community waste-reporting platform built with Next.js and PostgreSQL. Residents report waste problems with their location, and local admins track each issue through to resolution.',
-    stacks: [
-      { name: 'Next.js', icon: '/programming-icons-svg/nextjs-original.svg' },
-      { name: 'PostgreSQL', icon: '/programming-icons-svg/postgresql.svg' },
-      { name: 'TypeScript', icon: '/programming-icons-svg/typescript.svg' },
-      {
-        name: 'Tailwind CSS',
-        icon: '/programming-icons-svg/tailwindcss-original.svg',
-      },
-      { name: 'React', icon: '/programming-icons-svg/react.svg' },
-    ],
-    image: '/projects/wisewaste.png',
-    githubLink: 'https://github.com/GioMjds/WiseWaste',
-    status: 'pending',
-    features: [
-      'Geolocation-tagged reports so collectors know exactly where to go',
-      'Status tracking from reported to in-progress to resolved',
-      'Community dashboard showing open and resolved issues in the area',
-      'Admin panel to triage, assign, and close reports',
-      'Mobile-first interface designed for reporting on the spot',
-    ],
-    problemStatement:
-      'Illegal dumping and missed collections often go unreported because residents do not know who to tell, and local offices have no structured way to see where problems cluster. Reports that do get made vanish with no feedback.',
-    solutionStatement:
-      'WiseWaste turns a complaint into a trackable record: a photo-ready, location-tagged report with a visible status. Admins get one queue to triage, and residents can see that their report was received and acted on.',
-    performanceMetric:
-      'Report in a few taps from any phone | Every report carries coordinates and a visible status | PostgreSQL-backed issue queue',
-  },
-  {
-    projectId: 4,
-    projectName: 'Printify',
-    description:
-      'A print-on-demand web portal where users upload documents, choose print options, pay, and track their orders without visiting a counter.',
-    stacks: [
-      { name: 'Next.js', icon: '/programming-icons-svg/nextjs-original.svg' },
-      { name: 'PostgreSQL', icon: '/programming-icons-svg/postgresql.svg' },
-      { name: 'TypeScript', icon: '/programming-icons-svg/typescript.svg' },
-      { name: 'React', icon: '/programming-icons-svg/react.svg' },
-      {
-        name: 'Tailwind CSS',
-        icon: '/programming-icons-svg/tailwindcss-original.svg',
-      },
-    ],
-    image: '/projects/printify.png',
-    githubLink: 'https://github.com/GioMjds/Printify',
-    status: 'finished',
-    features: [
-      'Document upload and personal file management',
-      'Print customization: copies, paper size, color, and page range',
-      'Integrated payment processing at checkout',
-      'Order management for both customers and shop operators',
-      'Order tracking from submitted to ready for pickup',
-    ],
-    problemStatement:
-      'Walk-in print shops rely on USB drives, messaged files, and verbal instructions. Orders get mixed up, customers wait without knowing their status, and operators repeat the same clarifying questions all day.',
-    solutionStatement:
-      'Printify moves the whole order online. Customers upload a file, set their exact print options, and pay in one flow, while the shop receives a clean, structured order with nothing left to clarify.',
-    performanceMetric:
-      'Upload to paid order in a single flow | Print options captured up front, no back-and-forth | Live order status for every job',
-  },
-  {
-    projectId: 5,
-    projectName: 'Savoury',
-    description:
-      'A recipe-sharing platform built with the Next.js App Router and PostgreSQL. Users discover, post, and save recipes, and build a profile around what they cook.',
-    stacks: [
-      { name: 'Next.js', icon: '/programming-icons-svg/nextjs-original.svg' },
-      { name: 'TypeScript', icon: '/programming-icons-svg/typescript.svg' },
-      { name: 'React', icon: '/programming-icons-svg/react.svg' },
-      {
-        name: 'Tailwind CSS',
-        icon: '/programming-icons-svg/tailwindcss-original.svg',
-      },
-      { name: 'PostgreSQL', icon: '/programming-icons-svg/postgresql.svg' },
-    ],
-    image: '/projects/savoury.png',
-    githubLink: 'https://github.com/GioMjds/Savoury',
-    status: 'finished',
-    features: [
-      'Recipe discovery with search across the full catalog',
-      'Post and edit your own recipes',
-      'Save favorite recipes to revisit later',
-      "Public user profiles showing a cook's recipes",
-      'Profile editing and account management',
-    ],
-    problemStatement:
-      'Good home recipes are buried in social media posts and screenshots that are impossible to search or save. Home cooks have no single place to publish their own dishes and build a following around them.',
-    solutionStatement:
-      "Savoury gives recipes a proper home: structured posts that are searchable, savable, and attached to a cook's profile. Server-rendered pages with the App Router keep browsing fast, and indexed PostgreSQL queries keep search responsive as the catalog grows.",
-    performanceMetric:
-      'Search over 10,000 seeded recipes | Indexed PostgreSQL queries averaging 42ms locally | Server-rendered pages',
-  },
-  {
-    projectId: 6,
-    projectName: 'Commitly',
-    description:
-      'A React Native habit tracker for developers that combines manual daily check-ins with automatic GitHub commit data, so streaks reflect all the work you do, not just what lands on GitHub.',
-    stacks: [
-      { name: 'React Native', icon: '/programming-icons-svg/react.svg' },
-      { name: 'Firebase', icon: '/programming-icons-svg/firebase.svg' },
-      { name: 'Zustand', icon: '/programming-icons-svg/zustand-original.svg' },
-      {
-        name: 'GitHub API',
-        icon: '/programming-icons-svg/github-original.svg',
-      },
-    ],
-    image: '/projects/commitly.jpg',
-    githubLink: 'https://github.com/GioMjds/Commitly',
-    status: 'finished',
-    features: [
-      'Secure sign-in with Firebase Authentication',
-      'Manual commit entries for work that never reaches GitHub',
-      'Calendar view with streak tracking and activity stats',
-      'Motivational coaching messages tied to your progress',
-      '"Call It a Day" check-in to close out a session and protect your streak',
-      'Preference settings for reminders and tracking',
-    ],
-    problemStatement:
-      "GitHub's contribution graph only counts pushes, so a day of debugging, studying, or reviewing code looks like a day off. Developers lose streaks and motivation even when they worked, and nothing nudges them back.",
-    solutionStatement:
-      'Commitly merges two sources of truth: automatic GitHub commit data and manual entries for everything else. One calendar, one streak, and coaching prompts that keep the habit going on days the graph would stay empty.',
-    performanceMetric:
-      'Streaks combine GitHub and manual activity | Instant local state with Zustand | Firebase sync across sessions',
-  },
-  {
     projectId: 7,
     projectName: 'PrintBit',
     description:
@@ -239,15 +93,108 @@ export const projects: Projects[] = [
       },
     ],
     image: '/projects/printbit.png',
+    screenshots: [
+      {
+        src: '/projects/printbit/13.png',
+        caption: 'Attract screen',
+        alt: 'PrintBit idle screen reading "Print, copy, and scan. All you need is coins and your phone." with a tap-anywhere-to-start prompt.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/1.png',
+        caption: 'Choose a service',
+        alt: 'Service selection screen with Print, Copy, and Scan cards, the accepted coins (1, 5, 10, and 20 pesos), a clock, and language, Wi-Fi help, report issue, and feedback buttons.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/2.png',
+        caption: 'Join the kiosk Wi-Fi',
+        alt: 'Modal with a Wi-Fi QR code and three steps to connect a phone to the PrintBit network, plus a warning to turn off mobile data.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/3.png',
+        caption: 'Upload by QR code',
+        alt: 'Upload screen showing a session QR code, one-phone-per-session and 10-page print limit notes, and an empty received-files panel waiting for a phone upload.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/3.1.jpg',
+        caption: 'Phone upload page',
+        alt: 'Phone browser on the kiosk upload page, connected to the kiosk, accepting PDF, Word, and image files up to 25 MB each.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/printbit/3.2.jpg',
+        caption: 'File sent to kiosk',
+        alt: 'Phone upload page confirming "Files Received at Kiosk!" for a PDF, with a note that the 25-page document exceeds the 10-page session limit.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/printbit/4.png',
+        caption: 'Configure the print',
+        alt: 'Configure screen with a live document preview, color mode, print quality, ink coverage check, orientation, rotation, paper size, and page range options, priced at 30 pesos.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/5.png',
+        caption: 'Coin payment in progress',
+        alt: 'Confirm and pay screen with 20 of 30 pesos inserted and a prompt to insert 10 more pesos.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/6.png',
+        caption: 'Paid with change due',
+        alt: 'Confirm and pay screen with 40 pesos inserted for a 30 peso job, showing 10 pesos change and an enabled Confirm and Print button.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/7.png',
+        caption: 'Paper tray check',
+        alt: 'Step 1 of 2 dialog asking the user to check that short bond paper is loaded, with guidance for out-of-paper and paper jam cases.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/8.png',
+        caption: 'Final review',
+        alt: 'Step 2 of 2 summary of the print job with total cost 30 pesos, total paid 40 pesos, and change of 10 pesos.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/9.png',
+        caption: 'Printing and dispensing change',
+        alt: 'Print in progress screen with a printer illustration, a pages-printed counter, and a message that coin change is being dispensed.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/10.png',
+        caption: 'Photocopy a document',
+        alt: 'Copy screen with a document selected, A4, short, and long bond paper sizes, and a Check Document button.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/11.png',
+        caption: 'Photocopy an ID card',
+        alt: 'Copy screen in ID card mode, guiding the user to scan the front side and then the back side.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/printbit/12.png',
+        caption: 'Scan to soft copy',
+        alt: 'Scan screen with paper size and PDF, JPG, or PNG output options, scanning steps, and a note that a 5 peso soft copy fee gives a download QR code.',
+        device: 'desktop',
+      },
+    ],
     githubLink: 'https://github.com/GioMjds/printbit',
     status: 'finished',
     features: [
-      'Wireless upload from any phone, with no cables or USB drives',
-      'Three services in one kiosk: print, photocopy, and convert to a soft copy',
-      'Coin payment with automatic change dispensing',
-      'Touchscreen interface built for first-time users',
+      'Wireless upload from any phone over the kiosk Wi-Fi, with no cables or USB drives',
+      'Three services in one kiosk: print, photocopy (documents and both sides of ID cards), and scan to PDF, JPG, or PNG',
+      'Coin payment with live balance tracking and automatic change dispensing',
+      'Per-page color detection, so grayscale and color pages are priced separately',
+      'Touchscreen interface built for first-time users, with guided steps and help at every screen',
       'Live print job monitoring from submission to completion',
-      'Secure handling with uploaded files removed after the job',
+      'Secure handling: one phone per session, and uploaded files are wiped after printing',
     ],
     problemStatement:
       'Campus print shops mean long queues, staff-dependent hours, and students passing documents around on shared USB drives. Cash-only service and manual handling slow everyone down and leave private files exposed.',
@@ -267,14 +214,71 @@ export const projects: Projects[] = [
       { name: 'SQLite', icon: '/programming-icons-svg/sqlite-original.svg' },
     ],
     image: '/projects/sarisari.png',
+    screenshots: [
+      {
+        src: '/projects/sarisari/1.jpg',
+        caption: 'Store dashboard',
+        alt: "SariSari home screen with today's sales, a New Sale button, quick actions, profit, expenses, low stock, and overdue utang tiles.",
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/2.jpg',
+        caption: 'Ring up a sale',
+        alt: "Sell screen with today's sales total, product search, a fast lane of +1, +2, and +5 buttons, and products showing stock levels and prices.",
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/3.jpg',
+        caption: 'Review order',
+        alt: 'Review order sheet with Cash or Utang payment, a suki selector, item quantities, a Park button, and a slide-to-confirm control.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/4.jpg',
+        caption: 'Sale recorded',
+        alt: 'Receipt confirmation with the SariSari jar mascot celebrating and the total, item count, and payment method.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/5.jpg',
+        caption: 'Digital resibo',
+        alt: 'Official resibo marked Paid in Full and Cash, with date, reference number, itemised list, and Void Sale, Refund, and Edit Price actions.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/6.jpg',
+        caption: 'Inventory',
+        alt: 'Inventory screen with Products, Movements, Stocktake, and Restock tabs, listing products with prices and Newly Added or Low Stock badges.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/7.jpg',
+        caption: 'Suki and utang list',
+        alt: 'Customers screen with total utang to collect, filters for with utang and paid up, and each suki with their balance.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/8.jpg',
+        caption: 'Utang to collect',
+        alt: 'To collect tab listing the longest outstanding balances, with follow-up dates and Mark Contacted and Record Payment buttons.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/9.jpg',
+        caption: 'Record a payment',
+        alt: 'Record payment screen with amount chips, Pay Full and Pay Half buttons, an oldest-first allocation receipt, and cash, bank, or other payment methods.',
+        device: 'mobile',
+      },
+    ],
     githubLink: 'https://github.com/GioMjds/SariSari',
     status: 'pending',
     features: [
       'Works fully offline, since all data lives on the device',
-      'Inventory tracking with stock levels per product',
-      'Quick sales recording with daily and period reports',
-      'Utang (customer credit) ledger with balances and payment history',
-      'Simple, touch-friendly interface for busy store counters',
+      'Fast checkout with a fast lane of +1, +2, and +5 buttons for best-selling items',
+      'Cash or utang at checkout, with a digital resibo that supports void, refund, and price edits',
+      'Utang (customer credit) ledger with follow-up reminders and payments applied to the oldest balance first',
+      'Inventory with stock movements, stocktake, restock, and low-stock alerts',
+      'Daily dashboard for sales, profit, expenses, low stock, and overdue utang',
       'Data export and backup so records are never lost with the phone',
     ],
     problemStatement:
@@ -283,5 +287,120 @@ export const projects: Projects[] = [
       "SariSari runs entirely on the owner's phone with local SQLite storage, so it works with no signal and no subscription. Inventory, sales, and utang are tracked in one place, with export and backup as a safety net.",
     performanceMetric:
       'Fully functional with zero connectivity | Local SQLite queries under 100ms | Built for low-end Android phones',
+  },
+  {
+    projectId: 9,
+    projectName: 'CVTEC EDMS',
+    description:
+      'An engineering document management system for a Dubai engineering consultancy, built with Next.js and Supabase. It tracks authority NOCs, submittal reviews and approvals, project teams, and contract value in one role-based workspace.',
+    stacks: [
+      { name: 'Next.js', icon: '/programming-icons-svg/nextjs-original.svg' },
+      { name: 'TypeScript', icon: '/programming-icons-svg/typescript.svg' },
+      { name: 'Supabase', icon: '/programming-icons-svg/supabase-original.svg' },
+      { name: 'PostgreSQL', icon: '/programming-icons-svg/postgresql.svg' },
+      {
+        name: 'Tailwind CSS',
+        icon: '/programming-icons-svg/tailwindcss-original.svg',
+      },
+      { name: 'TanStack Query', icon: '/programming-icons-svg/tanstack-query.png' },
+    ],
+    image: '/projects/cvtec-edms/2.png',
+    screenshots: [
+      {
+        src: '/projects/cvtec-edms/1.png',
+        caption: 'Sign in',
+        alt: 'CVTEC EDMS sign-in page with a summary of authority NOC tracking, controlled review and approval, and role-based access.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/2.png',
+        caption: 'Executive dashboard',
+        alt: 'Executive Command Deck with active projects, pending delays, 14-day expiries, authority clearance, and a financial portfolio table of contract sums per project.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/3.png',
+        caption: 'Projects directory',
+        alt: 'Projects directory with lifecycle stage counts, search and filters, and project cards listing contract values and assigned roles and personnel.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/4.png',
+        caption: 'Register a project',
+        alt: 'Step 1 of 2 register project dialog with project code, master authority, initial stage, client, contractor, and notification email fields.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/5.png',
+        caption: 'Assign the project team',
+        alt: 'Step 2 of 2 register project dialog assigning oversight roles and discipline leads, with a searchable staff picker.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/6.png',
+        caption: 'Project NOC tracker',
+        alt: 'NOC tracker for one project showing the team, lifecycle stages with a gate checklist, discipline coordination status, and a table of authority NOCs with plan and expiry dates.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/7.png',
+        caption: 'Discipline coordination',
+        alt: 'Side panel with discipline progress for architecture, structure, and MEP, authority stages, and specialist studies.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/8.png',
+        caption: 'Update discipline status',
+        alt: 'Dialog to update the architecture engineering stage and add remarks or transmittal notes.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/9.png',
+        caption: 'NOC detail',
+        alt: 'NOC detail panel with submit and record decision actions, approved submittals bundle, authority reference, payment fee, and a requirements checklist.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/10.png',
+        caption: 'NOC matrix blueprints',
+        alt: 'Authority NOC matrix showing a building permit blueprint with default validity, baseline fee, dependencies, and a mandatory statutory requirements checklist.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/11.png',
+        caption: 'Add a NOC blueprint',
+        alt: 'Add standard NOC blueprint form with reviewing authority, project stage, prerequisite sequence, fee, validity, requirements, a required reason for the change, and automatic propagation to active projects.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/12.png',
+        caption: 'Master authorities',
+        alt: 'Authorities admin page listing master authorities with linked project and matrix item counts.',
+        device: 'desktop',
+      },
+      {
+        src: '/projects/cvtec-edms/13.png',
+        caption: 'Reviewing authorities',
+        alt: 'Reviewing authorities tab listing statutory agencies with their matrix template and project NOC counts.',
+        device: 'desktop',
+      },
+    ],
+    githubLink: 'https://github.com/GioMjds/Engineer-Document-Management-System',
+    status: 'in-development',
+    features: [
+      'Authority NOC tracker per project, grouped by design, construction, information, and handover stages',
+      'NOC matrix blueprints with statutory checklists, fees, validity periods, and prerequisite sequences per jurisdiction',
+      'Blueprint changes require a logged reason and update unobtained NOCs across active projects',
+      'Controlled review and approval, with Resident Engineer and Area Manager sign-off and full history',
+      'Two-step project registration that assigns oversight roles and discipline leads',
+      'Executive dashboard for contract portfolio totals, delayed submittals, and NOC expiry alerts',
+      'Role- and assignment-based access, so people only see the projects and files they are assigned to',
+    ],
+    problemStatement:
+      'Engineering consultancies juggle many authority NOCs per project, each with its own reviewing body, prerequisites, fees, and expiry date. Tracked in shared folder trees and Excel masterlogs, renewals get missed, document versions blur, and there is no reliable record of who approved what.',
+    solutionStatement:
+      'CVTEC EDMS puts projects, teams, NOC registers, and document reviews in one workspace. Standard NOC blueprints per jurisdiction seed each project, and access is filtered by role and project assignment, so contract values stay with leadership while engineers see only their own work.',
+    performanceMetric:
+      'Access scoped by role and project assignment | Logged reason on every blueprint change | Expiry alerts before NOCs lapse',
   },
 ];

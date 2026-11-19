@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ExternalLink, Filter } from 'lucide-react';
+import { ExternalLink, Filter, Images } from 'lucide-react';
 import {
   cardVariants,
   containerVariants,
@@ -91,6 +91,17 @@ export function Projects({ activeFilter }: ProjectsProps) {
 
                 {/* Gradient overlay on hover */}
                 <div className="absolute inset-0 bg-linear-to-t from-background via-background/50 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+                {project.screenshots && project.screenshots.length > 0 && (
+                  <Link
+                    href={`/projects/${project.projectId}#project-gallery-heading`}
+                    className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full border border-border/60 bg-background/85 px-3 py-1.5 text-xs font-semibold text-foreground backdrop-blur-xl transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={`View ${project.screenshots.length} screenshots of ${project.projectName}`}
+                  >
+                    <Images className="size-3.5" aria-hidden="true" />
+                    {project.screenshots.length} screens
+                  </Link>
+                )}
               </div>
 
               {/* Content */}

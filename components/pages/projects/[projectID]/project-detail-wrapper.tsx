@@ -2,10 +2,15 @@
 
 import { motion } from 'motion/react';
 import { Separator } from '@/components/ui/separator';
-import { pageVariants, staggerContainerVariantsProject } from '@/utils';
+import {
+  itemVariants,
+  pageVariants,
+  staggerContainerVariantsProject,
+} from '@/utils';
 import {
   Header,
   MainContent,
+  ProjectGallery,
   RelatedProjects,
 } from '@/components/pages/projects/[projectID]';
 import type { Projects } from '@/constants';
@@ -31,6 +36,15 @@ export function ProjectDetailWrapper({
         <Header project={project} />
 
         <Separator className="mb-12" />
+
+        {project.screenshots && project.screenshots.length > 0 && (
+          <motion.div variants={itemVariants}>
+            <ProjectGallery
+              projectName={project.projectName}
+              screenshots={project.screenshots}
+            />
+          </motion.div>
+        )}
 
         <motion.div variants={staggerContainerVariantsProject}>
           <MainContent project={project} />

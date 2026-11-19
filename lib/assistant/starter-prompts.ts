@@ -10,7 +10,7 @@ export function getStarterPrompts(pathname: string): string[] {
     return [
       'Which project best shows full-stack experience?',
       'What technologies were used across the projects?',
-      'Can you summarize the Commitly project?',
+      'Can you summarize the PrintBit project?',
     ];
   }
 
