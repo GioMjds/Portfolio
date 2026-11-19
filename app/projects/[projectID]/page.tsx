@@ -41,6 +41,7 @@ export async function generateMetadata({
     description: project.description,
     pathname: `/projects/${project.projectId}`,
     type: 'article',
+    image: project.image,
   });
 }
 
@@ -76,6 +77,12 @@ export default async function ProjectDetailPage({
       url: createAbsoluteUrl('/projects'),
     },
     keywords: project.stacks.map((stack) => stack.name),
+    image: [
+      ...new Set([
+        project.image,
+        ...(project.screenshots ?? []).map((shot) => shot.src),
+      ]),
+    ].map((src) => createAbsoluteUrl(src)),
   };
 
   return (

@@ -21,6 +21,7 @@ export default function ProjectsPage() {
       url: createAbsoluteUrl(`/projects/${project.projectId}`),
       name: project.projectName,
       description: project.description,
+      image: createAbsoluteUrl(project.image),
     })),
   };
 

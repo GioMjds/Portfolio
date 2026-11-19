@@ -5,6 +5,14 @@ export interface Service {
 	delivers: string[];
 }
 
+/** Engineering approach shown beside the services list on the About page. */
+export const servicePrinciples = [
+  'Plan the whole product before building it, so every part fits together and a small change does not mean starting over',
+  'Keep things simple: choose the straightforward solution that works today and leaves room to grow',
+  'Organize the data and logic clearly, so adding a new feature does not break what already works',
+  'Write code that someone else can pick up and keep improving, with checks on the parts that matter most',
+];
+
 export const services: Service[] = [
   {
     title: 'Full-Stack Web Development',

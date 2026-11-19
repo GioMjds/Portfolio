@@ -12,6 +12,8 @@ interface CreatePageMetadataOptions {
   description: string;
   pathname: `/${string}` | '/';
   type?: 'website' | 'article';
+  /** Site-relative social preview image, e.g. a project cover. */
+  image?: `/${string}`;
 }
 
 export function createAbsoluteUrl(pathname: `/${string}` | '/'): string {
@@ -23,8 +25,10 @@ export function createPageMetadata({
   description,
   pathname,
   type = 'website',
+  image,
 }: CreatePageMetadataOptions): Metadata {
   const absoluteUrl = createAbsoluteUrl(pathname);
+  const images = image ? [createAbsoluteUrl(image)] : undefined;
 
   return {
     title,
@@ -39,11 +43,13 @@ export function createPageMetadata({
       description,
       siteName: SITE_NAME,
       locale: SITE_LOCALE,
+      images,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images,
     },
   };
 }
