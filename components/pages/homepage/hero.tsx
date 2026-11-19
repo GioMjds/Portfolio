@@ -1,19 +1,14 @@
 'use client';
 
+import { useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { motion, useReducedMotion } from 'motion/react';
-import {
-  fadeInUpVariants,
-  heroVariants,
-  scaleInVariants,
-  staggerContainerVariants,
-} from '@/utils/variants';
-import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Download, ExternalLink } from 'lucide-react';
 import { HeroAskBar } from './hero-ask-bar';
 import { Spotlight } from '@/components/ui/spotlight';
+import { Marquee } from '@/components/motion/marquee';
+import { gsap, GSAP_EASE, MEDIA, SplitText, useGSAP } from '@/lib/gsap';
 
 const techStack = [
   'TypeScript',
@@ -30,23 +25,66 @@ const techStack = [
 ];
 
 export function Hero() {
-  const shouldReduceMotion = useReducedMotion();
+  const scope = useRef<HTMLElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const transformOpacityStyle = useMemo(
-    () => ({ willChange: 'transform, opacity' }),
-    [],
+  // Intro timeline: badge → masked word reveal of the headline → copy, ask
+  // bar, CTAs and stack row. Reduced motion skips it; the CSS in globals.css
+  // only hides [data-intro-item] when motion is allowed.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add(MEDIA.motionOK, () => {
+        const heading = headingRef.current;
+        if (!heading) return;
+        const q = gsap.utils.selector(scope);
+        const badge = q('[data-intro="badge"]');
+        const rest = q('[data-intro="rest"]');
+
+        const split = SplitText.create(heading, {
+          type: 'words',
+          mask: 'words',
+          aria: 'auto',
+        });
+
+        const tl = gsap.timeline({
+          defaults: { ease: GSAP_EASE, duration: 1 },
+          // Restore the original markup: no lingering masks clipping
+          // descenders, and screen readers get the plain heading.
+          onComplete: () => split.revert(),
+        });
+
+        tl.fromTo(badge, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0 })
+          .set(heading, { autoAlpha: 1 }, 0.1)
+          .from(
+            split.words,
+            { yPercent: 110, duration: 1.1, stagger: 0.07 },
+            0.1,
+          )
+          .fromTo(
+            rest,
+            { autoAlpha: 0, y: 16 },
+            { autoAlpha: 1, y: 0, stagger: 0.1 },
+            0.55,
+          );
+
+        return () => split.revert();
+      });
+    },
+    { scope },
   );
 
   return (
-    <section className="relative overflow-hidden px-4 pb-8 pt-24 sm:pb-24 sm:pt-16">
+    <section
+      ref={scope}
+      className="relative overflow-hidden px-4 pb-8 pt-24 sm:pb-24 sm:pt-16"
+    >
       <Spotlight />
       <div className="relative mx-auto max-w-5xl">
         {/* Status Badge */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={heroVariants}
-          style={transformOpacityStyle}
+        <div
+          data-intro-item
+          data-intro="badge"
           className="mb-6 flex justify-center"
         >
           <Badge
@@ -59,47 +97,41 @@ export function Hero() {
             </span>
             Open to freelance and full-time work
           </Badge>
-        </motion.div>
+        </div>
 
         {/* Main Heading */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainerVariants}
-          className="text-center"
-        >
-          <motion.h1
-            variants={fadeInUpVariants}
-            style={transformOpacityStyle}
+        <div className="text-center">
+          <h1
+            ref={headingRef}
+            data-intro-item
             className="font-heading text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
           >
             <span className="block">One developer.</span>
-            <span className="mt-2 block bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent pb-2">
+            <span className="mt-2 block pb-2 text-muted-foreground">
               Whole product.
             </span>
-          </motion.h1>
-          <motion.p
-            variants={fadeInUpVariants}
-            style={transformOpacityStyle}
+          </h1>
+          <p
+            data-intro-item
+            data-intro="rest"
             className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground sm:text-xl"
           >
             I&apos;m{' '}
             <span className="font-semibold text-foreground">Gio Majadas</span>.
             I design, build, and deploy full-stack web, mobile, and AI products
             on my own, from database to interface.
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
         {/* Ask my portfolio */}
-        <HeroAskBar />
+        <div data-intro-item data-intro="rest">
+          <HeroAskBar />
+        </div>
 
         {/* CTA Buttons */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={heroVariants}
-          style={transformOpacityStyle}
-          transition={{ delay: shouldReduceMotion ? 0 : 0.4 }}
+        <div
+          data-intro-item
+          data-intro="rest"
           className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
           <Button
@@ -124,40 +156,43 @@ export function Hero() {
               Download Resume
             </a>
           </Button>
-        </motion.div>
+        </div>
 
         {/* Tech Stack Pills */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainerVariants}
-          transition={{ delay: shouldReduceMotion ? 0 : 0.6 }}
-          className="mt-12"
-        >
-          <motion.p
-            variants={fadeInUpVariants}
-            className="mb-4 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground"
-          >
+        <div data-intro-item data-intro="rest" className="mt-12">
+          <p className="mb-4 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground">
             What I ship with
-          </motion.p>
-          <motion.div
-            variants={staggerContainerVariants}
-            className="flex flex-wrap justify-center gap-2"
-            initial={false}
+          </p>
+          {/* Scrolling strip; reduced motion gets the static wrapped list. */}
+          <Marquee
+            speed={35}
+            gap="0.5rem"
+            className="mx-auto max-w-3xl motion-reduce:hidden"
           >
             {techStack.map((tech) => (
-              <motion.div key={tech} variants={scaleInVariants}>
-                <Badge
-                  variant="outline"
-                  className="border-border/70 bg-background px-3 py-1 text-sm text-foreground transition-colors duration-200 hover:bg-secondary"
-                >
-                  {tech}
-                </Badge>
-              </motion.div>
+              <TechBadge key={tech} tech={tech} />
             ))}
-          </motion.div>
-        </motion.div>
+          </Marquee>
+          <ul className="hidden flex-wrap justify-center gap-2 motion-reduce:flex">
+            {techStack.map((tech) => (
+              <li key={tech}>
+                <TechBadge tech={tech} />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
+  );
+}
+
+function TechBadge({ tech }: { tech: string }) {
+  return (
+    <Badge
+      variant="outline"
+      className="border-border/70 bg-background px-3 py-1 text-sm text-foreground transition-colors duration-200 hover:bg-secondary"
+    >
+      {tech}
+    </Badge>
   );
 }

@@ -33,7 +33,7 @@ export function ContactPageShell() {
             <motion.div className="space-y-4" variants={itemVariants}>
               <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl">
                 Let&apos;s work on your next
-                <span className="block bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent pb-1">
+                <span className="block pb-1 text-muted-foreground">
                   web experience.
                 </span>
               </h1>
@@ -83,7 +83,7 @@ export function ContactPageShell() {
             >
               Prefer email directly?{' '}
               <Link
-                className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline"
+                className="inline-flex items-center gap-1 text-brand underline-offset-4 hover:underline"
                 href="mailto:giomjds@gmail.com"
               >
                 <Mail className="size-4" />

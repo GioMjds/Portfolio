@@ -19,7 +19,7 @@ export function CallToAction() {
           viewport={{ once: true }}
           variants={fadeInUpVariants}
         >
-          <Card className="relative overflow-hidden border-primary/20 bg-linear-to-br from-primary/5 via-card to-card">
+          <Card className="relative overflow-hidden border-border bg-card">
             <CardContent className="flex flex-col items-center gap-6 p-8 text-center sm:p-12">
               <Badge variant="secondary" className="gap-1">
                 <Heart className="size-3" />

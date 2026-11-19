@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 export function CallToAction() {
   return (
     <section>
-      <Card className="border-primary/20 bg-linear-to-br from-primary/5 via-card to-card">
+      <Card className="border-border bg-card">
         <CardContent className="flex flex-col items-center gap-5 p-8 text-center sm:p-12">
           <h2 className="font-heading text-2xl font-semibold sm:text-3xl">
             Want to see these skills in action?

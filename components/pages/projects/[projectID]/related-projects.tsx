@@ -61,7 +61,7 @@ export function RelatedProjects({
                             className={`size-3 ${statusConfig[relatedProject.status].color}`}
                           />
                           <span
-                            className={`text-xs font-semibold ${statusConfig[relatedProject.status].color}`}
+                            className="text-xs font-semibold text-foreground"
                           >
                             {statusConfig[relatedProject.status].label}
                           </span>

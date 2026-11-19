@@ -25,7 +25,7 @@ export function Header() {
 
       <h1 className="mb-6 font-heading text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl">
         <span className="block">Showcase</span>
-        <span className="bg-linear-to-r from-primary via-purple-500 to-blue-500 bg-clip-text text-transparent">
+        <span className="block text-muted-foreground">
           Projects
         </span>
       </h1>

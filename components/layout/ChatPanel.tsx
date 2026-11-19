@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Spinner } from '@/components/ui/spinner';
+import { ThinkingShimmer } from '@/components/agents/loading-states/thinking-shimmer';
 import { Textarea } from '@/components/ui/textarea';
 import {
   scaleInVariants,
@@ -240,7 +241,7 @@ const CHAT_MARKDOWN_COMPONENTS: Components = {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-primary underline underline-offset-2 hover:opacity-80 transition-opacity"
+      className="text-brand underline underline-offset-2 hover:opacity-80 transition-opacity"
     >
       {children}
     </a>
@@ -776,7 +777,7 @@ export function ChatPanel() {
                 <CardHeader className="shrink-0 border-b py-4">
                   <CardTitle className="flex items-center justify-between gap-2 text-sm">
                     <span className="inline-flex items-center gap-2">
-                      <Sparkles className="size-4 text-primary" />
+                      <Sparkles className="size-4 text-brand" />
                       Portfolio AI Assistant
                     </span>
                     <div className="flex items-center gap-2">
@@ -861,7 +862,7 @@ export function ChatPanel() {
                           >
                             <div className="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
                               <Spinner className="size-3.5" />
-                              Thinking...
+                              <ThinkingShimmer>Thinking...</ThinkingShimmer>
                             </div>
                           </motion.div>
                         ) : null}

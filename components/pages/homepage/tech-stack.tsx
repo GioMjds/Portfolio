@@ -21,6 +21,7 @@ import { skills, skillCategories, type Skill } from '@/constants/about';
 import type { SkillProject } from '@/lib/skill-projects';
 import { cn } from '@/lib/utils';
 import { fadeInUpVariants, staggerContainerVariants } from '@/utils/variants';
+import { RevealHeading } from '@/components/motion/reveal-heading';
 
 interface TechStackProps {
   /** Skill name -> projects that use it. Skills without projects are absent. */
@@ -84,9 +85,10 @@ export function TechStack({ skillProjects }: TechStackProps) {
             <Sparkles className="size-3" />
             Tech Stack
           </Badge>
-          <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            Technologies I Work With
-          </h2>
+          <RevealHeading
+            text="Technologies I Work With"
+            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
+          />
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
             A curated set of languages, frameworks, and tools I use to build
             modern, performant applications.

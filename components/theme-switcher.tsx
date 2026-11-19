@@ -1,68 +1,57 @@
-"use client";
+'use client';
 
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { Sun, Moon } from "lucide-react";
-import { Kbd } from "@/components/ui/kbd";
-import { Button } from "@/components/ui/button";
+import { useEffect } from 'react';
+import { Sun, Moon } from 'lucide-react';
+import { ActionSwapIcon } from '@/components/motion/action-swap';
+import { useThemeToggle } from '@/components/motion/theme-toggle';
+import { Kbd } from '@/components/ui/kbd';
+import { Button } from '@/components/ui/button';
 
+function isTyping() {
+  const el = document.activeElement as HTMLElement | null;
+  if (!el) return false;
+  return (
+    el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable
+  );
+}
+
+/**
+ * Theme toggle: click or press `D`. The theme repaints through a View
+ * Transition (beUI `useThemeToggle`); reduced motion and browsers without
+ * View Transitions switch instantly.
+ */
 export default function ThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState<boolean>(false);
+  const { isDark, mounted, toggle } = useThemeToggle({
+    variant: 'circle',
+    start: 'top-right',
+  });
 
   useEffect(() => {
-    const raf = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  useEffect(() => {
-    const isTyping = () => {
-      const el = document.activeElement as HTMLElement | null;
-      if (!el) return false;
-      const tag = el.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA") return true;
-      if (el.isContentEditable) return true;
-      return false;
-    };
-
     const onKeyDown = (e: KeyboardEvent) => {
       if (isTyping()) return;
       if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
-      if (e.key.toLowerCase() !== "d") return;
-
-      const current = resolvedTheme || theme;
-      const active =
-        current === "dark" ||
-        (current === "system" &&
-          typeof window !== "undefined" &&
-          window.matchMedia?.("(prefers-color-scheme: dark)").matches);
-
-      setTheme(active ? "light" : "dark");
+      if (e.key.toLowerCase() !== 'd') return;
+      toggle();
     };
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [resolvedTheme, theme, setTheme]);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [toggle]);
 
   if (!mounted) return null;
 
-  const current = resolvedTheme || theme;
-  const active =
-    current === "dark" ||
-    (current === "system" &&
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-color-scheme: dark)").matches);
-
   return (
     <Button
-      aria-label="Toggle theme"
+      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       variant="outline"
       size="default"
-      onClick={() => setTheme(active ? "light" : "dark")}
+      onClick={toggle}
       className="flex items-center gap-1 p-2 cursor-pointer bg-background hover:bg-accent rounded-md transition-colors"
     >
-      {active ? <Moon size={20} /> : <Sun size={20} />}
-      <Kbd className="transition-colors">D</Kbd>
+      <ActionSwapIcon value={isDark ? 'dark' : 'light'} animation="blur">
+        {isDark ? <Moon size={20} /> : <Sun size={20} />}
+      </ActionSwapIcon>
+      <Kbd className="hidden transition-colors sm:inline-flex">D</Kbd>
     </Button>
   );
 }

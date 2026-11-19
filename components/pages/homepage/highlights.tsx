@@ -6,6 +6,7 @@ import { Bot, Code2, Globe, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { fadeInUpVariants, staggerContainerVariants } from '@/utils/variants';
 import { Card, CardContent } from '@/components/ui/card';
+import { RevealHeading } from '@/components/motion/reveal-heading';
 
 const highlights = [
   {
@@ -48,9 +49,10 @@ export function Highlights() {
             <Sparkles className="size-3" />
             What I Do
           </Badge>
-          <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            Building Digital Excellence
-          </h2>
+          <RevealHeading
+            text="Building Digital Excellence"
+            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
+          />
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
             From concept to deployment, I bring technical expertise and creative
             problem-solving to every project.

@@ -329,6 +329,10 @@ export const journeyMilestones: JourneyMilestone[] = [
 
 export const positioningStatement = `I'm a solo full-stack developer. I take products from a blank repo to a deployed app, and I'm comfortable on every layer in between: interface, API, database, and sometimes the hardware.`;
 
+// Not shown on the About page (see aboutParagraph); still used by the
+// portfolio assistant's knowledge base in lib/assistant/knowledge.ts.
+export const technicalIdentity = `My day-to-day is TypeScript with React and Next.js. When a product needs more, I go down the stack with NestJS, Express, FastAPI, Django, or ASP.NET Core, and I model data in PostgreSQL and MySQL. I also build mobile apps with React Native and Expo, and I've written the C#, Node.js, and PowerShell that connect software to physical hardware. I pick the simplest stack that fits the problem.`;
+
 export const valueProposition = [
   'Take a product from idea to deployed without handing it off',
   'Design data models and APIs that stay simple as features grow',

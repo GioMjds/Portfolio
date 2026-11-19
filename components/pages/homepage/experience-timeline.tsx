@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { fadeInUpVariants, staggerContainerVariants } from '@/utils/variants';
 import { journeyMilestones } from '@/constants/about';
+import { RevealHeading } from '@/components/motion/reveal-heading';
 
 const iconMap = { Code2, Briefcase, GraduationCap } as const;
 
@@ -30,9 +31,10 @@ export function ExperienceTimeline() {
             <History className="size-3" />
             My Journey
           </Badge>
-          <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            Experience Timeline
-          </h2>
+          <RevealHeading
+            text="Experience Timeline"
+            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
+          />
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
             A timeline of key milestones in my development career — from
             academics to real-world projects.

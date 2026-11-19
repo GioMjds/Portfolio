@@ -7,6 +7,7 @@ import {
   Footer,
   ChatPanel,
   BirthdayTrigger,
+  ScrollProgress,
 } from '@/components/layout';
 import { cn } from '@/lib/utils';
 import {
@@ -78,8 +79,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fbfaf8' },
-    { media: '(prefers-color-scheme: dark)', color: '#05050d' },
+    { media: '(prefers-color-scheme: light)', color: '#fbfaf9' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b0a09' },
   ],
 };
 
@@ -119,8 +120,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="gradient-bg" aria-hidden="true" />
           <div className="noise-overlay" aria-hidden="true" />
+          <ScrollProgress />
           <BirthdayTrigger />
           <Navbar />
           <main id="main-content" className="flex-1">

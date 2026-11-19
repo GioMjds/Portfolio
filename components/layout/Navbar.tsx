@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
+import { SharedLayoutBg } from '@/components/motion/shared-layout-bg';
 import ThemeToggle from '@/components/theme-switcher';
 import { GITHUB_IMAGE, navItems } from '@/constants';
 import { Download } from 'lucide-react';
@@ -34,7 +35,7 @@ export function Navbar() {
               href="/"
               className="group flex items-center gap-2 transition-transform duration-200 hover:scale-105"
             >
-              <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md transition-all duration-200 group-hover:shadow-lg group-hover:shadow-primary/25">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-muted text-foreground shadow-md dark:bg-primary transition-all duration-200 group-hover:shadow-lg group-hover:shadow-primary/25">
                 <Image
                   src={GITHUB_IMAGE}
                   alt="GioMjds's GitHub image"
@@ -46,7 +47,7 @@ export function Navbar() {
                 />
               </div>
               <span className="hidden font-heading text-lg font-bold tracking-tight sm:block">
-                Gio<span className="text-primary">Mjds</span>
+                Gio<span className="text-brand">Mjds</span>
                 {isBirthdayToday() && (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -65,7 +66,13 @@ export function Navbar() {
             </Link>
 
             {/* Navigation Links */}
-            <ul className="flex items-center gap-1" role="list">
+            <SharedLayoutBg
+              as="ul"
+              role="list"
+              inset={0}
+              className="w-auto flex-row items-center gap-1"
+              pillClassName="rounded-md bg-muted"
+            >
               {navItems.map(({ href, label, icon: Icon }) => {
                 const isActive = pathname === href;
                 return (
@@ -77,9 +84,10 @@ export function Navbar() {
                           variant={isActive ? 'secondary' : 'ghost'}
                           size="sm"
                           className={cn(
-                            'relative transition-all duration-200',
+                            'relative transition-colors duration-200',
+                            !isActive && 'hover:bg-transparent dark:hover:bg-transparent',
                             isActive &&
-                              'bg-secondary/80 shadow-sm after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4 after:-translate-x-1/2 after:rounded-full after:bg-primary',
+                              'bg-secondary/80 shadow-sm after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4 after:-translate-x-1/2 after:rounded-full after:bg-brand',
                           )}
                         >
                           <Link
@@ -100,7 +108,7 @@ export function Navbar() {
                   </li>
                 );
               })}
-            </ul>
+            </SharedLayoutBg>
 
             {/* Theme Toggle & CV Download */}
             <div className="flex items-center gap-2">
