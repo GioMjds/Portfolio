@@ -3,11 +3,13 @@ import { Separator } from '@/components/ui/separator';
 import {
   CallToAction,
   Hero,
-  QuickFacts,
   Services,
   Skills,
   Timeline,
 } from '@/components/pages/about';
+import { skills } from '@/constants/about';
+import { getProjects } from '@/lib/projects-data';
+import { buildSkillProjects } from '@/lib/skill-projects';
 import { createPageMetadata } from '@/lib/site';
 
 export const metadata: Metadata = createPageMetadata({
@@ -17,17 +19,17 @@ export const metadata: Metadata = createPageMetadata({
   pathname: '/about',
 });
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const skillProjects = buildSkillProjects(skills, await getProjects());
+
   return (
     <section className="relative" aria-label="About page content">
       <Hero />
-      <Separator className="mx-auto max-w-2xl" />
-      <QuickFacts />
-      <Separator className="mx-auto max-w-2xl" />
-      <Skills />
-      <Separator className="mx-auto max-w-2xl" />
+      <Separator className="mx-auto max-w-5xl" />
+      <Skills skillProjects={skillProjects} />
+      <Separator className="mx-auto max-w-5xl" />
       <Services />
-      <Separator className="mx-auto max-w-2xl" />
+      <Separator className="mx-auto max-w-5xl" />
       <Timeline />
       <CallToAction />
     </section>
