@@ -123,6 +123,9 @@
   --sidebar-accent-foreground: oklch(0.21 0.004 80);
   --sidebar-border: oklch(0.9 0.004 80);
   --sidebar-ring: oklch(0.54 0.145 50);
+  /* Loading skeletons (react-loading-skeleton): block colour + shimmer sweep. */
+  --skeleton-base: var(--muted);
+  --skeleton-highlight: var(--card);
 }
 
 .dark {
@@ -159,6 +162,8 @@
   --sidebar-accent-foreground: oklch(0.97 0.002 80);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.78 0.14 65);
+  --skeleton-base: var(--muted);
+  --skeleton-highlight: color-mix(in oklch, var(--muted), var(--foreground) 8%);
 }
 
 @layer base {
@@ -191,24 +196,86 @@
 }
 
 /*
- * Homepage backdrop (components/pages/homepage/backdrop.tsx). Everything is
+ * Custom scrollbar. Ink-tinted pill floating in a transparent track, warming
+ * to --brand on hover/drag. Chromium and Safari use the ::-webkit-scrollbar
+ * pseudo-elements; Firefox gets the standard properties instead (Chromium
+ * ignores the pseudo-elements once those are set, hence the @supports).
+ */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 25%, transparent)
+      transparent;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 4px solid transparent;
+  border-radius: 9999px;
+  background-color: color-mix(in oklch, var(--foreground) 22%, transparent);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border-width: 3px;
+  background-color: color-mix(in oklch, var(--brand) 80%, transparent);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--brand);
+}
+
+/* Footer wordmark rises as it scrolls into view (CSS scroll-driven, no JS). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .footer-wordmark {
+      animation: footer-wordmark-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+@keyframes footer-wordmark-rise {
+  from {
+    opacity: 0;
+    transform: translateY(35%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * Site backdrop (components/layout/SiteBackdrop.tsx). Everything is
  * radial gradients and transforms: no filter blur, nothing that repaints per
  * frame, so it stays cheap during theme View Transitions. Colours mix from
  * tokens, so both themes follow automatically.
  */
-.home-backdrop {
+.site-backdrop {
   --glow-brand: color-mix(in oklch, var(--brand) 16%, transparent);
   --glow-ink: color-mix(in oklch, var(--foreground) 6%, transparent);
   --grid-line: color-mix(in oklch, var(--foreground) 5%, transparent);
 }
 
-.dark .home-backdrop {
+.dark .site-backdrop {
   --glow-brand: color-mix(in oklch, var(--brand) 11%, transparent);
   --glow-ink: color-mix(in oklch, var(--foreground) 5%, transparent);
   --grid-line: color-mix(in oklch, var(--foreground) 4%, transparent);
 }
 
-.home-backdrop__grid {
+.site-backdrop__grid {
   position: absolute;
   inset: 0;
   background-image:
@@ -218,13 +285,13 @@
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
 }
 
-.home-backdrop__blob {
+.site-backdrop__blob {
   position: absolute;
   border-radius: 9999px;
   will-change: transform;
 }
 
-.home-backdrop__blob--a {
+.site-backdrop__blob--a {
   top: -20vmax;
   left: 50%;
   width: 70vmax;
@@ -234,7 +301,7 @@
   animation: backdrop-drift-a 26s ease-in-out infinite alternate;
 }
 
-.home-backdrop__blob--b {
+.site-backdrop__blob--b {
   top: 35vh;
   left: -15vmax;
   width: 45vmax;
@@ -243,7 +310,7 @@
   animation: backdrop-drift-b 32s ease-in-out infinite alternate;
 }
 
-.home-backdrop__blob--c {
+.site-backdrop__blob--c {
   bottom: -15vmax;
   right: -10vmax;
   width: 50vmax;
@@ -252,8 +319,8 @@
   animation: backdrop-drift-a 38s ease-in-out infinite alternate-reverse;
 }
 
-/* Cursor spotlight: moved by transform only (see backdrop.tsx). */
-.home-backdrop__spot {
+/* Cursor spotlight: moved by transform only (see SiteBackdrop.tsx). */
+.site-backdrop__spot {
   position: absolute;
   top: -18rem;
   left: -18rem;
@@ -266,7 +333,7 @@
   will-change: transform;
 }
 
-.home-backdrop[data-pointer] .home-backdrop__spot {
+.site-backdrop[data-pointer] .site-backdrop__spot {
   opacity: 1;
 }
 
@@ -283,10 +350,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-backdrop__blob {
+  .site-backdrop__blob {
     animation: none;
   }
-  .home-backdrop__spot {
+  .site-backdrop__spot {
     display: none;
   }
 }

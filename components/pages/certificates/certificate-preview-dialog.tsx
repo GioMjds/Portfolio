@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { CATEGORY_META } from './category-meta';
 
 interface CertificatePreviewDialogProps {
   certificate: Certificate | null;
@@ -52,10 +53,9 @@ export function CertificatePreviewDialog({
         </div>
         <DialogHeader className="px-6 pb-6">
           <DialogTitle className="text-lg">{certificate.name}</DialogTitle>
-          <DialogDescription>
-            {certificate.issuer} • {certificate.year} •{' '}
-            {certificate.category.charAt(0).toUpperCase() +
-              certificate.category.slice(1)}
+          <DialogDescription className="font-mono text-xs uppercase tracking-[0.14em]">
+            {certificate.issuer} · {certificate.year} ·{' '}
+            {CATEGORY_META[certificate.category].label}
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

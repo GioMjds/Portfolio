@@ -5,6 +5,7 @@ import {
   FeaturedCertificates,
   Header,
 } from '@/components/pages/certificates';
+import { ChapterDivider } from '@/components/pages/homepage/chapter-divider';
 import { certificates } from '@/constants';
 import { createPageMetadata } from '@/lib/site';
 
@@ -17,10 +18,11 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function CertificatesPage() {
   return (
-    <section className="relative min-h-screen overflow-hidden" aria-label="Certificates page content">
-      <div className="mx-auto flex max-w-7xl flex-col gap-20 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+    <section className="relative" aria-label="Certificates page content">
+      <div className="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24 lg:px-8">
         <Header certificates={certificates} />
         <FeaturedCertificates certificates={certificates} />
+        <ChapterDivider />
         <CertificatesArchive certificates={certificates} />
         <CallToAction />
       </div>

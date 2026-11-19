@@ -1,6 +1,6 @@
 'use client';
 
-import { useOptimistic, useState, useTransition, type ReactNode } from 'react';
+import { useOptimistic, useState, useTransition } from 'react';
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { useForm, type UseFormSetError } from 'react-hook-form';
 import { motion, AnimatePresence } from 'motion/react';
@@ -12,13 +12,7 @@ import {
   type ContactFormValues,
 } from '@/lib/contact/schema';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import { Alert, AlertTitle } from '@/components/ui/alert';
 import {
   Field,
@@ -45,8 +39,9 @@ type ContactFieldName = 'name' | 'email' | 'subject' | 'message';
 interface ContactFieldConfig {
   name: ContactFieldName;
   label: string;
-  delay: number;
   placeholder: string;
+  /** Shares a row with the next half-width field from `sm` up. */
+  half?: boolean;
   description?: string;
   input?: {
     type?: string;
@@ -71,45 +66,31 @@ const defaultValues: ContactFormValues = {
   companyWebsite: '',
 };
 
-const fieldVariants = {
-  hidden: { opacity: 0, x: -10 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.3,
-      ease: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number],
-    },
-  },
-};
-
 const CONTACT_FIELDS = [
   {
     name: 'name',
     label: 'Name',
-    delay: 0.1,
     placeholder: 'Your name',
+    input: { autoComplete: 'name' },
+    half: true,
   },
   {
     name: 'email',
     label: 'Email',
-    delay: 0.2,
     placeholder: 'you@example.com',
     input: { type: 'email', inputMode: 'email', autoComplete: 'email' },
+    half: true,
   },
   {
     name: 'subject',
     label: 'Subject',
-    delay: 0.3,
     placeholder: 'Project inquiry',
   },
   {
     name: 'message',
     label: 'Message',
-    delay: 0.4,
     placeholder: 'Tell me about your project, timeline, and goals...',
-    description:
-      'Please include enough context so I can provide a meaningful reply.',
+    description: 'At least 20 characters. Context helps me give a useful reply.',
     textarea: { rows: 7 },
   },
 ] satisfies readonly ContactFieldConfig[];
@@ -136,25 +117,6 @@ function getErrorMessage(
 ): string {
   if (response.ok) return fallback;
   return response.message || fallback;
-}
-
-function AnimatedField({
-  delay,
-  children,
-}: {
-  delay: number;
-  children: ReactNode;
-}) {
-  return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={fieldVariants}
-      transition={{ delay }}
-    >
-      {children}
-    </motion.div>
-  );
 }
 
 function SubmissionAlert({ state }: { state: SubmissionState }) {
@@ -280,21 +242,33 @@ export function ContactForm() {
       : 'Send message';
 
   return (
-    <Card
-      className="border-border/70 bg-card/70 backdrop-blur"
+    <section
       aria-labelledby="contact-form-title"
+      className="overflow-hidden rounded-2xl border border-border/70 bg-card/80 shadow-2xl shadow-foreground/5 backdrop-blur-sm"
     >
-      <CardHeader className="space-y-2">
-        <CardTitle id="contact-form-title" className="font-heading text-2xl">
-          Send a message
-        </CardTitle>
-        <CardDescription>
-          Fill out the form and I&apos;ll get back to you as soon as possible.
-        </CardDescription>
-      </CardHeader>
+      <div className="flex items-center gap-2 border-b border-border/70 px-4 py-3">
+        <span aria-hidden="true" className="flex gap-1.5">
+          <span className="size-2.5 rounded-full bg-border" />
+          <span className="size-2.5 rounded-full bg-border" />
+          <span className="size-2.5 rounded-full bg-border" />
+        </span>
+        <span className="mx-auto font-mono text-xs text-muted-foreground">
+          new-message
+        </span>
+      </div>
 
-      <CardContent>
-        <form className="space-y-6" onSubmit={onSubmit} noValidate>
+      <div className="p-6 sm:p-8">
+        <h2
+          id="contact-form-title"
+          className="font-heading text-2xl font-bold tracking-tight"
+        >
+          Send a message
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Fill it out and I&apos;ll get back to you as soon as I can.
+        </p>
+
+        <form className="mt-8 space-y-6" onSubmit={onSubmit} noValidate>
           <input
             type="text"
             tabIndex={-1}
@@ -304,43 +278,47 @@ export function ContactForm() {
             {...register('companyWebsite')}
           />
 
-          <FieldGroup className="gap-5">
+          <FieldGroup className="grid gap-5 sm:grid-cols-2">
             {CONTACT_FIELDS.map((field) => {
               const id = `contact-${field.name}`;
               const error = errors[field.name];
               const invalid = Boolean(error);
 
               return (
-                <AnimatedField key={field.name} delay={field.delay}>
-                  <Field data-invalid={invalid}>
-                    <FieldLabel htmlFor={id}>{field.label}</FieldLabel>
-                    <FieldContent>
-                      {field.textarea ? (
-                        <Textarea
-                          id={id}
-                          rows={field.textarea.rows}
-                          placeholder={field.placeholder}
-                          aria-invalid={invalid}
-                          disabled={isSending}
-                          {...register(field.name)}
-                        />
-                      ) : (
-                        <Input
-                          {...field.input}
-                          id={id}
-                          placeholder={field.placeholder}
-                          aria-invalid={invalid}
-                          disabled={isSending}
-                          {...register(field.name)}
-                        />
-                      )}
-                      {field.description ? (
-                        <FieldDescription>{field.description}</FieldDescription>
-                      ) : null}
-                      <FieldError errors={[error]} />
-                    </FieldContent>
-                  </Field>
-                </AnimatedField>
+                <Field
+                  key={field.name}
+                  data-invalid={invalid}
+                  className={cn(!('half' in field && field.half) && 'sm:col-span-2')}
+                >
+                  <FieldLabel htmlFor={id}>{field.label}</FieldLabel>
+                  <FieldContent>
+                    {field.textarea ? (
+                      <Textarea
+                        id={id}
+                        rows={field.textarea.rows}
+                        placeholder={field.placeholder}
+                        aria-invalid={invalid}
+                        disabled={isSending}
+                        className="bg-background/60"
+                        {...register(field.name)}
+                      />
+                    ) : (
+                      <Input
+                        {...field.input}
+                        id={id}
+                        placeholder={field.placeholder}
+                        aria-invalid={invalid}
+                        disabled={isSending}
+                        className="h-11 bg-background/60"
+                        {...register(field.name)}
+                      />
+                    )}
+                    {'description' in field ? (
+                      <FieldDescription>{field.description}</FieldDescription>
+                    ) : null}
+                    <FieldError errors={[error]} />
+                  </FieldContent>
+                </Field>
               );
             })}
           </FieldGroup>
@@ -351,14 +329,10 @@ export function ContactForm() {
             ) : null}
           </AnimatePresence>
 
-          <motion.div
-            className="flex flex-col gap-2 sm:flex-row sm:items-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-          >
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Button
               type="submit"
+              size="lg"
               disabled={isSending}
               className="w-full gap-2 sm:w-auto"
             >
@@ -370,15 +344,16 @@ export function ContactForm() {
               <Button
                 type="button"
                 variant="outline"
+                size="lg"
                 onClick={resetSubmissionState}
                 className="w-full sm:w-auto"
               >
                 Send another
               </Button>
             ) : null}
-          </motion.div>
+          </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

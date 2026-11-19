@@ -3,7 +3,6 @@ import {
   CallToAction,
   ChapterDivider,
   Hero,
-  HomeBackdrop,
   Prologue,
   Highlights,
   TechStack,
@@ -49,7 +48,6 @@ export default async function Home() {
           __html: JSON.stringify(webSiteJsonLd).replace(/</g, '\\u003c'),
         }}
       />
-      <HomeBackdrop />
       <Hero />
       <Prologue />
       <ChapterDivider />

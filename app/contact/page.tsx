@@ -11,7 +11,8 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function ContactPage() {
   return (
-    <section className="relative min-h-screen overflow-hidden" aria-label="Contact page content">
+    // No overflow-hidden: it would break the sticky intro column.
+    <section className="relative min-h-screen" aria-label="Contact page content">
       <ContactPageShell />
     </section>
   );

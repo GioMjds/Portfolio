@@ -4,3 +4,4 @@ export * from './Navbar';
 export * from './BirthdayTrigger';
 export * from './ScrollProgress';
 export * from './NotFoundView';
+export * from './SiteBackdrop';

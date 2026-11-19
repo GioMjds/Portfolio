@@ -6,7 +6,6 @@ export * from './flagship-showcase';
 export * from './experience-timeline';
 export * from './github-stats';
 export * from './cta';
-export * from './backdrop';
 export * from './prologue';
 export * from './chapter-divider';
 export * from './section-intro';

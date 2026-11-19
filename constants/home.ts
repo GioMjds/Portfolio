@@ -37,7 +37,8 @@ export const projectStories = {
       "So SariSari lives entirely on the owner's phone, backed by local SQLite. No signal needed, no subscription. Inventory, sales, and utang sit in one place, with export and backup as the safety net.",
   },
   3: {
-    episode: 'The one that talks to coin slots, printer, and the physical kiosk itself',
+    episode:
+      'The one that talks to coin slots, printer, and the physical kiosk itself',
     logline: 'A printing kiosk machine that runs itself, paid via coins.',
     itch: 'Campus print shops mean long lines, hours that depend on staff, and USB drives passed from hand to hand. Cash-only, manual handling slows everyone down and leaves private files lying around.',
     build:
@@ -80,24 +81,31 @@ export const journeyCommits = [
   },
   {
     type: 'feat',
-    when: '2024',
+    when: '2023 - Present',
     title: 'Took on my first freelance clients',
     body: 'Real clients, real deadlines, real applications. Nobody grades on a curve out there.',
   },
   {
     type: 'build',
-    title: 'Shipped Azurea and PrintBit',
-    body: 'A full-stack hotel system with booking verification, and a coin-operated print kiosk with actual hardware on the other end of the serial port.',
+    when: '2024',
+    title: 'Shipped Azurea Hotel Management System',
+    body: "A full-stack hotel system with booking verification being shipped alongside with it's mobile app. The first project I built from scratch and deployed on my own.",
   },
   {
     type: 'feat',
-    when: '2024 – now',
+    when: '2025 - 2026',
     title: 'Going full-stack, solo',
-    body: "These days I take products from a blank repo to a deployed app on my own: schema, API, interface, and deploy. Right now that's SariSari and CVTEC EDMS.",
+    body: 'During free days, I take products from a blank repo to a deployed app on my own: schema, API, interface, and deploy.',
+  },
+  {
+    type: 'feat',
+    when: '2026 up to present',
+    title: 'Still going full-stack, but leaning towards software engineering',
+    body: 'Continuous study of software engineering principles, patterns, and practices. I want to be a better engineer, not just a better coder. I want to solve real things at the core of the problem, not just make them look right.',
   },
   {
     type: 'next',
-    when: 'Next',
+    when: "Now what's next for me?",
     title: 'Your project?',
     body: "I'm open to freelance and full-time work. If you've got a product that needs the whole stack handled, let's talk.",
   },

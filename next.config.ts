@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
         port: '',
       },
     ],
+    qualities: [50, 75, 100],
+  },
+  experimental: {
+    useOffline: true,
+    turbopackRustReactCompiler: true,
   },
 };
 

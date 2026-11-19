@@ -306,7 +306,7 @@ export interface JourneyMilestone {
 export const journeyMilestones: JourneyMilestone[] = [
   {
     year: '2024 - Present',
-    title: 'Full-Stack Developer',
+    title: 'Software Engineer',
     description:
       'Building web and mobile products on my own, from database schema to deployed interface, with React, Next.js, React Native, and NestJS.',
     iconName: 'Code2',
@@ -329,8 +329,6 @@ export const journeyMilestones: JourneyMilestone[] = [
 
 export const positioningStatement = `I'm an aspiring software engineer. I love solving problems with code, and I take products from idea to deployed app on my own. Transform problems into solutions. Ideas into working products. That's what I do, and I want to make a difference by showcasing my skills.`;
 
-// Not shown on the About page (see aboutParagraph); still used by the
-// portfolio assistant's knowledge base in lib/assistant/knowledge.ts.
 export const technicalIdentity = `My day-to-day is TypeScript with React and Next.js. When a product needs more, I go down the stack with NestJS, Express, FastAPI, Django, or ASP.NET Core, and I model data in PostgreSQL and MySQL. I also build mobile apps with React Native and Expo, and I've written the C#, Node.js, and PowerShell that connect software to physical hardware. I pick the simplest stack that fits the problem.`;
 
 export const valueProposition = [

@@ -27,9 +27,13 @@ const STATUS_LABEL: Record<ProjectStatus, string> = {
   archived: 'Archived',
 };
 
-const flagshipProjects = projects.filter(
-  (p) => p.problemStatement && projectStories[p.projectId],
-);
+// Widened lookup: `satisfies` keeps the literal keys, which a number can't index.
+const stories: Partial<Record<number, ProjectStory>> = projectStories;
+
+const flagshipChapters = projects.flatMap((project) => {
+  const story = stories[project.projectId];
+  return project.problemStatement && story ? [{ project, story }] : [];
+});
 
 export function FlagshipShowcase() {
   const scope = useRef<HTMLElement>(null);
@@ -72,11 +76,11 @@ export function FlagshipShowcase() {
         </SectionIntro>
 
         <ol className="space-y-24 sm:space-y-36">
-          {flagshipProjects.map((project, index) => (
+          {flagshipChapters.map(({ project, story }, index) => (
             <StoryChapter
               key={project.projectId}
               project={project}
-              story={projectStories[project.projectId]}
+              story={story}
               index={index}
             />
           ))}

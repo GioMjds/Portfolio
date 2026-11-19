@@ -5,11 +5,11 @@ import { useReducedMotion } from 'motion/react';
 import { useHoverCapable } from '@/lib/hooks/use-hover-capable';
 
 /**
- * Fixed, decorative homepage background: a masked grid, slow-drifting glows
+ * Fixed, decorative site-wide background: a masked grid, slow-drifting glows
  * (CSS keyframes in globals.css) and, on mouse devices, a soft spotlight that
  * follows the cursor. The spotlight moves by transform only, once per frame.
  */
-export function HomeBackdrop() {
+export function SiteBackdrop() {
   const rootRef = useRef<HTMLDivElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
   const canHover = useHoverCapable();
@@ -49,13 +49,13 @@ export function HomeBackdrop() {
     <div
       ref={rootRef}
       aria-hidden="true"
-      className="home-backdrop pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+      className="site-backdrop pointer-events-none fixed inset-0 -z-10 overflow-hidden"
     >
-      <div className="home-backdrop__grid" />
-      <div className="home-backdrop__blob home-backdrop__blob--a" />
-      <div className="home-backdrop__blob home-backdrop__blob--b" />
-      <div className="home-backdrop__blob home-backdrop__blob--c" />
-      <div ref={spotRef} className="home-backdrop__spot" />
+      <div className="site-backdrop__grid" />
+      <div className="site-backdrop__blob site-backdrop__blob--a" />
+      <div className="site-backdrop__blob site-backdrop__blob--b" />
+      <div className="site-backdrop__blob site-backdrop__blob--c" />
+      <div ref={spotRef} className="site-backdrop__spot" />
     </div>
   );
 }
