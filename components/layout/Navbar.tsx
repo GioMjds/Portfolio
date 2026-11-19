@@ -34,7 +34,7 @@ export function Navbar() {
               href="/"
               className="group flex items-center gap-2 transition-transform duration-200 hover:scale-105"
             >
-              <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md transition-all duration-200 group-hover:shadow-lg group-hover:shadow-primary/25">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-muted text-foreground shadow-md dark:bg-primary transition-all duration-200 group-hover:shadow-lg group-hover:shadow-primary/25">
                 <Image
                   src={GITHUB_IMAGE}
                   alt="GioMjds's GitHub image"
@@ -46,7 +46,7 @@ export function Navbar() {
                 />
               </div>
               <span className="hidden font-heading text-lg font-bold tracking-tight sm:block">
-                Gio<span className="text-primary">Mjds</span>
+                Gio<span className="text-brand">Mjds</span>
                 {isBirthdayToday() && (
                   <Tooltip>
                     <TooltipTrigger asChild>

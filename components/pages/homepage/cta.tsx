@@ -30,7 +30,7 @@ export function CallToAction() {
           variants={scaleInVariants}
           style={transformOpacityStyle}
         >
-          <Card className="relative overflow-hidden border-primary/20 bg-linear-to-br from-primary/5 via-card to-card">
+          <Card className="relative overflow-hidden border-border bg-card">
             <CardContent className="flex flex-col items-center gap-6 p-8 text-center sm:p-12">
               <Badge variant="secondary" className="gap-1">
                 <GitBranch className="size-3" />

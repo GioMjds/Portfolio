@@ -124,7 +124,7 @@ export function FlagshipShowcase() {
                         href={project.githubLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                        className="mt-4 inline-flex items-center gap-1 text-sm text-brand hover:underline"
                       >
                         View on GitHub
                         <ArrowUpRight className="size-3" />

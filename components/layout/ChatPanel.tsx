@@ -240,7 +240,7 @@ const CHAT_MARKDOWN_COMPONENTS: Components = {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-primary underline underline-offset-2 hover:opacity-80 transition-opacity"
+      className="text-brand underline underline-offset-2 hover:opacity-80 transition-opacity"
     >
       {children}
     </a>
@@ -776,7 +776,7 @@ export function ChatPanel() {
                 <CardHeader className="shrink-0 border-b py-4">
                   <CardTitle className="flex items-center justify-between gap-2 text-sm">
                     <span className="inline-flex items-center gap-2">
-                      <Sparkles className="size-4 text-primary" />
+                      <Sparkles className="size-4 text-brand" />
                       Portfolio AI Assistant
                     </span>
                     <div className="flex items-center gap-2">

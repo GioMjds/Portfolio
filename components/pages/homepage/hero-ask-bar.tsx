@@ -66,7 +66,7 @@ export function HeroAskBar() {
         </Label>
 
         <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-card/60 p-1.5 pl-4 shadow-lg shadow-primary/5 backdrop-blur transition-[border-color,box-shadow] focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
-          <Sparkles className="size-4 shrink-0 text-primary" aria-hidden />
+          <Sparkles className="size-4 shrink-0 text-brand" aria-hidden />
           <Input
             {...register('question', {
               required: true,

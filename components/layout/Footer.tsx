@@ -34,7 +34,7 @@ export function Footer() {
               href="/"
               className="inline-block font-heading text-2xl font-bold tracking-tight"
             >
-              Gio<span className="text-primary">Mjds</span>
+              Gio<span className="text-brand">Mjds</span>
             </Link>
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">
               Passionate software developer crafting modern web experiences with

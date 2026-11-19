@@ -39,7 +39,7 @@ export function Hero() {
 
             <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl">
               About{' '}
-              <span className="bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+              <span className="text-muted-foreground">
                 Me
               </span>
             </h1>

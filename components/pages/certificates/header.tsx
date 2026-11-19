@@ -69,7 +69,7 @@ export function Header({ certificates }: HeaderProps) {
           variants={itemVariants}
         >
           Verified
-          <span className="block bg-linear-to-r from-primary via-purple-500 to-blue-500 bg-clip-text text-transparent pb-2">
+          <span className="block pb-2 text-muted-foreground">
             Learning Journey
           </span>
         </motion.h1>

@@ -74,7 +74,7 @@ export function Hero() {
             className="font-heading text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
           >
             <span className="block">One developer.</span>
-            <span className="mt-2 block bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent pb-2">
+            <span className="mt-2 block pb-2 text-muted-foreground">
               Whole product.
             </span>
           </motion.h1>
