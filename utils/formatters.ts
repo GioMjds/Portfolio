@@ -6,6 +6,7 @@ export const statusConfig: Record<
   {
     label: string;
     icon: typeof CheckCircle2;
+    /** Icon colour. Labels use text-foreground so they read over screenshots. */
     color: string;
     bg: string;
     border: string;
@@ -14,30 +15,30 @@ export const statusConfig: Record<
   finished: {
     label: 'Completed',
     icon: CheckCircle2,
-    color: 'text-emerald-500',
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/30',
+    color: 'text-emerald-600 dark:text-emerald-400',
+    bg: 'bg-background/90',
+    border: 'border-border',
   },
   'in-development': {
     label: 'In Progress',
     icon: Code2,
-    color: 'text-blue-500',
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/30',
+    color: 'text-brand',
+    bg: 'bg-background/90',
+    border: 'border-border',
   },
   pending: {
     label: 'Pending',
     icon: Clock,
-    color: 'text-amber-500',
-    bg: 'bg-amber-500/10',
-    border: 'border-amber-500/30',
+    color: 'text-muted-foreground',
+    bg: 'bg-background/90',
+    border: 'border-border',
   },
   archived: {
     label: 'Archived',
     icon: Archive,
-    color: 'text-gray-500',
-    bg: 'bg-gray-500/10',
-    border: 'border-gray-500/30',
+    color: 'text-muted-foreground',
+    bg: 'bg-background/90',
+    border: 'border-border',
   },
 };
 

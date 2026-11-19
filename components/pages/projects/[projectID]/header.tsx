@@ -43,7 +43,7 @@ export function Header({ project }: HeaderProps) {
               className={`size-3.5 ${statusConfig[project.status].color}`}
             />
             <span
-              className={`text-sm font-semibold ${statusConfig[project.status].color}`}
+              className="text-sm font-semibold text-foreground"
             >
               {statusConfig[project.status].label}
             </span>

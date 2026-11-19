@@ -82,7 +82,7 @@ export function Projects({ activeFilter }: ProjectsProps) {
                       className={`size-3.5 ${statusConfig[project.status].color}`}
                     />
                     <span
-                      className={`text-xs font-semibold ${statusConfig[project.status].color}`}
+                      className="text-xs font-semibold text-foreground"
                     >
                       {statusConfig[project.status].label}
                     </span>
