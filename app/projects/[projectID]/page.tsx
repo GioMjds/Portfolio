@@ -9,6 +9,17 @@ function normalizeProjectPath(projectID: string): `/${string}` | '/' {
   return isNumericParam ? (`/projects/${projectID}` as const) : '/projects';
 }
 
+// Project data is static, so every detail page is prerendered at build time.
+// Any other ID is a real 404 at routing time, before the response streams
+// (with loading.tsx, a notFound() thrown during render could only ever be a
+// 200 "soft 404").
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ projectID: String(project.projectId) }));
+}
+
 export async function generateMetadata({
   params,
 }: PageProps<'/projects/[projectID]'>): Promise<Metadata> {
