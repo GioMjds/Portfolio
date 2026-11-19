@@ -1,12 +1,20 @@
 'use client';
 
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'motion/react';
+import Link from 'next/link';
+import { motion } from 'motion/react';
+import { ArrowUpRight } from 'lucide-react';
 import { fadeInUpVariants } from '@/utils';
-import { skillCategories, skills, type Level } from '@/constants';
-import { Badge } from '@/components/ui/badge';
-import { Code2 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { skillCategories, skills, type Level, type Skill } from '@/constants';
+import {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import type { SkillProject } from '@/lib/skill-projects';
 import { cn } from '@/lib/utils';
 
 type SkillLevel = {
@@ -70,28 +78,28 @@ const chipStyles = {
     text: 'text-base font-semibold',
   },
   comfortable: {
-    card: 'border-border/50 bg-card',
+    card: 'border-border bg-card',
     content: 'gap-2 px-3 py-2',
     icon: 'size-6',
     sizes: '24px',
     text: 'text-sm font-medium',
   },
   working: {
-    card: 'border-border/45 bg-card/80',
+    card: 'border-border bg-card/80',
     content: 'gap-2 px-3 py-1.5',
     icon: 'size-6',
     sizes: '24px',
     text: 'text-sm',
   },
   familiar: {
-    card: 'border-border/40 bg-card/60',
+    card: 'border-border bg-card/60',
     content: 'gap-2 px-3 py-1.5',
     icon: 'size-6',
     sizes: '24px',
     text: 'text-sm text-muted-foreground',
   },
   exploring: {
-    card: 'border-dashed border-border/40 bg-transparent',
+    card: 'border-dashed border-border bg-transparent',
     content: 'gap-2 px-2.5 py-1',
     icon: 'size-6',
     sizes: '24px',
@@ -115,9 +123,33 @@ function LevelMeter({ filled }: { filled: number }) {
   );
 }
 
-export function Skills() {
-  const shouldReduceMotion = useReducedMotion();
+function ChipContent({ skill, style }: { skill: Skill; style: Chip }) {
+  return (
+    <>
+      <span className={cn('relative shrink-0', style.icon)}>
+        {/* Decorative: the adjacent text already names the skill. */}
+        <Image
+          src={skill.icon}
+          alt=""
+          fill
+          loading="lazy"
+          sizes={style.sizes}
+          className="object-contain dark:brightness-110"
+        />
+      </span>
+      <span className={style.text}>{skill.name}</span>
+    </>
+  );
+}
 
+interface SkillsProps {
+  /** Skill name -> projects that use it. Skills without projects are absent. */
+  skillProjects: Record<string, SkillProject[]>;
+}
+
+const chipBase = 'flex items-center rounded-lg border';
+
+export function Skills({ skillProjects }: SkillsProps) {
   const groups = levels
     .map((level) => ({
       ...level,
@@ -136,55 +168,43 @@ export function Skills() {
     .filter((group) => group.items.length > 0);
 
   return (
-    <section className="px-4 py-16 sm:py-20">
+    <section className="px-4 py-16 sm:py-24">
       <div className="mx-auto max-w-5xl">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
           variants={fadeInUpVariants}
-          className="mb-10 text-center"
+          className="mb-12 space-y-4"
         >
-          <Badge variant="outline" className="mb-4 gap-1">
-            <Code2 className="size-3" />
-            Tech Stack
-          </Badge>
-          <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            Skills & Technologies
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+            Skills &amp; Technologies
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+          <p className="max-w-[60ch] text-muted-foreground">
             Grouped by how much I rely on each one, so you can see exactly where
-            my ceiling is.
+            my ceiling is. Tools with a count open the projects I built with
+            them.
           </p>
         </motion.div>
 
-        <div className="space-y-6">
-          {groups.map((group, groupIndex) => {
+        <div className="space-y-8">
+          {groups.map((group) => {
             const style = chipStyles[group.id];
             return (
               <motion.div
                 key={group.id}
                 role="group"
                 aria-labelledby={`skill-level-${group.id}`}
-                initial="hidden"
-                whileInView="visible"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: '-50px' }}
-                variants={{
-                  hidden: { opacity: 0 },
-                  visible: {
-                    opacity: 1,
-                    transition: {
-                      staggerChildren: 0.04,
-                      delayChildren: groupIndex * 0.1,
-                    },
-                  },
-                }}
-                className="grid gap-3 border-t border-border/40 pt-6 first:border-t-0 first:pt-0 md:grid-cols-[13rem_1fr] md:gap-6"
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                className="grid gap-3 border-t pt-8 first:border-t-0 first:pt-0 md:grid-cols-[13rem_1fr] md:gap-6"
               >
                 <div className="space-y-2 md:pt-1.5">
                   <h3
                     id={`skill-level-${group.id}`}
-                    className="text-sm font-medium uppercase tracking-wider text-foreground"
+                    className="font-heading text-base font-semibold text-foreground"
                   >
                     {group.label}
                   </h3>
@@ -193,54 +213,72 @@ export function Skills() {
                     {group.description}
                   </p>
                 </div>
-                <div className="flex flex-wrap content-start gap-2">
-                  {group.items.map((skill) => (
-                    <motion.div
-                      key={skill.name}
-                      variants={{
-                        hidden: { opacity: 0, scale: 0.8 },
-                        visible: {
-                          opacity: 1,
-                          scale: 1,
-                          transition: { duration: 0.3 },
-                        },
-                      }}
-                      whileHover={{
-                        scale: shouldReduceMotion ? 1 : 1.05,
-                        y: shouldReduceMotion ? 0 : -2,
-                      }}
-                      whileTap={{ scale: shouldReduceMotion ? 1 : 0.98 }}
-                    >
-                      <Card
-                        className={cn(
-                          'group cursor-default gap-0 overflow-hidden py-0 transition-all duration-300 hover:border-primary/30 hover:shadow-md',
-                          style.card,
-                        )}
-                      >
-                        <CardContent
-                          className={cn('flex items-center', style.content)}
+                <ul className="flex flex-wrap content-start gap-2">
+                  {group.items.map((skill) => {
+                    const projects = skillProjects[skill.name];
+                    if (!projects) {
+                      return (
+                        <li
+                          key={skill.name}
+                          className={cn(chipBase, style.card, style.content)}
                         >
-                          <div
+                          <ChipContent skill={skill} style={style} />
+                        </li>
+                      );
+                    }
+                    const projectWord =
+                      projects.length === 1 ? 'project' : 'projects';
+                    return (
+                      <li key={skill.name}>
+                        <Popover>
+                          <PopoverTrigger
                             className={cn(
-                              'relative transition-transform duration-300 group-hover:scale-110',
-                              style.icon,
+                              chipBase,
+                              style.card,
+                              style.content,
+                              'cursor-pointer transition-colors duration-200 outline-none hover:border-primary/50 hover:bg-primary/10 focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=open]:border-primary data-[state=open]:bg-primary/10',
                             )}
                           >
-                            <Image
-                              src={skill.icon}
-                              alt=""
-                              fill
-                              loading="lazy"
-                              sizes={style.sizes}
-                              className="object-contain dark:brightness-110"
-                            />
-                          </div>
-                          <span className={style.text}>{skill.name}</span>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
+                            <ChipContent skill={skill} style={style} />
+                            <span
+                              aria-hidden
+                              className="rounded-full bg-primary/10 px-1.5 text-xs font-medium tabular-nums text-primary"
+                            >
+                              {projects.length}
+                            </span>
+                            <span className="sr-only">
+                              , used in {projects.length} {projectWord}
+                            </span>
+                          </PopoverTrigger>
+                          <PopoverContent align="start" className="w-80 gap-3">
+                            <PopoverHeader>
+                              <PopoverTitle>Built with {skill.name}</PopoverTitle>
+                              <PopoverDescription>
+                                {projects.length} {projectWord} in my portfolio
+                                use it.
+                              </PopoverDescription>
+                            </PopoverHeader>
+                            <ul className="-mx-2 flex flex-col">
+                              {projects.map((project) => (
+                                <li key={project.id}>
+                                  <Link
+                                    href={`/projects/${project.id}`}
+                                    className="group flex min-h-11 items-center justify-between gap-3 rounded-md px-2 py-2 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+                                  >
+                                    <span className="font-medium">
+                                      {project.name}
+                                    </span>
+                                    <ArrowUpRight className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </PopoverContent>
+                        </Popover>
+                      </li>
+                    );
+                  })}
+                </ul>
               </motion.div>
             );
           })}
