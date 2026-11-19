@@ -1,78 +1,77 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
 import { motion } from 'motion/react';
+import { ArrowRight } from 'lucide-react';
 import {
   fadeInUpVariants,
   GithubIcon,
   scaleInVariants,
   staggerContainerVariants,
 } from '@/utils';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowRight, GitBranch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { RevealHeading } from '@/components/motion/reveal-heading';
 
 export function CallToAction() {
-  const transformOpacityStyle = useMemo(
-    () => ({ willChange: 'transform, opacity' }),
-    [],
-  );
-
   return (
-    <section className="px-4 pb-16 sm:pb-24">
+    <section className="px-4 pt-8 pb-16 sm:pb-24">
       <div className="mx-auto max-w-5xl">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
           variants={scaleInVariants}
-          style={transformOpacityStyle}
+          className="cta-orbit rounded-3xl p-px shadow-2xl shadow-foreground/5"
         >
-          <Card className="relative overflow-hidden border-border bg-card">
-            <CardContent className="flex flex-col items-center gap-6 p-8 text-center sm:p-12">
-              <Badge variant="secondary" className="gap-1">
-                <GitBranch className="size-3" />
-                Open to Collaborate
-              </Badge>
-              <h2 className="font-heading text-2xl font-bold sm:text-3xl">
-                Let&apos;s Build Something Amazing Together
-              </h2>
-              <p className="max-w-lg text-muted-foreground">
-                Whether you have a project in mind or just want to chat about
-                technology, I&apos;d love to hear from you.
-              </p>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerContainerVariants}
-                className="flex flex-col gap-3 sm:flex-row"
-              >
-                <motion.div variants={fadeInUpVariants}>
-                  <Button asChild size="lg" className="gap-2">
-                    <Link href="/contact">
-                      Start a Conversation
-                      <ArrowRight className="size-4" />
-                    </Link>
-                  </Button>
-                </motion.div>
-                <motion.div variants={fadeInUpVariants}>
-                  <Button asChild variant="outline" size="lg" className="gap-2">
-                    <Link
-                      href="https://github.com/giomjds"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <GithubIcon className="size-4" />
-                      View GitHub
-                    </Link>
-                  </Button>
-                </motion.div>
+          <div className="relative overflow-hidden rounded-[calc(var(--radius-3xl)-1px)] bg-card px-6 py-14 text-center sm:px-12 sm:py-20">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-48 w-2/3 rounded-full"
+              style={{
+                background:
+                  'radial-gradient(closest-side, color-mix(in oklch, var(--brand) 14%, transparent), transparent)',
+              }}
+            />
+            <p className="relative mb-5 flex items-center justify-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+              <span className="text-brand tabular-nums">07</span>
+              <span aria-hidden="true" className="h-px w-8 bg-border" />
+              To be continued
+            </p>
+            <RevealHeading
+              text="This story's still being written."
+              className="relative mx-auto max-w-2xl font-heading text-3xl font-bold tracking-tight text-balance sm:text-5xl"
+            />
+            <p className="relative mx-auto mt-5 max-w-lg text-pretty text-muted-foreground sm:text-lg">
+              Got a product that needs building, or just want to talk shop?
+              The next chapter could be yours.
+            </p>
+            <motion.div
+              variants={staggerContainerVariants}
+              className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row"
+            >
+              <motion.div variants={fadeInUpVariants}>
+                <Button asChild size="lg" className="group gap-2">
+                  <Link href="/contact">
+                    Start a conversation
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
+                  </Link>
+                </Button>
               </motion.div>
-            </CardContent>
-          </Card>
+              <motion.div variants={fadeInUpVariants}>
+                <Button asChild variant="outline" size="lg" className="gap-2">
+                  <Link
+                    href="https://github.com/GioMjds"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <GithubIcon className="size-4" />
+                    View GitHub
+                    <span className="sr-only"> (opens in a new tab)</span>
+                  </Link>
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

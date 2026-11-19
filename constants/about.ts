@@ -327,7 +327,7 @@ export const journeyMilestones: JourneyMilestone[] = [
   },
 ];
 
-export const positioningStatement = `I'm a solo full-stack developer. I take products from a blank repo to a deployed app, and I'm comfortable on every layer in between: interface, API, database, and sometimes the hardware.`;
+export const positioningStatement = `I'm an aspiring software engineer. I love solving problems with code, and I take products from idea to deployed app on my own. Transform problems into solutions. Ideas into working products. That's what I do, and I want to make a difference by showcasing my skills.`;
 
 // Not shown on the About page (see aboutParagraph); still used by the
 // portfolio assistant's knowledge base in lib/assistant/knowledge.ts.

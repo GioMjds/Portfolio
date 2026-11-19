@@ -1,249 +1,318 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'motion/react';
-import { Trophy, ArrowUpRight } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
+import { ArrowRight, ArrowUpRight, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { TiltCard } from '@/components/ui/tilt-card';
+import { Button } from '@/components/ui/button';
 import {
-  fadeInUpVariants,
-  staggerContainerVariants,
-  cardVariants,
-} from '@/utils/variants';
-import { projects, type Projects } from '@/constants/projects';
-import { RevealHeading } from '@/components/motion/reveal-heading';
+  projects,
+  type ProjectStatus,
+  type Projects,
+} from '@/constants/projects';
+import { projectStories, type ProjectStory } from '@/constants/home';
+import { EASE_OUT } from '@/lib/ease';
 import { gsap, MEDIA, useGSAP } from '@/lib/gsap';
+import { cn } from '@/lib/utils';
+import { fadeInUpVariants, staggerContainerVariants } from '@/utils/variants';
+import { GithubIcon } from '@/utils';
+import { SectionIntro } from './section-intro';
 
-/** Clears the sticky navbar when pinned. */
-const PIN_TOP_OFFSET = 96;
+const STATUS_LABEL: Record<ProjectStatus, string> = {
+  finished: 'Shipped',
+  'in-development': 'Still building',
+  pending: 'Up next',
+  archived: 'Archived',
+};
+
+const flagshipProjects = projects.filter(
+  (p) => p.problemStatement && projectStories[p.projectId],
+);
 
 export function FlagshipShowcase() {
-  const flagshipProjects = useMemo<Projects[]>(
-    () => projects.filter((p) => p.problemStatement),
-    [],
-  );
+  const scope = useRef<HTMLElement>(null);
 
-  const transformOpacityStyle = useMemo(
-    () => ({ willChange: 'transform, opacity' }),
-    [],
-  );
-
-  const sectionRef = useRef<HTMLElement>(null);
-  const pinRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLSpanElement>(null);
-
-  // Desktop + motion allowed: pin the cards and scrub them sideways as the
-  // page scrolls. Everywhere else the server-rendered 2-column grid stays.
-  // GSAP moves only trackRef (plain div); motion owns the cards inside it.
+  // GSAP owns only the [data-story-line] fills: each one scrubs down its
+  // chapter's beats as the reader scrolls. motion owns every other element.
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-      mm.add(`${MEDIA.pinnable} and ${MEDIA.motionOK}`, () => {
-        const section = sectionRef.current;
-        const pin = pinRef.current;
-        const track = trackRef.current;
-        const cards = cardsRef.current;
-        if (!section || !pin || !track || !cards) return;
-
-        section.dataset.pinned = 'true';
-        const total = flagshipProjects.length;
-        const distance = () => Math.max(0, track.scrollWidth - pin.clientWidth);
-
-        const tl = gsap.timeline({
-          defaults: { ease: 'none' },
-          scrollTrigger: {
-            trigger: pin,
-            pin: true,
-            start: `top top+=${PIN_TOP_OFFSET}`,
-            end: () => `+=${distance()}`,
-            scrub: 0.6,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              if (!counterRef.current) return;
-              const current = Math.round(self.progress * (total - 1)) + 1;
-              counterRef.current.textContent = String(current).padStart(2, '0');
-            },
-          },
-        });
-        tl.to(track, { x: () => -distance() }, 0).fromTo(
-          barRef.current,
-          { scaleX: 0 },
-          { scaleX: 1 },
-          0,
-        );
-
-        // Keyboard users: focusing a card that's off to the side scrolls the
-        // page to the point where the track brings it into view.
-        const onFocusIn = (event: FocusEvent) => {
-          const card = (event.target as Element).closest<HTMLElement>(
-            '[data-flag-card]',
-          );
-          const st = tl.scrollTrigger;
-          const max = distance();
-          if (!card || !st || max === 0) return;
-          const padLeft = parseFloat(getComputedStyle(cards).paddingLeft) || 0;
-          const shift = gsap.utils.clamp(0, max, card.offsetLeft - padLeft);
-          window.scrollTo({
-            top: st.start + (shift / max) * (st.end - st.start),
-            behavior: 'instant',
+      mm.add(MEDIA.motionOK, () => {
+        gsap.utils
+          .toArray<HTMLElement>('[data-story-line]')
+          .forEach((line) => {
+            gsap.fromTo(
+              line,
+              { scaleY: 0 },
+              {
+                scaleY: 1,
+                ease: 'none',
+                scrollTrigger: {
+                  trigger: line.parentElement,
+                  start: 'top 70%',
+                  end: 'bottom 55%',
+                  scrub: 0.5,
+                },
+              },
+            );
           });
-        };
-        track.addEventListener('focusin', onFocusIn);
-
-        return () => {
-          track.removeEventListener('focusin', onFocusIn);
-          delete section.dataset.pinned;
-        };
       });
     },
-    { scope: sectionRef },
+    { scope },
   );
 
   return (
-    <section ref={sectionRef} className="group/flag py-16 sm:py-24">
-      <div className="mx-auto max-w-5xl px-4">
+    <section ref={scope} className="px-4 py-16 sm:py-24">
+      <div className="mx-auto max-w-6xl">
+        <SectionIntro chapter={4} label="Proof of work" title="Proof of work">
+          A few builds, told as short stories: the itch, the build, and where
+          each one stands today.
+        </SectionIntro>
+
+        <ol className="space-y-24 sm:space-y-36">
+          {flagshipProjects.map((project, index) => (
+            <StoryChapter
+              key={project.projectId}
+              project={project}
+              story={projectStories[project.projectId]}
+              index={index}
+            />
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+interface StoryChapterProps {
+  project: Projects;
+  story: ProjectStory;
+  index: number;
+}
+
+function StoryChapter({ project, story, index }: StoryChapterProps) {
+  const reduce = useReducedMotion();
+  const number = String(index + 1).padStart(2, '0');
+  const headingId = `story-${project.projectId}`;
+  const checkpoints =
+    project.performanceMetric
+      ?.split('|')
+      .map((item) => item.trim())
+      .filter(Boolean) ?? [];
+
+  const beats = [
+    { label: 'The itch', body: story.itch },
+    { label: 'The build', body: story.build },
+  ];
+
+  return (
+    <li>
+      <article
+        aria-labelledby={headingId}
+        className="grid items-start gap-10 lg:grid-cols-2 lg:gap-16"
+      >
+        {/* Visual: sticks beside the story on desktop */}
+        <div
+          className={cn(
+            'lg:sticky lg:top-28',
+            index % 2 === 1 && 'lg:order-last',
+          )}
+        >
+          <motion.div
+            initial={
+              reduce
+                ? false
+                : { clipPath: 'inset(10% 10% 10% 10% round 24px)', opacity: 0 }
+            }
+            whileInView={{
+              clipPath: 'inset(0% 0% 0% 0% round 16px)',
+              opacity: 1,
+            }}
+            viewport={{ once: true, margin: '-120px' }}
+            transition={{ duration: 1.1, ease: EASE_OUT }}
+            className="group overflow-hidden rounded-2xl border border-border/70 bg-card shadow-2xl shadow-foreground/5"
+          >
+            <div className="flex items-center gap-2 border-b border-border/70 px-4 py-3">
+              <span aria-hidden="true" className="flex gap-1.5">
+                <span className="size-2.5 rounded-full bg-border" />
+                <span className="size-2.5 rounded-full bg-border" />
+                <span className="size-2.5 rounded-full bg-border" />
+              </span>
+              <span className="mx-auto truncate font-mono text-xs text-muted-foreground">
+                chapter-{number} / {project.projectName}
+              </span>
+            </div>
+            <div className="relative aspect-video overflow-hidden bg-muted">
+              <Image
+                src={project.image}
+                alt={`${project.projectName} screenshot`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 560px"
+                className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03] motion-reduce:transition-none"
+              />
+            </div>
+          </motion.div>
+
+          <ul
+            aria-label={`${project.projectName} tech stack`}
+            className="mt-4 flex flex-wrap gap-1.5"
+          >
+            {project.stacks.map((stack) => (
+              <li key={stack.name}>
+                <Badge
+                  variant="outline"
+                  className="gap-1.5 bg-background/70 backdrop-blur-sm"
+                >
+                  <Image
+                    src={stack.icon}
+                    alt=""
+                    width={14}
+                    height={14}
+                    className="size-3.5"
+                  />
+                  {stack.name}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Story */}
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={fadeInUpVariants}
-          className="mb-12 text-center"
+          viewport={{ once: true, margin: '-80px' }}
+          variants={staggerContainerVariants}
+          className="relative"
         >
-          <Badge variant="outline" className="mb-4 gap-1">
-            <Trophy className="size-3" />
-            Flagship Projects
-          </Badge>
-          <RevealHeading
-            text="Proof of Work"
-            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
-          />
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            Real projects with real challenges, engineered solutions, and
-            measurable outcomes.
-          </p>
-        </motion.div>
-      </div>
-
-      {/* Pinned viewport (desktop) / plain block (everything else) */}
-      <div
-        ref={pinRef}
-        className="group-data-pinned/flag:flex group-data-pinned/flag:h-[calc(100svh-6rem)] group-data-pinned/flag:flex-col group-data-pinned/flag:justify-center group-data-pinned/flag:overflow-clip"
-      >
-        <div ref={trackRef} className="relative group-data-pinned/flag:w-max">
-          <motion.div
-            ref={cardsRef}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-            variants={staggerContainerVariants}
-            className="mx-auto grid max-w-5xl gap-6 px-4 md:grid-cols-2 group-data-pinned/flag:flex group-data-pinned/flag:max-w-none group-data-pinned/flag:gap-8 group-data-pinned/flag:px-[max(1rem,calc((100vw-64rem)/2+1rem))]"
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-10 right-0 select-none font-heading text-8xl font-bold leading-none text-transparent [-webkit-text-stroke:1px_var(--border)] sm:text-9xl"
           >
-            {flagshipProjects.map((project) => (
-              <motion.div
-                key={project.projectId}
-                data-flag-card
-                variants={cardVariants}
-                style={transformOpacityStyle}
-                className="group-data-pinned/flag:w-[min(54rem,72vw)] group-data-pinned/flag:shrink-0"
-              >
-                <TiltCard className="h-full">
-                  <Card className="group h-full overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 group-data-pinned/flag:flex-row group-data-pinned/flag:gap-0 group-data-pinned/flag:py-0">
-                    {/* Landscape card when pinned: image left, content right */}
-                    <div className="relative aspect-video overflow-hidden group-data-pinned/flag:aspect-auto group-data-pinned/flag:w-2/5 group-data-pinned/flag:shrink-0">
-                      <Image
-                        src={project.image}
-                        alt={project.projectName}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 30vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-
-                    <CardContent className="p-6">
-                      <h3 className="font-heading text-lg font-semibold">
-                        {project.projectName}
-                      </h3>
-
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {project.stacks.map((stack) => (
-                          <Badge
-                            key={stack.name}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {stack.name}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      <div className="mt-4">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                          Problem
-                        </p>
-                        <p className="mt-1 text-sm text-foreground/80">
-                          {project.problemStatement}
-                        </p>
-                      </div>
-
-                      {project.solutionStatement && (
-                        <div className="mt-3">
-                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            Solution
-                          </p>
-                          <p className="mt-1 text-sm text-foreground/80">
-                            {project.solutionStatement}
-                          </p>
-                        </div>
-                      )}
-
-                      {project.performanceMetric && (
-                        <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2">
-                          <p className="text-sm font-semibold text-primary">
-                            {project.performanceMetric}
-                          </p>
-                        </div>
-                      )}
-
-                      {project.githubLink && (
-                        <Link
-                          href={project.githubLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-4 inline-flex items-center gap-1 text-sm text-brand hover:underline"
-                        >
-                          View on GitHub
-                          <ArrowUpRight className="size-3" />
-                        </Link>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TiltCard>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Scroll progress through the pinned row (decorative) */}
-        <div
-          aria-hidden="true"
-          className="mx-auto mt-8 hidden w-full max-w-5xl items-center gap-4 px-4 group-data-pinned/flag:flex"
-        >
-          <span className="font-mono text-xs tabular-nums text-muted-foreground">
-            <span ref={counterRef}>01</span> /{' '}
-            {String(flagshipProjects.length).padStart(2, '0')}
+            {number}
           </span>
-          <div className="h-px flex-1 bg-border">
-            <div ref={barRef} className="h-px origin-left scale-x-0 bg-brand" />
+
+          <motion.p
+            variants={fadeInUpVariants}
+            className="relative flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            <span className="text-brand">Chapter {number}</span>
+            <span aria-hidden="true">·</span>
+            <span>{STATUS_LABEL[project.status]}</span>
+          </motion.p>
+
+          <motion.h3
+            id={headingId}
+            variants={fadeInUpVariants}
+            className="relative mt-3 font-heading text-3xl font-bold tracking-tight sm:text-4xl"
+          >
+            {project.projectName}
+          </motion.h3>
+          <motion.p
+            variants={fadeInUpVariants}
+            className="relative mt-2 text-sm italic text-muted-foreground"
+          >
+            {story.episode}
+          </motion.p>
+          <motion.p
+            variants={fadeInUpVariants}
+            className="relative mt-5 text-lg text-pretty text-foreground/90 sm:text-xl"
+          >
+            {story.logline}
+          </motion.p>
+
+          {/* Beats, with a progress line that fills on scroll */}
+          <div className="relative mt-10 pl-8">
+            <span
+              aria-hidden="true"
+              className="absolute top-1.5 bottom-1.5 left-[5px] w-px bg-border"
+            />
+            <span
+              aria-hidden="true"
+              data-story-line
+              className="absolute top-1.5 bottom-1.5 left-[5px] w-px origin-top bg-brand"
+            />
+            <ol className="space-y-8">
+              {beats.map((beat) => (
+                <motion.li
+                  key={beat.label}
+                  variants={fadeInUpVariants}
+                  className="relative"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-1.5 -left-8 size-[11px] rounded-full border-2 border-brand bg-background"
+                  />
+                  <h4 className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                    {beat.label}
+                  </h4>
+                  <p className="mt-2 leading-relaxed text-pretty text-foreground/85">
+                    {beat.body}
+                  </p>
+                </motion.li>
+              ))}
+  
+              {checkpoints.length > 0 && (
+                <motion.li variants={fadeInUpVariants} className="relative">
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-1.5 -left-8 size-[11px] rounded-full bg-brand"
+                  />
+                  <h4 className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                    Where it landed
+                  </h4>
+                  <ul className="mt-3 space-y-2">
+                    {checkpoints.map((checkpoint) => (
+                      <li
+                        key={checkpoint}
+                        className="flex items-start gap-2.5 text-sm text-foreground/85"
+                      >
+                        <Check
+                          aria-hidden="true"
+                          className="mt-0.5 size-4 shrink-0 text-brand"
+                        />
+                        {checkpoint}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.li>
+              )}
+            </ol>
           </div>
-        </div>
-      </div>
-    </section>
+
+          <motion.div
+            variants={fadeInUpVariants}
+            className="relative mt-10 flex flex-wrap gap-3"
+          >
+            <Button asChild className="group/cta gap-2">
+              <Link href={`/projects/${project.projectId}`}>
+                Read the full story
+                <span className="sr-only"> of {project.projectName}</span>
+                <ArrowRight className="size-4 transition-transform group-hover/cta:translate-x-0.5" />
+              </Link>
+            </Button>
+            {project.githubLink && (
+              <Button asChild variant="outline" className="gap-2">
+                <Link
+                  href={project.githubLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <GithubIcon className="size-4" />
+                  Source
+                  <span className="sr-only">
+                    {' '}
+                    for {project.projectName} (opens in a new tab)
+                  </span>
+                  <ArrowUpRight className="size-3.5" />
+                </Link>
+              </Button>
+            )}
+          </motion.div>
+        </motion.div>
+      </article>
+    </li>
   );
 }

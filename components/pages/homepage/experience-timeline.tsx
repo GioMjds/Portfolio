@@ -1,108 +1,141 @@
 'use client';
 
-import { useMemo } from 'react';
-import { motion } from 'motion/react';
-import { Briefcase, Code2, GraduationCap, History } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { fadeInUpVariants, staggerContainerVariants } from '@/utils/variants';
-import { journeyMilestones } from '@/constants/about';
-import { RevealHeading } from '@/components/motion/reveal-heading';
-
-const iconMap = { Code2, Briefcase, GraduationCap } as const;
+import { useRef } from 'react';
+import Link from 'next/link';
+import { motion, useReducedMotion } from 'motion/react';
+import { ArrowRight } from 'lucide-react';
+import { journeyCommits } from '@/constants/home';
+import { EASE_OUT } from '@/lib/ease';
+import { gsap, MEDIA, useGSAP } from '@/lib/gsap';
+import { cn } from '@/lib/utils';
+import { SectionIntro } from './section-intro';
 
 export function ExperienceTimeline() {
-  const transformOpacityStyle = useMemo(
-    () => ({ willChange: 'transform, opacity' }),
-    [],
+  const scope = useRef<HTMLElement>(null);
+  const lineRef = useRef<HTMLSpanElement>(null);
+  const reduce = useReducedMotion();
+
+  // GSAP scrubs the branch line down the log; motion reveals each commit.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add(MEDIA.motionOK, () => {
+        const line = lineRef.current;
+        if (!line) return;
+        gsap.fromTo(
+          line,
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: line.parentElement,
+              start: 'top 75%',
+              end: 'bottom 60%',
+              scrub: 0.5,
+            },
+          },
+        );
+      });
+    },
+    { scope },
   );
 
   return (
-    <section className="px-4 py-16 sm:py-24">
-      <div className="mx-auto max-w-5xl">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={fadeInUpVariants}
-          className="mb-12 text-center"
-        >
-          <Badge variant="outline" className="mb-4 gap-1">
-            <History className="size-3" />
-            My Journey
-          </Badge>
-          <RevealHeading
-            text="Experience Timeline"
-            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
-          />
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            A timeline of key milestones in my development career — from
-            academics to real-world projects.
-          </p>
-        </motion.div>
+    <section ref={scope} className="px-4 py-16 sm:py-24">
+      <div className="mx-auto max-w-3xl">
+        <SectionIntro chapter={5} label="The journey" title="The journey so far">
+          No straight line, just a lot of commits. Here&apos;s the log, oldest
+          first.
+        </SectionIntro>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
-          variants={staggerContainerVariants}
-          className="relative mt-12"
-        >
-          <div
-            className="absolute left-6 top-0 bottom-0 w-px bg-border/50"
-            aria-hidden="true"
-          />
+        <div className="overflow-hidden rounded-2xl border border-border/70 bg-card/70 shadow-xl shadow-foreground/5 backdrop-blur-sm">
+          <div className="flex items-center gap-2 border-b border-border/70 px-4 py-3 font-mono text-xs text-muted-foreground">
+            <span aria-hidden="true" className="text-brand">
+              $
+            </span>
+            <span>git log --reverse journey</span>
+            <span
+              aria-hidden="true"
+              className="h-3.5 w-1.5 animate-pulse bg-muted-foreground/60 motion-reduce:animate-none"
+            />
+          </div>
 
-          {journeyMilestones.map((milestone, index) => {
-            const Icon = iconMap[milestone.iconName];
+          <div className="relative px-5 py-8 sm:px-8">
+            <span
+              aria-hidden="true"
+              className="absolute top-10 bottom-10 left-[29px] w-px bg-border sm:left-[41px]"
+            />
+            <span
+              ref={lineRef}
+              aria-hidden="true"
+              className="absolute top-10 bottom-10 left-[29px] w-px origin-top bg-brand sm:left-[41px]"
+            />
 
-            return (
-              <motion.div
-                key={index}
-                variants={fadeInUpVariants}
-                style={transformOpacityStyle}
-                className="relative mb-8 pl-16 last:mb-0"
-              >
-                <div className="absolute left-3 flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
-                  <Icon className="size-3.5" />
-                </div>
+            <ol className="space-y-10">
+              {journeyCommits.map((commit) => {
+                const isNext = commit.type === 'next';
+                return (
+                  <motion.li
+                    key={commit.title}
+                    initial={reduce ? false : { opacity: 0, x: -12 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 0.6, ease: EASE_OUT }}
+                    className="relative pl-10"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'absolute top-1 left-0 flex size-[19px] items-center justify-center rounded-full border bg-card',
+                        isNext
+                          ? 'border-dashed border-brand'
+                          : 'border-border',
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          'size-[7px] rounded-full',
+                          isNext ? 'animate-pulse bg-brand motion-reduce:animate-none' : 'bg-foreground/70',
+                        )}
+                      />
+                    </span>
 
-                <Card className="border-border/50 bg-card">
-                  <CardContent className="p-5">
-                    <Badge variant="secondary" className="mb-2">
-                      {milestone.year}
-                    </Badge>
-                    <h3 className="font-heading text-base font-semibold">
-                      {milestone.title}
+                    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs text-muted-foreground">
+                      <span
+                        className={cn(
+                          'rounded-md border px-1.5 py-0.5',
+                          isNext
+                            ? 'border-brand/40 text-brand'
+                            : 'border-border',
+                        )}
+                      >
+                        {commit.type}
+                      </span>
+                      {commit.when && <span>{commit.when}</span>}
+                    </p>
+                    <h3 className="mt-2 font-heading text-lg font-semibold tracking-tight sm:text-xl">
+                      {commit.title}
                     </h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {milestone.description}
+                    <p className="mt-1.5 leading-relaxed text-pretty text-muted-foreground">
+                      {commit.body}
                     </p>
 
-                    {milestone.year === '2022' && (
-                      <ul className="mt-3 space-y-1 text-sm text-foreground/70">
-                        <li className="flex items-start gap-2">
-                          <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
-                          <span>
-                            Built <strong>PrintBit</strong> — a coin-operated
-                            self-service document printing kiosk
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
-                          <span>
-                            Built <strong>Azurea</strong> — a full-stack hotel
-                            management system with booking verification
-                          </span>
-                        </li>
-                      </ul>
+                    {isNext && (
+                      <Link
+                        href="/contact"
+                        className="group mt-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-brand underline-offset-4 hover:underline"
+                      >
+                        Start a conversation
+                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
+                      </Link>
                     )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                  </motion.li>
+                );
+              })}
+            </ol>
+          </div>
+        </div>
       </div>
     </section>
   );

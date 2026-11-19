@@ -54,6 +54,16 @@
   /* beUI Marquee: each of the two tracks shifts by its own width + gap. */
   --animate-marquee: marquee 40s linear infinite;
   --animate-marquee-vertical: marquee-vertical 40s linear infinite;
+  /* Hero scroll cue: a short bead sliding down a hairline. */
+  --animate-scroll-cue: scroll-cue 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  @keyframes scroll-cue {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(200%);
+    }
+  }
   @keyframes marquee {
     from {
       transform: translateX(0);
@@ -178,6 +188,146 @@
 
 .dark .noise-overlay {
   opacity: 0.04;
+}
+
+/*
+ * Homepage backdrop (components/pages/homepage/backdrop.tsx). Everything is
+ * radial gradients and transforms: no filter blur, nothing that repaints per
+ * frame, so it stays cheap during theme View Transitions. Colours mix from
+ * tokens, so both themes follow automatically.
+ */
+.home-backdrop {
+  --glow-brand: color-mix(in oklch, var(--brand) 16%, transparent);
+  --glow-ink: color-mix(in oklch, var(--foreground) 6%, transparent);
+  --grid-line: color-mix(in oklch, var(--foreground) 5%, transparent);
+}
+
+.dark .home-backdrop {
+  --glow-brand: color-mix(in oklch, var(--brand) 11%, transparent);
+  --glow-ink: color-mix(in oklch, var(--foreground) 5%, transparent);
+  --grid-line: color-mix(in oklch, var(--foreground) 4%, transparent);
+}
+
+.home-backdrop__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
+}
+
+.home-backdrop__blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+.home-backdrop__blob--a {
+  top: -20vmax;
+  left: 50%;
+  width: 70vmax;
+  height: 50vmax;
+  margin-left: -35vmax;
+  background: radial-gradient(closest-side, var(--glow-brand), transparent);
+  animation: backdrop-drift-a 26s ease-in-out infinite alternate;
+}
+
+.home-backdrop__blob--b {
+  top: 35vh;
+  left: -15vmax;
+  width: 45vmax;
+  height: 45vmax;
+  background: radial-gradient(closest-side, var(--glow-ink), transparent);
+  animation: backdrop-drift-b 32s ease-in-out infinite alternate;
+}
+
+.home-backdrop__blob--c {
+  bottom: -15vmax;
+  right: -10vmax;
+  width: 50vmax;
+  height: 40vmax;
+  background: radial-gradient(closest-side, var(--glow-ink), transparent);
+  animation: backdrop-drift-a 38s ease-in-out infinite alternate-reverse;
+}
+
+/* Cursor spotlight: moved by transform only (see backdrop.tsx). */
+.home-backdrop__spot {
+  position: absolute;
+  top: -18rem;
+  left: -18rem;
+  width: 36rem;
+  height: 36rem;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, var(--glow-brand), transparent);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  will-change: transform;
+}
+
+.home-backdrop[data-pointer] .home-backdrop__spot {
+  opacity: 1;
+}
+
+@keyframes backdrop-drift-a {
+  to {
+    transform: translate3d(6vmax, 4vmax, 0) scale(1.08);
+  }
+}
+
+@keyframes backdrop-drift-b {
+  to {
+    transform: translate3d(10vmax, -6vmax, 0) scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-backdrop__blob {
+    animation: none;
+  }
+  .home-backdrop__spot {
+    display: none;
+  }
+}
+
+/* Epilogue CTA: a thin brand glint orbits the card's border. */
+@property --cta-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.cta-orbit {
+  background: conic-gradient(
+    from var(--cta-angle),
+    var(--border) 0deg 250deg,
+    var(--brand) 310deg,
+    var(--border) 360deg
+  );
+  animation: cta-orbit 6s linear infinite;
+}
+
+@keyframes cta-orbit {
+  to {
+    --cta-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-orbit {
+    animation: none;
+  }
+}
+
+/* Prologue (homepage): words light up as the reader scrolls past them. */
+[data-lit-word] {
+  color: var(--muted-foreground);
+  transition: color 0.35s ease;
+}
+
+[data-lit-word][data-lit] {
+  color: var(--foreground);
 }
 
 .skip-link {

@@ -1,93 +1,117 @@
 'use client';
 
-import { useMemo } from 'react';
+import type { PointerEvent } from 'react';
 import { motion } from 'motion/react';
-import { Bot, Code2, Globe, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Bot, Cpu, Globe, Server, WifiOff } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { fadeInUpVariants, staggerContainerVariants } from '@/utils/variants';
-import { Card, CardContent } from '@/components/ui/card';
-import { RevealHeading } from '@/components/motion/reveal-heading';
+import { SectionIntro } from './section-intro';
 
 const highlights = [
   {
     icon: Globe,
-    title: 'Full-Stack Web Development',
+    title: 'I build the whole thing',
     description:
-      'Dedicated to build modern, responsive, and production-ready web applications using the latest technologies and best practices.',
+      'Modern, responsive web apps, from the database schema all the way to the last hover state. No hand-offs in between.',
+    span: 'lg:col-span-4',
   },
   {
-    icon: Code2,
-    title: 'Back-End Engineering',
+    icon: Server,
+    title: 'Backends that hold up',
     description:
-      'Dedicated to build robust and scalable backend systems and APIs.',
+      'Data models and APIs designed to stay simple as the features pile on.',
+    span: 'lg:col-span-2',
   },
   {
     icon: Bot,
-    title: 'AI Integration',
+    title: 'AI where it actually helps',
     description:
-      'Dedicated to implement AI features that enhance user experience and add value to applications.',
+      'AI features that make an app more useful. The assistant on this site is one of them.',
+    span: 'lg:col-span-2',
+  },
+  {
+    icon: WifiOff,
+    title: 'Offline is a feature',
+    description:
+      'Apps that keep working when the connection does not, backed by local SQLite.',
+    span: 'lg:col-span-2',
+  },
+  {
+    icon: Cpu,
+    title: 'Software, meet hardware',
+    description:
+      'Coin acceptors, printers, and serial devices. I write the code that makes them behave.',
+    span: 'lg:col-span-2',
   },
 ];
 
-export function Highlights() {
-  const transformOpacityStyle = useMemo(
-    () => ({ willChange: 'transform, opacity' }),
-    [],
-  );
+/** Feeds the cursor position to the card's spotlight gradient. */
+function trackPointer(event: PointerEvent<HTMLElement>) {
+  const el = event.currentTarget;
+  const rect = el.getBoundingClientRect();
+  el.style.setProperty('--x', `${event.clientX - rect.left}px`);
+  el.style.setProperty('--y', `${event.clientY - rect.top}px`);
+}
 
+export function Highlights() {
   return (
     <section className="px-4 py-16 sm:py-24">
       <div className="mx-auto max-w-5xl">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={fadeInUpVariants}
-          className="mb-12 text-center"
-        >
-          <Badge variant="outline" className="mb-4 gap-1">
-            <Sparkles className="size-3" />
-            What I Do
-          </Badge>
-          <RevealHeading
-            text="Building Digital Excellence"
-            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
-          />
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            From concept to deployment, I bring technical expertise and creative
-            problem-solving to every project.
-          </p>
-        </motion.div>
+        <SectionIntro chapter={2} label="What I do" title="The short version">
+          Give me a problem and a blank repo. Here&apos;s what usually comes
+          out the other side.
+        </SectionIntro>
 
-        <motion.div
+        <motion.ul
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
           variants={staggerContainerVariants}
-          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6"
         >
-          {highlights.map(({ icon: Icon, title, description }) => (
-            <motion.div
+          {highlights.map(({ icon: Icon, title, description, span }, i) => (
+            <motion.li
               key={title}
               variants={fadeInUpVariants}
-              style={transformOpacityStyle}
+              onPointerMove={trackPointer}
+              className={cn(
+                'group relative overflow-hidden rounded-2xl border border-border/70 bg-card/80 p-6 backdrop-blur-sm transition-[border-color,box-shadow] duration-300 hover:border-brand/40 hover:shadow-xl hover:shadow-foreground/5',
+                i === 0 && 'sm:col-span-2',
+                span,
+              )}
             >
-              <Card className="group relative h-full overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5">
-                <CardContent className="p-6">
-                  <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
-                    <Icon className="size-6" />
-                  </div>
-                  <h3 className="font-heading text-lg font-semibold">
-                    {title}
-                  </h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {description}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{
+                  background:
+                    'radial-gradient(320px circle at var(--x, 50%) var(--y, 50%), color-mix(in oklch, var(--brand) 12%, transparent), transparent 70%)',
+                }}
+              />
+              <div className="relative">
+                <div className="mb-5 flex size-11 items-center justify-center rounded-xl border border-border/70 bg-background text-foreground transition-colors duration-300 group-hover:border-brand/40 group-hover:text-brand">
+                  <Icon aria-hidden="true" className="size-5" />
+                </div>
+                <h3
+                  className={cn(
+                    'font-heading font-semibold tracking-tight',
+                    i === 0 ? 'text-2xl' : 'text-lg',
+                  )}
+                >
+                  {title}
+                </h3>
+                <p
+                  className={cn(
+                    'mt-2 text-pretty text-muted-foreground',
+                    i === 0 ? 'max-w-md' : 'text-sm',
+                  )}
+                >
+                  {description}
+                </p>
+              </div>
+            </motion.li>
           ))}
-        </motion.div>
+        </motion.ul>
       </div>
     </section>
   );

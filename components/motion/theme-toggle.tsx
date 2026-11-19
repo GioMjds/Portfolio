@@ -135,6 +135,13 @@ const CIRCLE_ORIGIN: Record<RectStart, string> = {
   "bottom-up":   "50% 100%",
 };
 
+type ThemeTransition = { finished: Promise<void>; skipTransition(): void };
+
+// One document, one theme transition: shared by every toggle instance so a
+// key press and a click arriving together coordinate instead of racing.
+let activeTransition: ThemeTransition | null = null;
+let pendingTheme: "light" | "dark" | null = null;
+
 export function useThemeToggle({
   variant = "rectangle",
   start = "bottom-up",
@@ -152,14 +159,22 @@ export function useThemeToggle({
   const isDark = mounted && resolvedTheme === "dark";
 
   const toggle = () => {
-    const next = isDark ? "light" : "dark";
+    const root = document.documentElement;
+    // Aim from the theme we're already heading to, not React state: a second
+    // press can land before the first transition's setTheme has rendered, and
+    // stale state would make both presses pick the same theme.
+    const current =
+      pendingTheme ?? (root.classList.contains("dark") ? "dark" : "light");
+    const next = current === "dark" ? "light" : "dark";
 
     if (reduce || !("startViewTransition" in document)) {
       setTheme(next);
       return;
     }
 
-    const root = document.documentElement;
+    // Finish the running transition instantly instead of stacking snapshots.
+    activeTransition?.skipTransition();
+    pendingTheme = next;
 
     if (variant === "rectangle") {
       root.style.setProperty("--beui-vt-from", RECT_FROM[start]);
@@ -174,15 +189,22 @@ export function useThemeToggle({
 
     const vt = (
       document as Document & {
-        startViewTransition(cb: () => void): { finished: Promise<void> };
+        startViewTransition(cb: () => void): ThemeTransition;
       }
     ).startViewTransition(() => {
       // next-themes applies the class in an effect; flushSync commits it (and
       // its effects) before the browser captures the "after" snapshot.
       flushSync(() => setTheme(next));
     });
+    activeTransition = vt;
 
     vt.finished.finally(() => {
+      // A skipped transition settles while its replacement is still running;
+      // clearing the variant attribute then would drop the new reveal back
+      // to the browser's default cross-fade mid-animation.
+      if (activeTransition !== vt) return;
+      activeTransition = null;
+      pendingTheme = null;
       delete root.dataset.beuiVt;
     });
   };

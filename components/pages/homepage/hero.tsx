@@ -179,6 +179,22 @@ export function Hero() {
             ))}
           </ul>
         </div>
+
+        {/* Scroll cue into the prologue */}
+        <a
+          href="#prologue"
+          data-intro-item
+          data-intro="rest"
+          className="mx-auto mt-14 hidden w-fit flex-col items-center gap-3 rounded-md px-3 py-2 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground sm:flex"
+        >
+          The story starts here
+          <span
+            aria-hidden="true"
+            className="relative h-10 w-px overflow-hidden bg-border"
+          >
+            <span className="absolute inset-x-0 top-0 h-1/2 animate-scroll-cue bg-brand motion-reduce:hidden" />
+          </span>
+        </a>
       </div>
     </section>
   );

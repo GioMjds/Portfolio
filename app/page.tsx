@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
-import { Separator } from '@/components/ui/separator';
 import {
   CallToAction,
+  ChapterDivider,
   Hero,
+  HomeBackdrop,
+  Prologue,
   Highlights,
   TechStack,
   FlagshipShowcase,
@@ -47,18 +49,19 @@ export default async function Home() {
           __html: JSON.stringify(webSiteJsonLd).replace(/</g, '\\u003c'),
         }}
       />
+      <HomeBackdrop />
       <Hero />
-      <Separator className="mx-auto max-w-2xl" />
+      <Prologue />
+      <ChapterDivider />
       <Highlights />
-      <Separator className="mx-auto max-w-2xl" />
+      <ChapterDivider />
       <TechStack skillProjects={skillProjects} />
-      <Separator className="mx-auto max-w-2xl" />
+      <ChapterDivider />
       <FlagshipShowcase />
-      <Separator className="mx-auto max-w-2xl" />
+      <ChapterDivider />
       <ExperienceTimeline />
-      <Separator className="mx-auto max-w-2xl" />
+      <ChapterDivider />
       <GithubStats />
-      <Separator className="mx-auto max-w-2xl" />
       <CallToAction />
     </section>
   );

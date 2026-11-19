@@ -2,9 +2,8 @@
 
 import { useMemo } from 'react';
 import { motion } from 'motion/react';
-import { ArrowUpRight, GitBranch } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -12,7 +11,7 @@ import {
   scaleInVariants,
   staggerContainerVariants,
 } from '@/utils/variants';
-import { RevealHeading } from '@/components/motion/reveal-heading';
+import { SectionIntro } from './section-intro';
 
 const GITHUB_USERNAME = 'GioMjds';
 
@@ -50,33 +49,17 @@ export function GithubStats() {
   return (
     <section className="px-4 py-16 sm:py-24">
       <div className="mx-auto max-w-5xl">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={fadeInUpVariants}
-          className="mb-12 text-center"
-        >
-          <Badge variant="outline" className="mb-4 gap-1">
-            <GitBranch className="size-3" />
-            Open Source
-          </Badge>
-          <RevealHeading
-            text="GitHub Activity"
-            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
-          />
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            A snapshot of my open-source contributions and the languages I work
-            with most.
-          </p>
-        </motion.div>
+        <SectionIntro chapter={6} label="In the open" title="Building in public">
+          Most of what I build lives on GitHub. Here&apos;s what the commit
+          history and language mix look like right now.
+        </SectionIntro>
 
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
           variants={staggerContainerVariants}
-          className="mt-12 grid gap-6 md:grid-cols-2"
+          className="grid gap-6 md:grid-cols-2"
         >
           {statsCards.map(({ src, alt }) => (
             <motion.div

@@ -4,8 +4,7 @@ import { useMemo, useState, type KeyboardEvent } from 'react';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight, Sparkles, X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { ArrowUpRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -21,7 +20,7 @@ import { skills, skillCategories, type Skill } from '@/constants/about';
 import type { SkillProject } from '@/lib/skill-projects';
 import { cn } from '@/lib/utils';
 import { fadeInUpVariants, staggerContainerVariants } from '@/utils/variants';
-import { RevealHeading } from '@/components/motion/reveal-heading';
+import { SectionIntro } from './section-intro';
 
 interface TechStackProps {
   /** Skill name -> projects that use it. Skills without projects are absent. */
@@ -74,29 +73,15 @@ export function TechStack({ skillProjects }: TechStackProps) {
   return (
     <section className="px-4 py-16 sm:py-24" onKeyDown={handleKeyDown}>
       <div className="mx-auto max-w-5xl">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={fadeInUpVariants}
-          className="mb-12 text-center"
-        >
-          <Badge variant="outline" className="mb-4 gap-1">
-            <Sparkles className="size-3" />
-            Tech Stack
-          </Badge>
-          <RevealHeading
-            text="Technologies I Work With"
-            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
-          />
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            A curated set of languages, frameworks, and tools I use to build
-            modern, performant applications.
+        <SectionIntro chapter={3} label="The toolkit" title="What's in the toolbox">
+          <p>
+            The languages, frameworks, and tools I reach for, picked up one
+            project at a time.
           </p>
-          <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground/80">
-            Select a skill with a project count to see where I used it.
+          <p className="mt-2 text-sm text-muted-foreground/80">
+            Tap a skill with a project count to see where I used it.
           </p>
-        </motion.div>
+        </SectionIntro>
 
         <div className="space-y-10">
           {groupedSkills.map(({ category, items }) => (

@@ -28,7 +28,9 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (isTyping()) return;
+      // Holding D auto-repeats ~30×/s; each repeat would start a full-page
+      // View Transition. One press, one toggle.
+      if (e.repeat || isTyping()) return;
       if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
       if (e.key.toLowerCase() !== 'd') return;
       toggle();
@@ -38,7 +40,21 @@ export default function ThemeToggle() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [toggle]);
 
-  if (!mounted) return null;
+  // Same-size placeholder until the theme is known, so the navbar doesn't shift.
+  if (!mounted) {
+    return (
+      <Button
+        aria-hidden="true"
+        tabIndex={-1}
+        variant="outline"
+        disabled
+        className="flex items-center gap-1 p-2"
+      >
+        <span className="size-5" />
+        <Kbd className="hidden sm:inline-flex">D</Kbd>
+      </Button>
+    );
+  }
 
   return (
     <Button
