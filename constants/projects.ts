@@ -72,7 +72,92 @@ export const projects: Projects[] = [
       'Server-side availability check on every reservation | Zero double-bookings in test runs | Local API responses under 150ms',
   },
   {
-    projectId: 7,
+    projectId: 2,
+    projectName: 'SariSari',
+    description:
+      'An offline-first mobile app for sari-sari store owners to manage inventory, record sales, and track customer utang, built with React Native, Expo, and SQLite.',
+    stacks: [
+      { name: 'React Native', icon: '/programming-icons-svg/react.svg' },
+      { name: 'Expo', icon: '/programming-icons-svg/expo-original.svg' },
+      { name: 'SQLite', icon: '/programming-icons-svg/sqlite-original.svg' },
+    ],
+    image: '/projects/sarisari.png',
+    screenshots: [
+      {
+        src: '/projects/sarisari/1.jpg',
+        caption: 'Store dashboard',
+        alt: "SariSari home screen with today's sales, a New Sale button, quick actions, profit, expenses, low stock, and overdue utang tiles.",
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/2.jpg',
+        caption: 'Ring up a sale',
+        alt: "Sell screen with today's sales total, product search, a fast lane of +1, +2, and +5 buttons, and products showing stock levels and prices.",
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/3.jpg',
+        caption: 'Review order',
+        alt: 'Review order sheet with Cash or Utang payment, a suki selector, item quantities, a Park button, and a slide-to-confirm control.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/4.jpg',
+        caption: 'Sale recorded',
+        alt: 'Receipt confirmation with the SariSari jar mascot celebrating and the total, item count, and payment method.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/5.jpg',
+        caption: 'Digital resibo',
+        alt: 'Official resibo marked Paid in Full and Cash, with date, reference number, itemised list, and Void Sale, Refund, and Edit Price actions.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/6.jpg',
+        caption: 'Inventory',
+        alt: 'Inventory screen with Products, Movements, Stocktake, and Restock tabs, listing products with prices and Newly Added or Low Stock badges.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/7.jpg',
+        caption: 'Suki and utang list',
+        alt: 'Customers screen with total utang to collect, filters for with utang and paid up, and each suki with their balance.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/8.jpg',
+        caption: 'Utang to collect',
+        alt: 'To collect tab listing the longest outstanding balances, with follow-up dates and Mark Contacted and Record Payment buttons.',
+        device: 'mobile',
+      },
+      {
+        src: '/projects/sarisari/9.jpg',
+        caption: 'Record a payment',
+        alt: 'Record payment screen with amount chips, Pay Full and Pay Half buttons, an oldest-first allocation receipt, and cash, bank, or other payment methods.',
+        device: 'mobile',
+      },
+    ],
+    githubLink: 'https://github.com/GioMjds/SariSari',
+    status: 'in-development',
+    features: [
+      'Works fully offline, since all data lives on the device',
+      'Fast checkout with a fast lane of +1, +2, and +5 buttons for best-selling items',
+      'Cash or utang at checkout, with a digital resibo that supports void, refund, and price edits',
+      'Utang (customer credit) ledger with follow-up reminders and payments applied to the oldest balance first',
+      'Inventory with stock movements, stocktake, restock, and low-stock alerts',
+      'Daily dashboard for sales, profit, expenses, low stock, and overdue utang',
+      'Data export and backup so records are never lost with the phone',
+    ],
+    problemStatement:
+      'Most sari-sari stores run on memory and a notebook. Owners cannot tell which items actually earn money, and utang entries get forgotten or disputed. Existing POS apps assume stable internet and a laptop, which most stores do not have.',
+    solutionStatement:
+      "SariSari runs entirely on the owner's phone with local SQLite storage, so it works with no signal and no subscription. Inventory, sales, and utang are tracked in one place, with export and backup as a safety net.",
+    performanceMetric:
+      'Fully functional with zero connectivity | Local SQLite queries under 100ms | Built for low-end Android phones',
+  },
+  {
+    projectId: 3,
     projectName: 'PrintBit',
     description:
       'A coin-operated, self-service document printing kiosk. Users upload files from their phone, pay with coins, and collect prints, photocopies, or converted soft copies without staff.',
@@ -204,105 +289,26 @@ export const projects: Projects[] = [
       'Coin verification under 1 second | Hardware, payment, and print pipeline working end to end | Files deleted after every job',
   },
   {
-    projectId: 8,
-    projectName: 'SariSari',
-    description:
-      'An offline-first mobile app for sari-sari store owners to manage inventory, record sales, and track customer utang, built with React Native, Expo, and SQLite.',
-    stacks: [
-      { name: 'React Native', icon: '/programming-icons-svg/react.svg' },
-      { name: 'Expo', icon: '/programming-icons-svg/expo-original.svg' },
-      { name: 'SQLite', icon: '/programming-icons-svg/sqlite-original.svg' },
-    ],
-    image: '/projects/sarisari.png',
-    screenshots: [
-      {
-        src: '/projects/sarisari/1.jpg',
-        caption: 'Store dashboard',
-        alt: "SariSari home screen with today's sales, a New Sale button, quick actions, profit, expenses, low stock, and overdue utang tiles.",
-        device: 'mobile',
-      },
-      {
-        src: '/projects/sarisari/2.jpg',
-        caption: 'Ring up a sale',
-        alt: "Sell screen with today's sales total, product search, a fast lane of +1, +2, and +5 buttons, and products showing stock levels and prices.",
-        device: 'mobile',
-      },
-      {
-        src: '/projects/sarisari/3.jpg',
-        caption: 'Review order',
-        alt: 'Review order sheet with Cash or Utang payment, a suki selector, item quantities, a Park button, and a slide-to-confirm control.',
-        device: 'mobile',
-      },
-      {
-        src: '/projects/sarisari/4.jpg',
-        caption: 'Sale recorded',
-        alt: 'Receipt confirmation with the SariSari jar mascot celebrating and the total, item count, and payment method.',
-        device: 'mobile',
-      },
-      {
-        src: '/projects/sarisari/5.jpg',
-        caption: 'Digital resibo',
-        alt: 'Official resibo marked Paid in Full and Cash, with date, reference number, itemised list, and Void Sale, Refund, and Edit Price actions.',
-        device: 'mobile',
-      },
-      {
-        src: '/projects/sarisari/6.jpg',
-        caption: 'Inventory',
-        alt: 'Inventory screen with Products, Movements, Stocktake, and Restock tabs, listing products with prices and Newly Added or Low Stock badges.',
-        device: 'mobile',
-      },
-      {
-        src: '/projects/sarisari/7.jpg',
-        caption: 'Suki and utang list',
-        alt: 'Customers screen with total utang to collect, filters for with utang and paid up, and each suki with their balance.',
-        device: 'mobile',
-      },
-      {
-        src: '/projects/sarisari/8.jpg',
-        caption: 'Utang to collect',
-        alt: 'To collect tab listing the longest outstanding balances, with follow-up dates and Mark Contacted and Record Payment buttons.',
-        device: 'mobile',
-      },
-      {
-        src: '/projects/sarisari/9.jpg',
-        caption: 'Record a payment',
-        alt: 'Record payment screen with amount chips, Pay Full and Pay Half buttons, an oldest-first allocation receipt, and cash, bank, or other payment methods.',
-        device: 'mobile',
-      },
-    ],
-    githubLink: 'https://github.com/GioMjds/SariSari',
-    status: 'pending',
-    features: [
-      'Works fully offline, since all data lives on the device',
-      'Fast checkout with a fast lane of +1, +2, and +5 buttons for best-selling items',
-      'Cash or utang at checkout, with a digital resibo that supports void, refund, and price edits',
-      'Utang (customer credit) ledger with follow-up reminders and payments applied to the oldest balance first',
-      'Inventory with stock movements, stocktake, restock, and low-stock alerts',
-      'Daily dashboard for sales, profit, expenses, low stock, and overdue utang',
-      'Data export and backup so records are never lost with the phone',
-    ],
-    problemStatement:
-      'Most sari-sari stores run on memory and a notebook. Owners cannot tell which items actually earn money, and utang entries get forgotten or disputed. Existing POS apps assume stable internet and a laptop, which most stores do not have.',
-    solutionStatement:
-      "SariSari runs entirely on the owner's phone with local SQLite storage, so it works with no signal and no subscription. Inventory, sales, and utang are tracked in one place, with export and backup as a safety net.",
-    performanceMetric:
-      'Fully functional with zero connectivity | Local SQLite queries under 100ms | Built for low-end Android phones',
-  },
-  {
-    projectId: 9,
+    projectId: 4,
     projectName: 'CVTEC EDMS',
     description:
       'An engineering document management system for a Dubai engineering consultancy, built with Next.js and Supabase. It tracks authority NOCs, submittal reviews and approvals, project teams, and contract value in one role-based workspace.',
     stacks: [
       { name: 'Next.js', icon: '/programming-icons-svg/nextjs-original.svg' },
       { name: 'TypeScript', icon: '/programming-icons-svg/typescript.svg' },
-      { name: 'Supabase', icon: '/programming-icons-svg/supabase-original.svg' },
+      {
+        name: 'Supabase',
+        icon: '/programming-icons-svg/supabase-original.svg',
+      },
       { name: 'PostgreSQL', icon: '/programming-icons-svg/postgresql.svg' },
       {
         name: 'Tailwind CSS',
         icon: '/programming-icons-svg/tailwindcss-original.svg',
       },
-      { name: 'TanStack Query', icon: '/programming-icons-svg/tanstack-query.png' },
+      {
+        name: 'TanStack Query',
+        icon: '/programming-icons-svg/tanstack-query.png',
+      },
     ],
     image: '/projects/cvtec-edms/2.png',
     screenshots: [
@@ -385,7 +391,8 @@ export const projects: Projects[] = [
         device: 'desktop',
       },
     ],
-    githubLink: 'https://github.com/GioMjds/Engineer-Document-Management-System',
+    githubLink:
+      'https://github.com/GioMjds/Engineer-Document-Management-System',
     status: 'in-development',
     features: [
       'Authority NOC tracker per project, grouped by design, construction, information, and handover stages',

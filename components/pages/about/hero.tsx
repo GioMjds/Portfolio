@@ -1,14 +1,6 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
-import type { Route } from 'next';
-import { motion } from 'motion/react';
-import { ArrowRight, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { TiltCard } from '@/components/ui/tilt-card';
-import { quickFacts } from '@/constants';
-import { containerVariants, itemVariants } from '@/utils';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +9,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { TiltCard } from '@/components/ui/tilt-card';
+import { quickFacts } from '@/constants';
+import { containerVariants, itemVariants } from '@/utils';
+import { ArrowRight, FileText } from 'lucide-react';
+import { motion } from 'motion/react';
+import type { Route } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export function Hero() {
   return (

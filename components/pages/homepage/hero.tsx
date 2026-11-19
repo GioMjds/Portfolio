@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Download, ExternalLink } from 'lucide-react';
 import { HeroAskBar } from './hero-ask-bar';
-import { Spotlight } from '@/components/ui/spotlight';
 import { Marquee } from '@/components/motion/marquee';
 import { gsap, GSAP_EASE, MEDIA, SplitText, useGSAP } from '@/lib/gsap';
 
@@ -79,7 +78,6 @@ export function Hero() {
       ref={scope}
       className="relative overflow-hidden px-4 pb-8 pt-24 sm:pb-24 sm:pt-16"
     >
-      <Spotlight />
       <div className="relative mx-auto max-w-5xl">
         {/* Status Badge */}
         <div
