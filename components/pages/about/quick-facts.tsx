@@ -4,6 +4,13 @@ import { motion } from 'motion/react';
 import { quickFacts } from '@/constants';
 import { containerVariants, iconMap, itemVariants } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
+import { NumberTicker } from '@/components/motion/number-ticker';
+
+/** "8" → 8, "2+ Years" → 2 + "+ Years". Non-numeric values stay text. */
+function parseNumericFact(value: string) {
+  const match = /^(\d+)(.*)$/.exec(value);
+  return match ? { number: Number(match[1]), suffix: match[2] } : null;
+}
 
 export function QuickFacts() {
   return (
@@ -26,7 +33,9 @@ export function QuickFacts() {
                       <Icon className="size-5" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">{fact.value}</p>
+                      <p className="text-2xl font-bold">
+                        <FactValue value={fact.value} />
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {fact.label}
                       </p>
@@ -39,5 +48,13 @@ export function QuickFacts() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function FactValue({ value }: { value: string }) {
+  const numeric = parseNumericFact(value);
+  if (!numeric) return value;
+  return (
+    <NumberTicker value={numeric.number} suffix={numeric.suffix} startOnView />
   );
 }

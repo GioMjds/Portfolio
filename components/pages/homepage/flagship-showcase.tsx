@@ -14,6 +14,7 @@ import {
   cardVariants,
 } from '@/utils/variants';
 import { projects, type Projects } from '@/constants/projects';
+import { RevealHeading } from '@/components/motion/reveal-heading';
 
 export function FlagshipShowcase() {
   const flagshipProjects = useMemo<Projects[]>(
@@ -40,9 +41,10 @@ export function FlagshipShowcase() {
             <Trophy className="size-3" />
             Flagship Projects
           </Badge>
-          <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            Proof of Work
-          </h2>
+          <RevealHeading
+            text="Proof of Work"
+            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
+          />
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
             Real projects with real challenges, engineered solutions, and
             measurable outcomes.

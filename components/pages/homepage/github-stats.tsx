@@ -12,16 +12,31 @@ import {
   scaleInVariants,
   staggerContainerVariants,
 } from '@/utils/variants';
+import { RevealHeading } from '@/components/motion/reveal-heading';
 
 const GITHUB_USERNAME = 'GioMjds';
 
+/** Hex values of the design tokens; the stats SVGs can't read CSS variables. */
+const STATS_COLORS = {
+  light: { title: 'ae4f00', text: '65635f', icon: 'ae4f00' },
+  dark: { title: 'f4a34b', text: 'a09e9b', icon: 'f4a34b' },
+} as const;
+
+type StatsTheme = keyof typeof STATS_COLORS;
+
 const statsCards = [
   {
-    src: `https://github-readme-stats.vercel.app/api?username=${GITHUB_USERNAME}&show_icons=true&theme=transparent&hide_border=true&title_color=8b5cf6&text_color=a1a1aa&icon_color=8b5cf6`,
+    src: (theme: StatsTheme) => {
+      const c = STATS_COLORS[theme];
+      return `https://github-readme-stats.vercel.app/api?username=${GITHUB_USERNAME}&show_icons=true&theme=transparent&hide_border=true&title_color=${c.title}&text_color=${c.text}&icon_color=${c.icon}`;
+    },
     alt: `${GITHUB_USERNAME}'s GitHub Stats`,
   },
   {
-    src: `https://github-readme-stats.vercel.app/api/top-langs/?username=${GITHUB_USERNAME}&layout=compact&theme=transparent&hide_border=true&title_color=8b5cf6&text_color=a1a1aa`,
+    src: (theme: StatsTheme) => {
+      const c = STATS_COLORS[theme];
+      return `https://github-readme-stats.vercel.app/api/top-langs/?username=${GITHUB_USERNAME}&layout=compact&theme=transparent&hide_border=true&title_color=${c.title}&text_color=${c.text}`;
+    },
     alt: `${GITHUB_USERNAME}'s Top Languages`,
   },
 ];
@@ -46,9 +61,10 @@ export function GithubStats() {
             <GitBranch className="size-3" />
             Open Source
           </Badge>
-          <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            GitHub Activity
-          </h2>
+          <RevealHeading
+            text="GitHub Activity"
+            className="font-heading text-3xl font-bold tracking-tight sm:text-4xl"
+          />
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
             A snapshot of my open-source contributions and the languages I work
             with most.
@@ -70,11 +86,19 @@ export function GithubStats() {
             >
               <Card className="overflow-hidden border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5">
                 <CardContent className="p-4">
+                  {/* One variant per theme; the hidden one is lazy and never loads. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={src}
+                    src={src('light')}
                     alt={alt}
-                    className="h-auto w-full"
+                    className="h-auto w-full dark:hidden"
+                    loading="lazy"
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src('dark')}
+                    alt={alt}
+                    className="hidden h-auto w-full dark:block"
                     loading="lazy"
                   />
                 </CardContent>

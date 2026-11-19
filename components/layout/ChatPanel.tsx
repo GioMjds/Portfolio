@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Spinner } from '@/components/ui/spinner';
+import { ThinkingShimmer } from '@/components/agents/loading-states/thinking-shimmer';
 import { Textarea } from '@/components/ui/textarea';
 import {
   scaleInVariants,
@@ -861,7 +862,7 @@ export function ChatPanel() {
                           >
                             <div className="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
                               <Spinner className="size-3.5" />
-                              Thinking...
+                              <ThinkingShimmer>Thinking...</ThinkingShimmer>
                             </div>
                           </motion.div>
                         ) : null}

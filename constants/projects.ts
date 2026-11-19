@@ -11,6 +11,21 @@ export interface TechStack {
   icon: string;
 }
 
+/** Screenshot set for the project detail lightbox. All images share one size. */
+export interface ProjectGallery {
+  images: string[];
+  width: number;
+  height: number;
+}
+
+/** `/projects/<dir>/1.<ext>` … `/projects/<dir>/<count>.<ext>` */
+function galleryPaths(dir: string, count: number, ext: 'png' | 'jpg') {
+  return Array.from(
+    { length: count },
+    (_, i) => `/projects/${dir}/${i + 1}.${ext}`,
+  );
+}
+
 export interface Projects {
   projectId: number;
   projectName: string;
@@ -24,6 +39,7 @@ export interface Projects {
   problemStatement?: string;
   solutionStatement?: string;
   performanceMetric?: string;
+  gallery?: ProjectGallery;
 }
 
 export const projects: Projects[] = [
@@ -239,6 +255,11 @@ export const projects: Projects[] = [
       },
     ],
     image: '/projects/printbit.png',
+    gallery: {
+      images: galleryPaths('printbit', 14, 'png'),
+      width: 1920,
+      height: 1080,
+    },
     githubLink: 'https://github.com/GioMjds/printbit',
     status: 'finished',
     features: [
@@ -267,6 +288,11 @@ export const projects: Projects[] = [
       { name: 'SQLite', icon: '/programming-icons-svg/sqlite-original.svg' },
     ],
     image: '/projects/sarisari.png',
+    gallery: {
+      images: galleryPaths('sarisari', 9, 'jpg'),
+      width: 1080,
+      height: 2400,
+    },
     githubLink: 'https://github.com/GioMjds/SariSari',
     status: 'pending',
     features: [

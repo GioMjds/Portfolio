@@ -10,6 +10,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import Link from 'next/link';
 import { GithubIcon } from '@/utils';
 import type { Projects } from '@/constants';
+import { ProjectGallery } from './project-gallery';
 
 interface MainContentProps {
   project: Projects;
@@ -37,6 +38,14 @@ export function MainContent({ project }: MainContentProps) {
             />
           </div>
         </Card>
+
+        {/* Screenshot gallery */}
+        {project.gallery && project.gallery.images.length > 0 && (
+          <ProjectGallery
+            projectName={project.projectName}
+            gallery={project.gallery}
+          />
+        )}
 
         {/* Features Section */}
         {project.features && project.features.length > 0 && (

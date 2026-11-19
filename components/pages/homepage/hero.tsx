@@ -5,7 +5,6 @@ import { motion, useReducedMotion } from 'motion/react';
 import {
   fadeInUpVariants,
   heroVariants,
-  scaleInVariants,
   staggerContainerVariants,
 } from '@/utils/variants';
 import { useMemo } from 'react';
@@ -14,6 +13,7 @@ import Link from 'next/link';
 import { ArrowRight, Download, ExternalLink } from 'lucide-react';
 import { HeroAskBar } from './hero-ask-bar';
 import { Spotlight } from '@/components/ui/spotlight';
+import { Marquee } from '@/components/motion/marquee';
 
 const techStack = [
   'TypeScript',
@@ -140,24 +140,36 @@ export function Hero() {
           >
             What I ship with
           </motion.p>
-          <motion.div
-            variants={staggerContainerVariants}
-            className="flex flex-wrap justify-center gap-2"
-            initial={false}
+          {/* Scrolling strip; reduced motion gets the static wrapped list. */}
+          <Marquee
+            speed={35}
+            gap="0.5rem"
+            className="mx-auto max-w-3xl motion-reduce:hidden"
           >
             {techStack.map((tech) => (
-              <motion.div key={tech} variants={scaleInVariants}>
-                <Badge
-                  variant="outline"
-                  className="border-border/70 bg-background px-3 py-1 text-sm text-foreground transition-colors duration-200 hover:bg-secondary"
-                >
-                  {tech}
-                </Badge>
-              </motion.div>
+              <TechBadge key={tech} tech={tech} />
             ))}
-          </motion.div>
+          </Marquee>
+          <ul className="hidden flex-wrap justify-center gap-2 motion-reduce:flex">
+            {techStack.map((tech) => (
+              <li key={tech}>
+                <TechBadge tech={tech} />
+              </li>
+            ))}
+          </ul>
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function TechBadge({ tech }: { tech: string }) {
+  return (
+    <Badge
+      variant="outline"
+      className="border-border/70 bg-background px-3 py-1 text-sm text-foreground transition-colors duration-200 hover:bg-secondary"
+    >
+      {tech}
+    </Badge>
   );
 }

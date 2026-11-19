@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { askAssistant } from '@/lib/assistant/ask-event';
 import { getStarterPrompts } from '@/lib/assistant/starter-prompts';
 import { fadeInUpVariants } from '@/utils/variants';
+import { TextShimmer } from '@/components/motion/text-shimmer';
 
 const CHIPS = getStarterPrompts('/');
 const MAX_QUESTION_LENGTH = 300;
@@ -62,7 +63,7 @@ export function HeroAskBar() {
           htmlFor={inputId}
           className="mb-2 justify-center text-sm text-muted-foreground"
         >
-          Ask my portfolio anything
+          <TextShimmer duration={3.5}>Ask my portfolio anything</TextShimmer>
         </Label>
 
         <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-card/60 p-1.5 pl-4 shadow-lg shadow-primary/5 backdrop-blur transition-[border-color,box-shadow] focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
